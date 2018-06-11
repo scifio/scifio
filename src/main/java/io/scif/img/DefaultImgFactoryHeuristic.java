@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -73,9 +73,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 	// -- ImgFactoryHeuristic API Methods --
 
 	@Override
-	public <T extends NativeType<T>> ImgFactory<T> createFactory(
-		final Metadata m, final ImgMode[] imgModes, final T type)
-		throws IncompatibleTypeException
+	public <T extends NativeType<T>> ImgFactory<T> createFactory(final Metadata m,
+		final ImgMode[] imgModes, final T type) throws IncompatibleTypeException
 	{
 		ImgFactory<T> tmpFactory = null;
 
@@ -83,17 +82,17 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 		// 2GB.
 		final long maxSize = ArrayUtils.safeMultiply64(2, 1024, 1024, 1024);
 
-		final long availableMem =
-			(long) (MemoryTools.totalAvailableMemory() * MEMORY_THRESHOLD);
+		final long availableMem = (long) (MemoryTools.totalAvailableMemory() *
+			MEMORY_THRESHOLD);
 		long datasetSize = m.getDatasetSize();
 
 		// check for overflow
 		if (datasetSize <= 0) datasetSize = Long.MAX_VALUE;
 
 		// divide by 1024 to compare to max_size and avoid overflow
-		final long planeSize =
-			m.get(0).getAxisLength(Axes.X) * m.get(0).getAxisLength(Axes.Y) *
-				FormatTools.getBytesPerPixel(m.get(0).getPixelType());
+		final long planeSize = m.get(0).getAxisLength(Axes.X) * m.get(0)
+			.getAxisLength(Axes.Y) * FormatTools.getBytesPerPixel(m.get(0)
+				.getPixelType());
 
 		final boolean fitsInMemory = availableMem > datasetSize;
 
@@ -105,8 +104,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
 			// get the current mode, or AUTO if we've exhausted the list of
 			// modes
-			final ImgMode mode =
-				modeIndex >= imgModes.length ? ImgMode.AUTO : imgModes[modeIndex++];
+			final ImgMode mode = modeIndex >= imgModes.length ? ImgMode.AUTO
+				: imgModes[modeIndex++];
 
 			if (mode.equals(ImgMode.AUTO)) {
 				if (!fitsInMemory) tmpFactory = new SCIFIOCellImgFactory<>();

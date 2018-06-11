@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,7 +52,7 @@ public class BitBuffer {
 		0x1F, // 00011111
 		0x3F, // 00111111
 		0x7F // 01111111
-		};
+	};
 
 	/** Various bitmasks for the xxxx0000 side of a byte. */
 	private static final int[] FRONT_MASK = { 0x0000, // 00000000
@@ -63,7 +63,7 @@ public class BitBuffer {
 		0x00F8, // 11111000
 		0x00FC, // 11111100
 		0x00FE // 11111110
-		};
+	};
 
 	private final byte[] byteBuffer;
 
@@ -175,8 +175,8 @@ public class BitBuffer {
 				// then push them into the int.
 				toStore = toStore << bitsToRead;
 				final int cb = byteBuffer[currentByte] & 0xff;
-				toStore +=
-					(cb & (0x00FF - FRONT_MASK[currentBit])) >> (bitsLeft - bitsToRead);
+				toStore += (cb & (0x00FF - FRONT_MASK[currentBit])) >> (bitsLeft -
+					bitsToRead);
 				currentBit += bitsToRead;
 				bitsToRead = 0;
 			}

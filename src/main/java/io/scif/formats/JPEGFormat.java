@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -131,8 +131,8 @@ public class JPEGFormat extends ImageIOFormat {
 				stream.seek(0);
 
 				// Need to check dimension lengths
-				if (m.get(0).getAxisLength(Axes.X) > MAX_SIZE &&
-					m.get(0).getAxisLength(Axes.Y) > MAX_SIZE)
+				if (m.get(0).getAxisLength(Axes.X) > MAX_SIZE && m.get(0).getAxisLength(
+					Axes.Y) > MAX_SIZE)
 				{
 					return false;
 				}
@@ -201,8 +201,8 @@ public class JPEGFormat extends ImageIOFormat {
 					tagValue = Bytes.toShort(tag, false) & 0xffff;
 				}
 				v.write(tag);
-				final byte[] remainder =
-					new byte[(int) (stream.length() - stream.getFilePointer())];
+				final byte[] remainder = new byte[(int) (stream.length() - stream
+					.getFilePointer())];
 				stream.read(remainder);
 				v.write(remainder);
 

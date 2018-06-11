@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -55,44 +55,23 @@ public class ReadLongTest {
 
 	private static final byte[] PAGE = new byte[] {
 		// 64-bit long
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x01,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x01,
 		// 64-bit long
-		(byte) 0x0F, (byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0x02,
-		// 64-bit long
-		(byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x03,
-		// 64-bit long
-		(byte) 0x0F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0xFF,
-		(byte) 0x04,
+		(byte) 0x0F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+		(byte) 0xFF, (byte) 0xFF, (byte) 0x02,
 		// 64-bit long
 		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x05,
+		(byte) 0x00, (byte) 0x00, (byte) 0x03,
+		// 64-bit long
+		(byte) 0x0F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+		(byte) 0xFF, (byte) 0xFF, (byte) 0x04,
+		// 64-bit long
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x05,
 		// 64-bit long (-1)
 		(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-		(byte) 0xFF, (byte) 0xFF,
-		(byte) 0xFF,
+		(byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
 		// 64-bit long
 		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 		(byte) 0x00, (byte) 0x00, (byte) 0x07,

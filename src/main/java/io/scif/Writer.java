@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -79,9 +79,8 @@ public interface Writer extends HasFormat, HasSource {
 	 * @throws FormatException if one of the parameters is invalid.
 	 * @throws IOException if there was a problem writing to the file.
 	 */
-	void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds)
-		throws FormatException, IOException;
+	void savePlane(final int imageIndex, final long planeIndex, final Plane plane,
+		final Interval bounds) throws FormatException, IOException;
 
 	/**
 	 * @return True if this {@code Writer} can save multiple images to a single

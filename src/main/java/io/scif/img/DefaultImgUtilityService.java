@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -108,8 +108,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 		for (int i = 0; i < dimLengths.length; i++) {
 
 			if (region != null && i < region.size()) {
-				final Range range =
-					region.getRange(m.get(imageIndex).getAxis(i).type());
+				final Range range = region.getRange(m.get(imageIndex).getAxis(i)
+					.type());
 				if (range != null) {
 					dimLengths[i] = range.size();
 				}
@@ -225,7 +225,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 	/** Obtains planar access instance backing the given img, if any. */
 	@Override
 	@SuppressWarnings("unchecked")
-	public PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(final ImgPlus<?> img)
+	public PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(
+		final ImgPlus<?> img)
 	{
 		if (img.getImg() instanceof PlanarAccess) {
 			return (PlanarAccess<ArrayDataAccess<?>>) img.getImg();
@@ -308,8 +309,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 			pixelType = FormatTools.DOUBLE;
 		}
 		else {
-			throw new ImgIOException("Pixel type not supported. "
-				+ "Please convert your image to a supported type.");
+			throw new ImgIOException("Pixel type not supported. " +
+				"Please convert your image to a supported type.");
 		}
 
 		return pixelType;

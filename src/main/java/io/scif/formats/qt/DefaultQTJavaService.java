@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -65,16 +65,16 @@ public class DefaultQTJavaService extends AbstractService implements
 	// -- Constants --
 
 	private static final String NO_QT_MSG =
-		"QuickTime for Java is required to read some QuickTime files. "
-			+ "Please install QuickTime for Java from http://www.apple.com/quicktime/";
+		"QuickTime for Java is required to read some QuickTime files. " +
+			"Please install QuickTime for Java from http://www.apple.com/quicktime/";
 
 	private static final String JVM_64BIT_MSG =
-		"QuickTime for Java is not supported with a 64-bit JVM. "
-			+ "Please invoke the 32-bit JVM (-d32) to utilize QTJava functionality.";
+		"QuickTime for Java is not supported with a 64-bit JVM. " +
+			"Please invoke the 32-bit JVM (-d32) to utilize QTJava functionality.";
 
 	private static final String EXPIRED_QT_MSG =
-		"Your version of QuickTime for Java has expired. "
-			+ "Please reinstall QuickTime for Java from http://www.apple.com/quicktime/";
+		"Your version of QuickTime for Java has expired. " +
+			"Please reinstall QuickTime for Java from http://www.apple.com/quicktime/";
 
 	private static final boolean MAC_OS_X = System.getProperty("os.name").equals(
 		"Mac OS X");
@@ -155,8 +155,8 @@ public class DefaultQTJavaService extends AbstractService implements
 	}
 
 	@Override
-	public Dimension getPictDimensions(final byte[] bytes)
-		throws FormatException, ReflectException
+	public Dimension getPictDimensions(final byte[] bytes) throws FormatException,
+		ReflectException
 	{
 		checkQTLibrary();
 		try {
@@ -199,8 +199,8 @@ public class DefaultQTJavaService extends AbstractService implements
 			r.exec("rei = pixMap.getPixelData()");
 
 			// copy bytes to an array
-			final int rowBytes =
-				((Integer) r.exec("pixMap.getRowBytes()")).intValue();
+			final int rowBytes = ((Integer) r.exec("pixMap.getRowBytes()"))
+				.intValue();
 			final int intsPerRow = rowBytes / 4;
 			final int pixLen = intsPerRow * height;
 			r.setVar("pixLen", pixLen);
@@ -215,15 +215,12 @@ public class DefaultQTJavaService extends AbstractService implements
 			final int greenMask = 0x0000ff00;
 			final int blueMask = 0x000000ff;
 			final int alphaMask = 0x00000000;
-			final DirectColorModel colorModel =
-				new DirectColorModel(bitsPerSample, redMask, greenMask, blueMask,
-					alphaMask);
+			final DirectColorModel colorModel = new DirectColorModel(bitsPerSample,
+				redMask, greenMask, blueMask, alphaMask);
 
 			r.exec("QTSession.close()");
-			return Toolkit.getDefaultToolkit()
-				.createImage(
-					new MemoryImageSource(width, height, colorModel, pixels, 0,
-						intsPerRow));
+			return Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(
+				width, height, colorModel, pixels, 0, intsPerRow));
 		}
 		catch (final ReflectException e) {
 			try {
@@ -322,8 +319,8 @@ public class DefaultQTJavaService extends AbstractService implements
 
 		if (MAC_OS_X) {
 			try {
-				paths =
-					new URL[] { new URL("file:/System/Library/Java/Extensions/QTJava.zip") };
+				paths = new URL[] { new URL(
+					"file:/System/Library/Java/Extensions/QTJava.zip") };
 			}
 			catch (final MalformedURLException exc) {
 				log.info("", exc);

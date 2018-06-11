@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -65,7 +65,8 @@ public class MSVideoCodec extends AbstractCodec {
 	public byte[] decompress(final RandomAccessInputStream in,
 		CodecOptions options) throws FormatException, IOException
 	{
-		if (in == null) throw new IllegalArgumentException("No data to decompress.");
+		if (in == null) throw new IllegalArgumentException(
+			"No data to decompress.");
 		if (options == null) options = CodecOptions.getDefaultOptions();
 
 		in.order(true);
@@ -98,8 +99,8 @@ public class MSVideoCodec extends AbstractCodec {
 								if (row + x >= options.width) break;
 								if (column + y >= options.height) break;
 								final int ndx = options.width * (column + y) + row + x;
-								final int oldNdx =
-									options.width * (options.height - 1 - y - column) + row + x;
+								final int oldNdx = options.width * (options.height - 1 - y -
+									column) + row + x;
 								if (options.bitsPerSample == 8) {
 									bytes[ndx] = options.previousImage[oldNdx];
 								}
@@ -107,8 +108,8 @@ public class MSVideoCodec extends AbstractCodec {
 									final byte red = options.previousImage[oldNdx];
 									final byte green = options.previousImage[oldNdx + plane];
 									final byte blue = options.previousImage[oldNdx + 2 * plane];
-									shorts[ndx] =
-										(short) (((blue & 0x1f) << 10) | ((green & 0x1f) << 5) | (red & 0x1f));
+									shorts[ndx] = (short) (((blue & 0x1f) << 10) | ((green &
+										0x1f) << 5) | (red & 0x1f));
 								}
 							}
 						}
@@ -156,10 +157,10 @@ public class MSVideoCodec extends AbstractCodec {
 							for (int x = 3; x >= 0; x--) {
 								final int ndx = options.width * (column + (3 - y)) + row + x;
 
-								final short colorA =
-									x < 2 ? (y < 2 ? q3a : q1a) : (y < 2 ? q4a : q2a);
-								final short colorB =
-									x < 2 ? (y < 2 ? q3b : q1b) : (y < 2 ? q4b : q2b);
+								final short colorA = x < 2 ? (y < 2 ? q3a : q1a) : (y < 2 ? q4a
+									: q2a);
+								final short colorB = x < 2 ? (y < 2 ? q3b : q1b) : (y < 2 ? q4b
+									: q2b);
 
 								final short flag = y < 2 ? b : a;
 								final int shift = 4 - 4 * (y % 2) + x;
@@ -204,12 +205,10 @@ public class MSVideoCodec extends AbstractCodec {
 				for (int y = 0; y < 4; y++) {
 					for (int x = 3; x >= 0; x--) {
 						final int ndx = options.width * (column + (3 - y)) + row + x;
-						final byte colorA =
-							y < 2 ? (x < 2 ? colors[4] : colors[6]) : (x < 2 ? colors[0]
-								: colors[2]);
-						final byte colorB =
-							y < 2 ? (x < 2 ? colors[5] : colors[7]) : (x < 2 ? colors[1]
-								: colors[3]);
+						final byte colorA = y < 2 ? (x < 2 ? colors[4] : colors[6]) : (x < 2
+							? colors[0] : colors[2]);
+						final byte colorB = y < 2 ? (x < 2 ? colors[5] : colors[7]) : (x < 2
+							? colors[1] : colors[3]);
 
 						final short flag = y < 2 ? b : a;
 						final int shift = 4 - 4 * (y % 2) + x;
@@ -253,8 +252,8 @@ public class MSVideoCodec extends AbstractCodec {
 			final byte[] tmp = bytes;
 			bytes = new byte[tmp.length];
 			for (int y = 0; y < options.height; y++) {
-				System.arraycopy(tmp, y * options.width, bytes,
-					(options.height - y - 1) * options.width, options.width);
+				System.arraycopy(tmp, y * options.width, bytes, (options.height - y -
+					1) * options.width, options.width);
 			}
 			return bytes;
 		}

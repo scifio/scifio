@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -139,9 +139,8 @@ public class AxisGuesser {
 			// strip trailing digits and divider characters
 			final char[] ch = p.toCharArray();
 			int l = ch.length - 1;
-			while (l >= 0 &&
-				(ch[l] >= '0' && ch[l] <= '9' || ch[l] == ' ' || ch[l] == '-' ||
-					ch[l] == '_' || ch[l] == '.'))
+			while (l >= 0 && (ch[l] >= '0' && ch[l] <= '9' || ch[l] == ' ' ||
+				ch[l] == '-' || ch[l] == '_' || ch[l] == '.'))
 			{
 				l--;
 			}
@@ -193,13 +192,12 @@ public class AxisGuesser {
 			if (axisTypes[i] != UNKNOWN_AXIS) continue;
 
 			// check special case: <2-3>, <1-3> (Bio-Rad PIC)
-			if (suffix.equalsIgnoreCase(".pic") &&
-				i == axisTypes.length - 1 &&
-				((elements[i].length == 2 &&
-					(elements[i][0].equals(ONE) || elements[i][0].equals(TWO)) && (elements[i][1]
-					.equals(TWO) || elements[i][1].equals(THREE))) || (elements[i].length == 3 &&
-					elements[i][0].equals(ONE) && elements[i][1].equals(TWO) && elements[i][2]
-						.equals(THREE))))
+			if (suffix.equalsIgnoreCase(".pic") && i == axisTypes.length - 1 &&
+				((elements[i].length == 2 && (elements[i][0].equals(ONE) ||
+					elements[i][0].equals(TWO)) && (elements[i][1].equals(TWO) ||
+						elements[i][1].equals(THREE))) || (elements[i].length == 3 &&
+							elements[i][0].equals(ONE) && elements[i][1].equals(TWO) &&
+							elements[i][2].equals(THREE))))
 			{
 				axisTypes[i] = C_AXIS;
 				continue;
@@ -207,13 +205,12 @@ public class AxisGuesser {
 			else if (elements[i].length == 2 || elements[i].length == 3) {
 				final char first = elements[i][0].toLowerCase().charAt(0);
 				final char second = elements[i][1].toLowerCase().charAt(0);
-				final char third =
-					elements[i].length == 2 ? 'b' : elements[i][2].toLowerCase()
-						.charAt(0);
+				final char third = elements[i].length == 2 ? 'b' : elements[i][2]
+					.toLowerCase().charAt(0);
 
-				if ((first == 'r' || second == 'r' || third == 'r') &&
-					(first == 'g' || second == 'g' || third == 'g') &&
-					(first == 'b' || second == 'b' || third == 'b'))
+				if ((first == 'r' || second == 'r' || third == 'r') && (first == 'g' ||
+					second == 'g' || third == 'g') && (first == 'b' || second == 'b' ||
+						third == 'b'))
 				{
 					axisTypes[i] = C_AXIS;
 					continue;
@@ -411,9 +408,8 @@ public class AxisGuesser {
 	{
 		final SCIFIO scifio = new SCIFIO(context);
 		final LogService log = scifio.log();
-		final Location file =
-			args.length < 1 ? new Location(context, System.getProperty("user.dir"))
-				.listFiles()[0] : new Location(context, args[0]);
+		final Location file = args.length < 1 ? new Location(context, System
+			.getProperty("user.dir")).listFiles()[0] : new Location(context, args[0]);
 		log.info("File = " + file.getAbsoluteFile());
 		final String pat = scifio.filePattern().findPattern(file);
 		if (pat == null) log.info("No pattern found.");
@@ -430,25 +426,25 @@ public class AxisGuesser {
 					// read dimensional information from first file
 					log.info("Reading first file ");
 					final Reader reader = scifio.initializer().initializeReader(id);
-					final AxisType[] dimOrder =
-						(AxisType[]) reader.getMetadata().get(0).getAxes().toArray();
+					final AxisType[] dimOrder = (AxisType[]) reader.getMetadata().get(0)
+						.getAxes().toArray();
 					final long sizeZ = reader.getMetadata().get(0).getAxisLength(Axes.Z);
-					final long sizeT =
-						reader.getMetadata().get(0).getAxisLength(Axes.TIME);
-					final long sizeC =
-						reader.getMetadata().get(0).getAxisLength(Axes.CHANNEL);
+					final long sizeT = reader.getMetadata().get(0).getAxisLength(
+						Axes.TIME);
+					final long sizeC = reader.getMetadata().get(0).getAxisLength(
+						Axes.CHANNEL);
 					final boolean certain = reader.getMetadata().get(0).isOrderCertain();
 					reader.close();
 					log.info("[done]");
-					log.info("\tdimOrder = " + Arrays.toString(dimOrder) + " (" +
-						(certain ? "certain" : "uncertain") + ")");
+					log.info("\tdimOrder = " + Arrays.toString(dimOrder) + " (" + (certain
+						? "certain" : "uncertain") + ")");
 					log.info("\tsizeZ = " + sizeZ);
 					log.info("\tsizeT = " + sizeT);
 					log.info("\tsizeC = " + sizeC);
 
 					// guess axes
-					final AxisGuesser ag =
-						new AxisGuesser(fp, dimOrder, sizeZ, sizeT, sizeC, certain);
+					final AxisGuesser ag = new AxisGuesser(fp, dimOrder, sizeZ, sizeT,
+						sizeC, certain);
 
 					// output results
 					final String[] blocks = fp.getBlocks();
@@ -476,8 +472,8 @@ public class AxisGuesser {
 							prefixes[i] + ")");
 					}
 					if (!Arrays.equals(dimOrder, newOrder)) {
-						log.info("Adjusted dimension order = " + Arrays.toString(newOrder) + " (" +
-							(isCertain ? "certain" : "uncertain") + ")");
+						log.info("Adjusted dimension order = " + Arrays.toString(newOrder) +
+							" (" + (isCertain ? "certain" : "uncertain") + ")");
 					}
 				}
 			}

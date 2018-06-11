@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -233,8 +233,8 @@ public class NRRDFormat extends AbstractFormat {
 			}
 			if (getMetadata().getDataFile() == null) return new String[] { getSource()
 				.getFileName() };
-			return new String[] { getSource().getFileName(),
-				getMetadata().getDataFile() };
+			return new String[] { getSource().getFileName(), getMetadata()
+				.getDataFile() };
 		}
 
 		// -- Abstract Parser API Methods --
@@ -246,8 +246,8 @@ public class NRRDFormat extends AbstractFormat {
 			String id = stream.getFileName();
 
 			// make sure we actually have the .nrrd/.nhdr file
-			if (!FormatTools.checkSuffix(id, "nhdr") &&
-				!FormatTools.checkSuffix(id, "nrrd"))
+			if (!FormatTools.checkSuffix(id, "nhdr") && !FormatTools.checkSuffix(id,
+				"nrrd"))
 			{
 				id += ".nhdr";
 
@@ -299,10 +299,9 @@ public class NRRDFormat extends AbstractFormat {
 						else if (v.contains("short") || v.contains("16")) {
 							iMeta.setPixelType(FormatTools.UINT16);
 						}
-						else if (v.equals("int") || v.equals("signed int") ||
-							v.equals("int32") || v.equals("int32_t") || v.equals("uint") ||
-							v.equals("unsigned int") || v.equals("uint32") ||
-							v.equals("uint32_t"))
+						else if (v.equals("int") || v.equals("signed int") || v.equals(
+							"int32") || v.equals("int32_t") || v.equals("uint") || v.equals(
+								"unsigned int") || v.equals("uint32") || v.equals("uint32_t"))
 						{
 							iMeta.setPixelType(FormatTools.UINT32);
 						}
@@ -362,15 +361,14 @@ public class NRRDFormat extends AbstractFormat {
 
 			if (meta.getDataFile() == null) meta.setOffset(stream.getFilePointer());
 			else {
-				final Location f =
-					new Location(getContext(), getSource().getFileName())
-						.getAbsoluteFile();
+				final Location f = new Location(getContext(), getSource().getFileName())
+					.getAbsoluteFile();
 				final Location parent = f.getParentFile();
 				if (f.exists() && parent != null) {
 					String dataFile = meta.getDataFile();
 					dataFile = dataFile.substring(dataFile.indexOf(File.separator) + 1);
-					dataFile =
-						new Location(getContext(), parent, dataFile).getAbsolutePath();
+					dataFile = new Location(getContext(), parent, dataFile)
+						.getAbsolutePath();
 				}
 				meta.setInitializeHelper(!meta.getEncoding().equals("raw"));
 			}
@@ -380,12 +378,12 @@ public class NRRDFormat extends AbstractFormat {
 				// the
 				// current
 				// image and cache it as a helper
-				final NRRDFormat nrrd =
-					formatService.getFormatFromClass(NRRDFormat.class);
+				final NRRDFormat nrrd = formatService.getFormatFromClass(
+					NRRDFormat.class);
 				formatService.removeFormat(nrrd);
 
-				final Format helperFormat =
-					formatService.getFormat(meta.getDataFile(), config);
+				final Format helperFormat = formatService.getFormat(meta.getDataFile(),
+					config);
 				final io.scif.Parser p = helperFormat.createParser();
 				final io.scif.Reader helper = helperFormat.createReader();
 				helper.setMetadata(p.parse(meta.getDataFile(), new SCIFIOConfig()
@@ -457,15 +455,15 @@ public class NRRDFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 
-			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, bounds);
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
+				bounds);
 
 			// TODO : add support for additional encoding types
 			if (meta.getDataFile() == null) {
@@ -480,18 +478,18 @@ public class NRRDFormat extends AbstractFormat {
 					meta.getEncoding());
 			}
 			else if (meta.getEncoding().equals("raw")) {
-				final RandomAccessInputStream s =
-					new RandomAccessInputStream(getContext(), meta.getDataFile());
-				s.seek(meta.getOffset() + planeIndex *
-					FormatTools.getPlaneSize(this, imageIndex));
+				final RandomAccessInputStream s = new RandomAccessInputStream(
+					getContext(), meta.getDataFile());
+				s.seek(meta.getOffset() + planeIndex * FormatTools.getPlaneSize(this,
+					imageIndex));
 				readPlane(s, imageIndex, bounds, plane);
 				s.close();
 				return plane;
 			}
 
 			// open the data file using our helper format
-			if (meta.isInitializeHelper() && meta.getDataFile() != null &&
-				meta.getHelper() != null)
+			if (meta.isInitializeHelper() && meta.getDataFile() != null && meta
+				.getHelper() != null)
 			{
 				meta.getHelper().openPlane(imageIndex, planeIndex, plane, bounds,
 					config);

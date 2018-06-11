@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -71,8 +71,8 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 		final int pixelType = m.get(imageIndex).getPixelType();
 		final boolean little = m.get(imageIndex).isLittleEndian();
 
-		final long[] dimLengths =
-			imgUtilService.getDimLengths(m, imageIndex, config);
+		final long[] dimLengths = imgUtilService.getDimLengths(m, imageIndex,
+			config);
 		final long[] pos = new long[dimLengths.length];
 
 		final int planeX = 0;
@@ -94,13 +94,13 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 			randomAccess.setPosition(pos);
 
 			for (int x = 1; x < sX; ++x) {
-				randomAccess.get().setReal(
-					imgUtilService.decodeWord(plane, index++, pixelType, little));
+				randomAccess.get().setReal(imgUtilService.decodeWord(plane, index++,
+					pixelType, little));
 				randomAccess.fwd(planeX);
 			}
 
-			randomAccess.get().setReal(
-				imgUtilService.decodeWord(plane, index++, pixelType, little));
+			randomAccess.get().setReal(imgUtilService.decodeWord(plane, index++,
+				pixelType, little));
 		}
 	}
 
@@ -111,8 +111,8 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 		final ImageMetadata meta = m.get(imageIndex);
 		final int offset = meta.getAxes().size() - meta.getAxesNonPlanar().size();
 
-		final long[] axesPositions =
-			FormatTools.rasterToPosition(imageIndex, planeIndex, m);
+		final long[] axesPositions = FormatTools.rasterToPosition(imageIndex,
+			planeIndex, m);
 		for (int i = 0; i < axesPositions.length; i++) {
 			pos[i + offset] = axesPositions[i];
 		}

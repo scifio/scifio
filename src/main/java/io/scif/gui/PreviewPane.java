@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -249,8 +249,8 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 				}
 				catch (final FormatException exc) {
 					logService.debug("Failed to initialize " + id, exc);
-					final boolean badFormat =
-						exc.getMessage().startsWith("Unknown file format");
+					final boolean badFormat = exc.getMessage().startsWith(
+						"Unknown file format");
 					iconText = "Unsupported " + (badFormat ? "format" : "file");
 					formatText = resText = "";
 					SwingUtilities.invokeLater(refresher);
@@ -294,10 +294,9 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 					logService.debug("Failed to read thumbnail #" + planeIndex +
 						" from " + id, exc);
 				}
-				final BufferedImage thumb =
-					AWTImageTools.openThumbImage(thumbPlane, reader, 0, iMeta
-						.getAxesLengthsPlanar(), (int) iMeta.getThumbSizeX(), (int) iMeta
-						.getThumbSizeY(), false);
+				final BufferedImage thumb = AWTImageTools.openThumbImage(thumbPlane,
+					reader, 0, iMeta.getAxesLengthsPlanar(), (int) iMeta.getThumbSizeX(),
+					(int) iMeta.getThumbSizeY(), false);
 				icon = new ImageIcon(thumb == null ? makeImage("Failed") : thumb);
 				iconText = "";
 
@@ -347,12 +346,11 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 		int w = (int) iMeta.getThumbSizeX(), h = (int) iMeta.getThumbSizeY();
 		if (w < 128) w = 128;
 		if (h < 32) h = 32;
-		final BufferedImage image =
-			new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		final BufferedImage image = new BufferedImage(w, h,
+			BufferedImage.TYPE_INT_RGB);
 		final Graphics2D g = image.createGraphics();
-		final Rectangle2D.Float r =
-			(Rectangle2D.Float) g.getFont().getStringBounds(message,
-				g.getFontRenderContext());
+		final Rectangle2D.Float r = (Rectangle2D.Float) g.getFont().getStringBounds(
+			message, g.getFontRenderContext());
 		g.drawString(message, (w - r.width) / 2, (h - r.height) / 2 + r.height);
 		g.dispose();
 		return image;

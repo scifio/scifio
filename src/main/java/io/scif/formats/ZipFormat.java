@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -105,11 +105,11 @@ public class ZipFormat extends AbstractFormat {
 		// -- HasColorTable API methods --
 
 		@Override
-		public ColorTable
-			getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable getColorTable(final int imageIndex,
+			final long planeIndex)
 		{
-			if (HasColorTable.class.isAssignableFrom(metadata.getClass())) return ((HasColorTable) metadata)
-				.getColorTable(imageIndex, planeIndex);
+			if (HasColorTable.class.isAssignableFrom(metadata.getClass()))
+				return ((HasColorTable) metadata).getColorTable(imageIndex, planeIndex);
 			return null;
 		}
 
@@ -167,11 +167,11 @@ public class ZipFormat extends AbstractFormat {
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			final String baseId =
-				ZipUtilities.unzipId(locationService, stream, meta.getMappedFiles());
+			final String baseId = ZipUtilities.unzipId(locationService, stream, meta
+				.getMappedFiles());
 
-			final io.scif.Parser p =
-				formatService.getFormat(baseId, config).createParser();
+			final io.scif.Parser p = formatService.getFormat(baseId, config)
+				.createParser();
 			final io.scif.Metadata m = p.parse(baseId, config);
 
 			meta.setMetadata(m);
@@ -229,8 +229,8 @@ public class ZipFormat extends AbstractFormat {
 			if (reader != null) reader.close();
 
 			try {
-				final String baseId =
-					ZipUtilities.unzipId(locationService, meta.getSource(), null);
+				final String baseId = ZipUtilities.unzipId(locationService, meta
+					.getSource(), null);
 
 				reader = initializeService.initializeReader(baseId);
 				meta.setMetadata(reader.getMetadata());
@@ -247,15 +247,14 @@ public class ZipFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
-			final Plane p =
-				reader.openPlane(imageIndex, planeIndex, plane, bounds,
-					config);
-			System.arraycopy(p.getBytes(), 0, plane.getData(), 0,
-				plane.getData().length);
+			final Plane p = reader.openPlane(imageIndex, planeIndex, plane, bounds,
+				config);
+			System.arraycopy(p.getBytes(), 0, plane.getData(), 0, plane
+				.getData().length);
 			plane.setColorTable(getMetadata().getColorTable(imageIndex, planeIndex));
 			return plane;
 		}
@@ -293,14 +292,14 @@ public class ZipFormat extends AbstractFormat {
 			while (true) {
 				ze = zip.getNextEntry();
 				if (ze == null) break;
-				final ZipHandle handle =
-					new ZipHandle(locationService.getContext(), stream.getFileName(), ze);
+				final ZipHandle handle = new ZipHandle(locationService.getContext(),
+					stream.getFileName(), ze);
 				locationService.mapFile(ze.getName(), handle);
 				if (mappedFiles != null) mappedFiles.add(ze.getName());
 			}
 
-			final ZipHandle base =
-				new ZipHandle(locationService.getContext(), stream.getFileName());
+			final ZipHandle base = new ZipHandle(locationService.getContext(), stream
+				.getFileName());
 			final String id = base.getEntryName();
 			base.close();
 
@@ -320,8 +319,8 @@ public class ZipFormat extends AbstractFormat {
 		{
 			// NB: We need a raw handle on the ZIP data itself, not a ZipHandle.
 			final String id = stream.getFileName();
-			final IRandomAccess rawHandle =
-				locationService.getHandle(id, false, false);
+			final IRandomAccess rawHandle = locationService.getHandle(id, false,
+				false);
 			return new RandomAccessInputStream(locationService.getContext(),
 				rawHandle, id);
 		}

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -51,8 +51,8 @@ import org.scijava.util.ArrayUtils;
 
 /**
  * FitsReader is the file format reader for Flexible Image Transport System
- * (FITS) images. Much of this code was adapted from <a
- * href="http://imagej.net/">ImageJ</a>.
+ * (FITS) images. Much of this code was adapted from
+ * <a href="http://imagej.net/">ImageJ</a>.
  *
  * @author Mark Hiner
  * @author Melissa Linkert
@@ -94,16 +94,16 @@ public class FITSFormat extends AbstractFormat {
 			if (iMeta.getAxisLength(Axes.Z) == 0) iMeta.setAxisLength(Axes.Z, 1);
 
 			// correct for truncated files
-			final int planeSize =
-				(int) iMeta.getAxisLength(Axes.X) * (int) iMeta.getAxisLength(Axes.Y) *
-					FormatTools.getBytesPerPixel(iMeta.getPixelType());
+			final int planeSize = (int) iMeta.getAxisLength(Axes.X) * (int) iMeta
+				.getAxisLength(Axes.Y) * FormatTools.getBytesPerPixel(iMeta
+					.getPixelType());
 
 			try {
-				if (ArrayUtils.safeMultiply64(planeSize, iMeta.getAxisLength(Axes.Z)) > (getSource()
-					.length() - pixelOffset))
+				if (ArrayUtils.safeMultiply64(planeSize, iMeta.getAxisLength(
+					Axes.Z)) > (getSource().length() - pixelOffset))
 				{
-					iMeta.setAxisLength(Axes.Z,
-						(int) ((getSource().length() - pixelOffset) / planeSize));
+					iMeta.setAxisLength(Axes.Z, (int) ((getSource().length() -
+						pixelOffset) / planeSize));
 				}
 			}
 			catch (final IOException e) {
@@ -197,8 +197,8 @@ public class FITSFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
@@ -206,9 +206,8 @@ public class FITSFormat extends AbstractFormat {
 			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
 				buf.length, bounds);
 
-			getStream().seek(
-				getMetadata().getPixelOffset() + planeIndex *
-					FormatTools.getPlaneSize(this, imageIndex));
+			getStream().seek(getMetadata().getPixelOffset() + planeIndex * FormatTools
+				.getPlaneSize(this, imageIndex));
 			return readPlane(getStream(), imageIndex, bounds, plane);
 		}
 	}

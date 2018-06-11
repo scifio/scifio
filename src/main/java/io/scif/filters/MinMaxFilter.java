@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -176,16 +176,15 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds) throws FormatException,
-		IOException
+		final Interval bounds) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds)
-		throws FormatException, IOException
+		final Plane plane, final Interval bounds) throws FormatException,
+		IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
 	}
@@ -211,8 +210,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds, final SCIFIOConfig config)
-		throws FormatException, IOException
+		final Interval bounds, final SCIFIOConfig config) throws FormatException,
+		IOException
 	{
 		final Plane plane = createPlane(bounds);
 		return openPlane(imageIndex, planeIndex, plane, bounds, config);
@@ -259,9 +258,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 * @param imageIndex the image index within the dataset
 	 * @param planeIndex the plane index within the image.
 	 * @param buf a pre-allocated buffer.
-	 * @param len as {@code buf} may be larger than the actual pixel count
-	 *          having been written to it, the length (in bytes) of the those
-	 *          pixels.
+	 * @param len as {@code buf} may be larger than the actual pixel count having
+	 *          been written to it, the length (in bytes) of the those pixels.
 	 */
 	private void updateMinMax(final int imageIndex, final long planeIndex,
 		final byte[] buf, final int len)
@@ -277,8 +275,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		// check whether min/max values have already been computed for this
 		// plane
 		// and that the buffer requested is actually the entire plane
-		if (len == planeSize &&
-			!Double.isNaN(planeMins[imageIndex][(int) planeIndex])) return;
+		if (len == planeSize && !Double.isNaN(
+			planeMins[imageIndex][(int) planeIndex])) return;
 
 		final boolean little = iMeta.isLittleEndian();
 
@@ -307,8 +305,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 			}
 
 			// Update the appropriate planar axis min/max if necessary
-			final long[] planarPositions =
-				FormatTools.rasterToPosition(iMeta.getAxesLengthsPlanar(), i);
+			final long[] planarPositions = FormatTools.rasterToPosition(iMeta
+				.getAxesLengthsPlanar(), i);
 
 			for (int axis = 0; axis < planarPositions.length; axis++) {
 				final AxisType type = iMeta.getAxis(axis).type();
@@ -332,8 +330,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		}
 
 		// Set the number of planes complete for this image
-		minMaxDone[imageIndex] =
-			Math.max(minMaxDone[imageIndex], (int) planeIndex + 1);
+		minMaxDone[imageIndex] = Math.max(minMaxDone[imageIndex], (int) planeIndex +
+			1);
 	}
 
 	/**
@@ -346,12 +344,11 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (planarAxisMin == null) {
 			planarAxisMin = new ArrayList<>();
 			for (int i = 0; i < imageCount; i++) {
-				final HashMap<AxisType, double[]> minMap =
-					new HashMap<>();
+				final HashMap<AxisType, double[]> minMap = new HashMap<>();
 				final ImageMetadata iMeta = m.get(i);
 				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
-					final double[] values =
-						new double[(int) iMeta.getAxisLength(axis.type())];
+					final double[] values = new double[(int) iMeta.getAxisLength(axis
+						.type())];
 					Arrays.fill(values, Double.POSITIVE_INFINITY);
 					minMap.put(axis.type(), values);
 				}
@@ -361,12 +358,11 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (planarAxisMax == null) {
 			planarAxisMax = new ArrayList<>();
 			for (int i = 0; i < imageCount; i++) {
-				final HashMap<AxisType, double[]> maxMap =
-					new HashMap<>();
+				final HashMap<AxisType, double[]> maxMap = new HashMap<>();
 				final ImageMetadata iMeta = m.get(i);
 				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
-					final double[] values =
-						new double[(int) iMeta.getAxisLength(axis.type())];
+					final double[] values = new double[(int) iMeta.getAxisLength(axis
+						.type())];
 					Arrays.fill(values, Double.NEGATIVE_INFINITY);
 					maxMap.put(axis.type(), values);
 				}
@@ -399,15 +395,16 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		throws FormatException
 	{
 //		FormatTools.assertId(getCurrentFile(), true, 2);
-		if (index < 0 || index >= getMetadata().get(imageIndex).getAxisLength(type))
+		if (index < 0 || index >= getMetadata().get(imageIndex).getAxisLength(
+			type))
 		{
 			throw new FormatException("Invalid " + type.getLabel() + " index: " +
 				index);
 		}
 
 		// check that all planes have been read
-		if (minMaxDone == null ||
-			minMaxDone[imageIndex] < getPlaneCount(imageIndex))
+		if (minMaxDone == null || minMaxDone[imageIndex] < getPlaneCount(
+			imageIndex))
 		{
 			return null;
 		}

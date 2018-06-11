@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,7 +29,6 @@
 
 package io.scif.io;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -73,37 +72,34 @@ public class LocationTest {
 	@Before
 	public void setup() throws IOException, InterruptedException {
 		context = new Context();
-		final File tmpDirectory =
-			new File(System.getProperty("java.io.tmpdir"),
-				System.currentTimeMillis() + "-location-test");
+		final File tmpDirectory = new File(System.getProperty("java.io.tmpdir"),
+			System.currentTimeMillis() + "-location-test");
 		tmpDirectory.mkdirs();
 		tmpDirectory.deleteOnExit();
 
-		final File hiddenFile =
-			File.createTempFile(".hiddenTest", null, tmpDirectory);
+		final File hiddenFile = File.createTempFile(".hiddenTest", null,
+			tmpDirectory);
 		hiddenFile.deleteOnExit();
 
 		if (isWindows) {
-			final Process p =
-				Runtime.getRuntime().exec("attrib +h " + hiddenFile.getAbsolutePath());
+			final Process p = Runtime.getRuntime().exec("attrib +h " + hiddenFile
+				.getAbsolutePath());
 			p.waitFor();
 		}
 
-		final File invalidFile =
-			File.createTempFile("invalidTest", null, tmpDirectory);
+		final File invalidFile = File.createTempFile("invalidTest", null,
+			tmpDirectory);
 		final String invalidPath = invalidFile.getAbsolutePath();
 		invalidFile.delete();
 
 		final File validFile = File.createTempFile("validTest", null, tmpDirectory);
 		validFile.deleteOnExit();
 
-		files =
-			new Location[] { new Location(context, validFile.getAbsolutePath()),
-				new Location(context, invalidPath),
-				new Location(context, tmpDirectory),
-				new Location(context, "http://example.com/"),
-				new Location(context, "http://www.openmicroscopy.org/software/scifio"),
-				new Location(context, hiddenFile) };
+		files = new Location[] { new Location(context, validFile.getAbsolutePath()),
+			new Location(context, invalidPath), new Location(context, tmpDirectory),
+			new Location(context, "http://loci.wisc.edu/software/scifio"),
+			new Location(context, "http://www.openmicroscopy.org/software/scifio"),
+			new Location(context, hiddenFile) };
 
 		exists = new boolean[] { true, false, true, true, false, true };
 
@@ -121,61 +117,61 @@ public class LocationTest {
 	public void testReadWriteMode() {
 		for (int i = 0; i < files.length; i++) {
 			final String msg = files[i].getName();
-			assertEquals(msg, mode[i].contains("r"), files[i].canRead());
-			assertEquals(msg, mode[i].contains("w"), files[i].canWrite());
+			assertEquals(msg, files[i].canRead(), mode[i].contains("r"));
+			assertEquals(msg, files[i].canWrite(), mode[i].contains("w"));
 		}
 	}
 
 	@Test
 	public void testAbsolute() {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.getAbsoluteFile().getAbsolutePath(),
-				file.getAbsolutePath());
+			assertEquals(file.getName(), file.getAbsolutePath(), file
+				.getAbsoluteFile().getAbsolutePath());
 		}
 	}
 
 	@Test
 	public void testExists() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), exists[i], files[i].exists());
+			assertEquals(files[i].getName(), files[i].exists(), exists[i]);
 		}
 	}
 
 	@Test
 	public void testCanonical() throws IOException {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.getCanonicalFile().getAbsolutePath(),
-				file.getCanonicalPath());
+			assertEquals(file.getName(), file.getCanonicalPath(), file
+				.getCanonicalFile().getAbsolutePath());
 		}
 	}
 
 	@Test
 	public void testParent() {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.getParentFile().getAbsolutePath(), file
-				.getParent());
+			assertEquals(file.getName(), file.getParent(), file.getParentFile()
+				.getAbsolutePath());
 		}
 	}
 
 	@Test
 	public void testIsDirectory() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), isDirectory[i], files[i].isDirectory());
+			assertEquals(files[i].getName(), files[i].isDirectory(), isDirectory[i]);
 		}
 	}
 
 	@Test
 	public void testIsFile() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), !isDirectory[i] && exists[i], files[i]
-				.isFile());
+			assertEquals(files[i].getName(), files[i].isFile(), !isDirectory[i] &&
+				exists[i]);
 		}
 	}
 
 	@Test
 	public void testIsHidden() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), isHidden[i], files[i].isHidden());
+			assertEquals(files[i].getName(), files[i].isHidden(), isHidden[i]);
 		}
 	}
 
@@ -187,9 +183,9 @@ public class LocationTest {
 			final Location[] fileList = file.listFiles();
 
 			if (!file.isDirectory()) {
-				assertArrayEquals(file.getName(), null, completeList);
-				assertArrayEquals(file.getName(), null, unhiddenList);
-				assertArrayEquals(file.getName(), null, fileList);
+				assertEquals(file.getName(), completeList, null);
+				assertEquals(file.getName(), unhiddenList, null);
+				assertEquals(file.getName(), fileList, null);
 				continue;
 			}
 
@@ -197,13 +193,13 @@ public class LocationTest {
 
 			final List<String> complete = Arrays.asList(completeList);
 			for (final String child : unhiddenList) {
-				assertEquals(file.getName(), true, complete.contains(child));
-				assertEquals(file.getName(), false, new Location(context, file, child)
-					.isHidden());
+				assertEquals(file.getName(), complete.contains(child), true);
+				assertEquals(file.getName(), new Location(context, file, child)
+					.isHidden(), false);
 			}
 
 			for (int f = 0; f < fileList.length; f++) {
-				assertEquals(file.getName(), completeList[f], fileList[f].getName());
+				assertEquals(file.getName(), fileList[f].getName(), completeList[f]);
 			}
 		}
 	}
@@ -220,14 +216,14 @@ public class LocationTest {
 			}
 			final URL baseURL = file.toURL();
 			final URL compareURL = new URL(path);
-			assertEquals(file.getName(), compareURL, baseURL);
+			assertEquals(file.getName(), baseURL, compareURL);
 		}
 	}
 
 	@Test
 	public void testToString() {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.getAbsolutePath(), file.toString());
+			assertEquals(file.getName(), file.toString(), file.getAbsolutePath());
 		}
 	}
 }

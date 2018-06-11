@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -97,8 +97,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	private static final String XML_SCHEMA_PATH =
 		"http://www.w3.org/2001/XMLSchema";
 
-	private static final SchemaFactory FACTORY = SchemaFactory
-		.newInstance(XML_SCHEMA_PATH);
+	private static final SchemaFactory FACTORY = SchemaFactory.newInstance(
+		XML_SCHEMA_PATH);
 
 	// -- Fields --
 
@@ -106,7 +106,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	private LogService log;
 
 	private final ThreadLocal<HashMap<URI, Schema>> schemas =
-		new ThreadLocal<HashMap<URI, Schema>>() {
+		new ThreadLocal<HashMap<URI, Schema>>()
+		{
 
 			@Override
 			protected HashMap<URI, Schema> initialValue() {
@@ -117,8 +118,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	// -- XML to/from DOM --
 
 	@Override
-	public Document parseDOM(final File file)
-		throws ParserConfigurationException, SAXException, IOException
+	public Document parseDOM(final File file) throws ParserConfigurationException,
+		SAXException, IOException
 	{
 		final InputStream is = new FileInputStream(file);
 		try {
@@ -149,8 +150,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	public Document parseDOM(final InputStream is)
 		throws ParserConfigurationException, SAXException, IOException
 	{
-		final InputStream in =
-			is.markSupported() ? is : new BufferedInputStream(is);
+		final InputStream in = is.markSupported() ? is : new BufferedInputStream(
+			is);
 		checkUTF8(in);
 
 		// Java XML factories are not declared to be thread safe
@@ -181,8 +182,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	public String sanitizeXML(final String s) {
 		final char[] c = s.toCharArray();
 		for (int i = 0; i < s.length(); i++) {
-			if ((Character.isISOControl(c[i]) && c[i] != '\n') ||
-				!Character.isDefined(c[i]))
+			if ((Character.isISOControl(c[i]) && c[i] != '\n') || !Character
+				.isDefined(c[i]))
 			{
 				c[i] = ' ';
 			}
@@ -375,8 +376,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		try {
 			final StreamSource xsltSource = new StreamSource(xsltStream);
 			// Java XML factories are not declared to be thread safe
-			final TransformerFactory transformerFactory =
-				TransformerFactory.newInstance();
+			final TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
 			transformerFactory.setErrorListener(new XMLListener());
 			return transformerFactory.newTemplates(xsltSource);
 		}
@@ -491,8 +492,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 			// Java XML factories are not declared to be thread safe
 			final SAXParserFactory factory = SAXParserFactory.newInstance();
 			final SAXParser saxParser = factory.newSAXParser();
-			final InputStream is =
-				new ByteArrayInputStream(xml.getBytes(Constants.ENCODING));
+			final InputStream is = new ByteArrayInputStream(xml.getBytes(
+				Constants.ENCODING));
 			saxParser.parse(is, saxHandler);
 		}
 		catch (final ParserConfigurationException exc) {

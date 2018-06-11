@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -520,11 +520,11 @@ public class NIOFileHandle extends AbstractNIOHandle {
 	private void buffer(long offset, final int size) throws IOException {
 		position = offset;
 		final long newPosition = offset + size;
-		if (newPosition < bufferStartPosition ||
-			newPosition > bufferStartPosition + bufferSize || buffer == null)
+		if (newPosition < bufferStartPosition || newPosition > bufferStartPosition +
+			bufferSize || buffer == null)
 		{
 			bufferStartPosition = offset;
-			long currentLength = length();
+			final long currentLength = length();
 			if (currentLength > 0 && currentLength - 1 < bufferStartPosition) {
 				bufferStartPosition = currentLength - 1;
 			}
@@ -535,9 +535,8 @@ public class NIOFileHandle extends AbstractNIOHandle {
 			}
 			offset = bufferStartPosition;
 			final ByteOrder byteOrder = buffer == null ? order : getOrder();
-			buffer =
-				nioService.allocate(channel, mapMode, bufferStartPosition,
-					(int) newSize);
+			buffer = nioService.allocate(channel, mapMode, bufferStartPosition,
+				(int) newSize);
 			if (byteOrder != null) setOrder(byteOrder);
 		}
 		buffer.position((int) (offset - bufferStartPosition));

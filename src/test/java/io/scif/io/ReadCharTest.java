@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -64,7 +64,7 @@ public class ReadCharTest {
 		(byte) 0x00, (byte) 0x6B, (byte) 0x00, (byte) 0x6C, // k, l
 		(byte) 0x00, (byte) 0x6D, (byte) 0x00, (byte) 0x6E, // m, n
 		(byte) 0x00, (byte) 0x6F, (byte) 0x00, (byte) 0x70 // o, p
-		};
+	};
 
 	private static final String MODE = "r";
 
@@ -104,9 +104,8 @@ public class ReadCharTest {
 
 	@Test
 	public void testSequentialReadChar() throws IOException {
-		final char[] expectedValues =
-			new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-				'm', 'n', 'o', 'p' };
+		final char[] expectedValues = new char[] { 'a', 'b', 'c', 'd', 'e', 'f',
+			'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p' };
 		for (final char expectedValue : expectedValues) {
 			final char value = fileHandle.readChar();
 			assertTrue(Character.isLetter(value));

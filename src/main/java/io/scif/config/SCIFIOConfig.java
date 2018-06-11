@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -106,21 +106,18 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	/**
 	 * Access type options for opening datasets.
 	 * <ul>
-	 * <li>
-	 * {@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}</li>
-	 * <li>
-	 * {@link ImgMode#AUTO} allows the program to decide, e.g. based on
+	 * <li>{@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}</li>
+	 * <li>{@link ImgMode#AUTO} allows the program to decide, e.g. based on
 	 * available memory.</li>
-	 * <li>
-	 * {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
-	 * <li>
-	 * {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}</li>
+	 * <li>{@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
+	 * <li>{@link ImgMode#PLANAR} will attempt to use
+	 * {@link PlanarImgFactory}</li>
 	 * </ul>
 	 *
 	 * @author Mark Hiner
 	 */
 	public static enum ImgMode {
-		ARRAY, AUTO, CELL, PLANAR;
+			ARRAY, AUTO, CELL, PLANAR;
 	}
 
 	// If true, planarEnabled returns true. If false, cellEnabled returns true.

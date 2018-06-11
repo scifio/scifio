@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -60,7 +60,8 @@ import org.scijava.service.Service;
  * Implementation of JAIIIOService for reading and writing JPEG-2000 data.
  */
 @Plugin(type = Service.class)
-public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
+public class JAIIIOServiceImpl extends AbstractService implements
+	JAIIIOService
 {
 
 	// -- JAIIIOService API methods --
@@ -72,21 +73,20 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 		final ImageOutputStream ios = ImageIO.createImageOutputStream(out);
 
 		final IIORegistry registry = IIORegistry.getDefaultInstance();
-		final Iterator<J2KImageWriterSpi> iter =
-			ServiceRegistry.lookupProviders(J2KImageWriterSpi.class);
+		final Iterator<J2KImageWriterSpi> iter = ServiceRegistry.lookupProviders(
+			J2KImageWriterSpi.class);
 		registry.registerServiceProviders(iter);
-		final J2KImageWriterSpi spi =
-			registry.getServiceProviderByClass(J2KImageWriterSpi.class);
+		final J2KImageWriterSpi spi = registry.getServiceProviderByClass(
+			J2KImageWriterSpi.class);
 		final J2KImageWriter writer = new J2KImageWriter(spi);
 		writer.setOutput(ios);
 
-		final String filter =
-			options.lossless ? J2KImageWriteParam.FILTER_53
-				: J2KImageWriteParam.FILTER_97;
+		final String filter = options.lossless ? J2KImageWriteParam.FILTER_53
+			: J2KImageWriteParam.FILTER_97;
 
 		final IIOImage iioImage = new IIOImage(img, null, null);
-		final J2KImageWriteParam param =
-			(J2KImageWriteParam) writer.getDefaultWriteParam();
+		final J2KImageWriteParam param = (J2KImageWriteParam) writer
+			.getDefaultWriteParam();
 		param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 		param.setCompressionType("JPEG2000");
 		param.setLossless(options.lossless);
@@ -98,8 +98,8 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 				options.tileGridXOffset, options.tileGridYOffset);
 		}
 		if (options.numDecompositionLevels != null) {
-			param
-				.setNumDecompositionLevels(options.numDecompositionLevels.intValue());
+			param.setNumDecompositionLevels(options.numDecompositionLevels
+				.intValue());
 		}
 		writer.write(null, iioImage, param);
 		ios.close();
@@ -115,8 +115,8 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 		final boolean lossless, final int[] codeBlockSize, final double quality)
 		throws IOException, ServiceException
 	{
-		final JPEG2000CodecOptions options =
-			JPEG2000CodecOptions.getDefaultOptions();
+		final JPEG2000CodecOptions options = JPEG2000CodecOptions
+			.getDefaultOptions();
 		options.lossless = lossless;
 		options.codeBlockSize = codeBlockSize;
 		options.quality = quality;
@@ -128,11 +128,11 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 		final JPEG2000CodecOptions options) throws IOException, ServiceException
 	{
 		final J2KImageReader reader = getReader();
-		final MemoryCacheImageInputStream mciis =
-			new MemoryCacheImageInputStream(in);
+		final MemoryCacheImageInputStream mciis = new MemoryCacheImageInputStream(
+			in);
 		reader.setInput(mciis, false, true);
-		final J2KImageReadParam param =
-			(J2KImageReadParam) reader.getDefaultReadParam();
+		final J2KImageReadParam param = (J2KImageReadParam) reader
+			.getDefaultReadParam();
 		if (options.resolution != null) {
 			param.setResolution(options.resolution.intValue());
 		}
@@ -151,11 +151,11 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 		final JPEG2000CodecOptions options) throws IOException, ServiceException
 	{
 		final J2KImageReader reader = getReader();
-		final MemoryCacheImageInputStream mciis =
-			new MemoryCacheImageInputStream(in);
+		final MemoryCacheImageInputStream mciis = new MemoryCacheImageInputStream(
+			in);
 		reader.setInput(mciis, false, true);
-		final J2KImageReadParam param =
-			(J2KImageReadParam) reader.getDefaultReadParam();
+		final J2KImageReadParam param = (J2KImageReadParam) reader
+			.getDefaultReadParam();
 		if (options.resolution != null) {
 			param.setResolution(options.resolution.intValue());
 		}
@@ -172,11 +172,11 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 	/** Set up the JPEG-2000 image reader. */
 	private J2KImageReader getReader() {
 		final IIORegistry registry = IIORegistry.getDefaultInstance();
-		final Iterator<J2KImageReaderSpi> iter =
-			ServiceRegistry.lookupProviders(J2KImageReaderSpi.class);
+		final Iterator<J2KImageReaderSpi> iter = ServiceRegistry.lookupProviders(
+			J2KImageReaderSpi.class);
 		registry.registerServiceProviders(iter);
-		final J2KImageReaderSpi spi =
-			registry.getServiceProviderByClass(J2KImageReaderSpi.class);
+		final J2KImageReaderSpi spi = registry.getServiceProviderByClass(
+			J2KImageReaderSpi.class);
 		return new J2KImageReader(spi);
 	}
 

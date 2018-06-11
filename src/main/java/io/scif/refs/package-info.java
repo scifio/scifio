@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,12 +31,11 @@
  * Provides reference management utilities.
  * <p>
  * The {@link io.scif.refs.RefManagerService} provides a dedicated thread for
- * polling reference queues, looking for available references. The 
+ * polling reference queues, looking for available references. The
  * {@link io.scif.refs.RefManagerService#manage(Object, Object[])} method is
- * used to create and enqueue a new reference. The first parameter is the
- * object to manage, and it must have a corresponding
- * {@link io.scif.refs.RefProvider} that matches the given {@code Object[]}
- * parameter list.
+ * used to create and enqueue a new reference. The first parameter is the object
+ * to manage, and it must have a corresponding {@link io.scif.refs.RefProvider}
+ * that matches the given {@code Object[]} parameter list.
  * </p>
  * <p>
  * The {@link io.scif.refs.RefProvider} is a new plugin type for generating
@@ -47,8 +46,8 @@
  * A {@link io.scif.refs.CleaningRef} interface is provided for references that
  * have clean-up operations after being enqueued.
  * </p>
- * 
+ *
  * @author Mark Hiner
  */
-package io.scif.refs;
 
+package io.scif.refs;

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -87,7 +87,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		this(null);
 	}
 
-	public AbstractReaderFilter(final Class<? extends MetadataWrapper> metaClass)
+	public AbstractReaderFilter(
+		final Class<? extends MetadataWrapper> metaClass)
 	{
 		super(Reader.class);
 		this.metaClass = metaClass;
@@ -103,12 +104,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	 *          {@code setSource} series.
 	 * @throws IOException
 	 */
-	protected void
-		setSourceHelper(final String source, final SCIFIOConfig config)
-			throws IOException
+	protected void setSourceHelper(final String source, final SCIFIOConfig config)
+		throws IOException
 	{
-		final String filterSource =
-			getMetadata() == null ? null : getMetadata().getSource().getFileName();
+		final String filterSource = getMetadata() == null ? null : getMetadata()
+			.getSource().getFileName();
 
 		if (filterSource == null || !filterSource.equals(source)) {
 			setMetadata(getParent().getMetadata());
@@ -157,12 +157,12 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 				wrapper.wrap(r.getMetadata());
 			}
 			catch (final InstantiationException e) {
-				log()
-					.error("Failed to create MetadataWrapper of type: " + metaClass, e);
+				log().error("Failed to create MetadataWrapper of type: " + metaClass,
+					e);
 			}
 			catch (final IllegalAccessException e) {
-				log()
-					.error("Failed to create MetadataWrapper of type: " + metaClass, e);
+				log().error("Failed to create MetadataWrapper of type: " + metaClass,
+					e);
 			}
 		}
 		else {
@@ -187,8 +187,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds) throws FormatException,
-		IOException
+		final Interval bounds) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
 	}
@@ -202,8 +201,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds)
-		throws FormatException, IOException
+		final Plane plane, final Interval bounds) throws FormatException,
+		IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
 	}
@@ -218,8 +217,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds, final SCIFIOConfig config)
-		throws FormatException, IOException
+		final Interval bounds, final SCIFIOConfig config) throws FormatException,
+		IOException
 	{
 		openPlaneHelper();
 		return getParent().openPlane(imageIndex, planeIndex, bounds, config);
@@ -236,8 +235,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds,
-		final SCIFIOConfig config) throws FormatException, IOException
+		final Plane plane, final Interval bounds, final SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 		openPlaneHelper();
 		return getParent().openPlane(imageIndex, planeIndex, plane, bounds, config);
@@ -370,8 +369,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final Interval bounds, final Plane plane)
-		throws IOException
+		final Interval bounds, final Plane plane) throws IOException
 	{
 		readPlaneHelper();
 		return getParent().readPlane(s, imageIndex, bounds, plane);
@@ -379,8 +377,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final Interval bounds, final int scanlinePad,
-		final Plane plane) throws IOException
+		final Interval bounds, final int scanlinePad, final Plane plane)
+		throws IOException
 	{
 		readPlaneHelper();
 		return getParent().readPlane(s, imageIndex, bounds, scanlinePad, plane);

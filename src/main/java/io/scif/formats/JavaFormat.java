@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -105,8 +105,7 @@ public class JavaFormat extends AbstractFormat {
 			final Metadata meta = getMetadata();
 
 			checkParams(imageIndex, planeIndex, buf, bounds);
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds))
-			{
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds)) {
 				throw new FormatException(
 					"JavaWriter does not yet support saving image tiles.");
 			}
@@ -116,7 +115,8 @@ public class JavaFormat extends AbstractFormat {
 			final int type = imageMeta.getPixelType();
 			if (!ArrayUtils.contains(getPixelTypes(getCompression()), type)) {
 				final String typeString = FormatTools.getPixelTypeString(type);
-				throw new FormatException("Unsupported image type '" + typeString + "'.");
+				throw new FormatException("Unsupported image type '" + typeString +
+					"'.");
 			}
 			final int bpp = FormatTools.getBytesPerPixel(type);
 			final boolean fp = FormatTools.isFloatingPoint(type);
@@ -127,7 +127,8 @@ public class JavaFormat extends AbstractFormat {
 			final Object array = Bytes.makeArray(buf, bpp, fp, little);
 
 			getStream().seek(getStream().length());
-			writePlane(varName, getType(array), (int) bounds.dimension(0), (int) bounds.dimension(1));
+			writePlane(varName, getType(array), (int) bounds.dimension(0),
+				(int) bounds.dimension(1));
 		}
 
 		@Override
@@ -151,11 +152,10 @@ public class JavaFormat extends AbstractFormat {
 		// -- Helper methods --
 
 		protected void writeHeader() throws IOException {
-			String className =
-				getMetadata().getDatasetName().substring(0,
-					getMetadata().getDatasetName().length() - 5);
-			className =
-				className.substring(className.lastIndexOf(File.separator) + 1);
+			String className = getMetadata().getDatasetName().substring(0,
+				getMetadata().getDatasetName().length() - 5);
+			className = className.substring(className.lastIndexOf(File.separator) +
+				1);
 
 			final RandomAccessOutputStream stream = getStream();
 			stream.writeLine("//");
@@ -183,7 +183,7 @@ public class JavaFormat extends AbstractFormat {
 				}
 				stream.writeBytes(type.value(i++));
 				stream.writeBytes("}");
-				String s = y < h - 1 ? "," : "";
+				final String s = y < h - 1 ? "," : "";
 				stream.writeLine(s);
 			}
 			stream.writeLine("  };");
@@ -312,7 +312,8 @@ public class JavaFormat extends AbstractFormat {
 		}
 	}
 
-	private static class DoubleArrayPlus extends DoubleArray implements ArrayPlus
+	private static class DoubleArrayPlus extends DoubleArray implements
+		ArrayPlus
 	{
 
 		public DoubleArrayPlus(final double[] data) {

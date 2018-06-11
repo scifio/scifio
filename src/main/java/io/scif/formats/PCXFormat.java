@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -139,8 +139,8 @@ public class PCXFormat extends AbstractFormat {
 		// -- HasColorTable API Methods -
 
 		@Override
-		public ColorTable
-			getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable getColorTable(final int imageIndex,
+			final long planeIndex)
 		{
 			return lut;
 		}
@@ -230,25 +230,23 @@ public class PCXFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 			final byte[] buf = plane.getData();
 
-			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, bounds);
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
+				bounds);
 
 			getStream().seek(meta.getOffset());
 
 			// PCX uses a simple RLE compression algorithm
 
-			final byte[] b =
-				new byte[meta.getBytesPerLine() *
-					(int) meta.get(imageIndex).getAxisLength(Axes.Y) *
-					meta.getnColorPlanes()];
+			final byte[] b = new byte[meta.getBytesPerLine() * (int) meta.get(
+				imageIndex).getAxisLength(Axes.Y) * meta.getnColorPlanes()];
 			int pt = 0;
 			while (pt < b.length) {
 				int val = getStream().read() & 0xff;

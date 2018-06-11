@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,19 +40,20 @@ import java.util.Map;
  */
 public enum JPEG2000SegmentMarker implements CodedEnum {
 
-	RESERVED_DELIMITER_MARKER_MIN(0xFF30, "Reserved delimiter marker minimum"),
+		RESERVED_DELIMITER_MARKER_MIN(0xFF30, "Reserved delimiter marker minimum"),
 		RESERVED_DELIMITER_MARKER_MAX(0xFF3F, "Reserved delimiter marker maximum"),
 		SOC(0xFF4F, "Start of codestream"), SOC_WRONG_ENDIANNESS(0x4FFF,
 			"Start of codestream (Wrong endianness)"), SOT(0xFF90, "Start of tile"),
 		SOD(0xFF93, "Start of data"), EOC(0xFFD9, "End of codestream"), SIZ(0xFF51,
 			"Size"), COD(0xFF52, "Coding style default"), COC(0xFF53,
-			"Coding style component"), RGN(0xFF5E, "Region of interest"), QCD(0xFF5C,
-			"Quantization default"), QCC(0xFF5D, "Quantization component"), POC(
-			0xFF5F, "Progression order change"), TLM(0xFF55, "Tile lengths"), PLM(
-			0xFF57, "Packet length main"), PLT(0xFF58, "Packet length tile"), PPM(
-			0xFF60, "Packed packet main"), PPT(0xFF61, "Packed packet tile"), SOP(
-			0xFF91, "Start of packet"), EPH(0xFF92, "End of packet header"), CRG(
-			0xFF63, "Component registration"), COM(0xFF64, "Comment");
+				"Coding style component"), RGN(0xFF5E, "Region of interest"), QCD(
+					0xFF5C, "Quantization default"), QCC(0xFF5D,
+						"Quantization component"), POC(0xFF5F, "Progression order change"),
+		TLM(0xFF55, "Tile lengths"), PLM(0xFF57, "Packet length main"), PLT(0xFF58,
+			"Packet length tile"), PPM(0xFF60, "Packed packet main"), PPT(0xFF61,
+				"Packed packet tile"), SOP(0xFF91, "Start of packet"), EPH(0xFF92,
+					"End of packet header"), CRG(0xFF63, "Component registration"), COM(
+						0xFF64, "Comment");
 
 	/** Code for the segment marker. */
 	private int code;
@@ -66,8 +67,8 @@ public enum JPEG2000SegmentMarker implements CodedEnum {
 
 	/** Reverse lookup of code to segment marker enumerate value. */
 	static {
-		for (final JPEG2000SegmentMarker v : EnumSet
-			.allOf(JPEG2000SegmentMarker.class))
+		for (final JPEG2000SegmentMarker v : EnumSet.allOf(
+			JPEG2000SegmentMarker.class))
 		{
 			lookup.put(v.getCode(), v);
 		}
@@ -77,8 +78,8 @@ public enum JPEG2000SegmentMarker implements CodedEnum {
 	 * Retrieves the segment marker by reverse lookup of its "code".
 	 *
 	 * @param code The code to look up.
-	 * @return The {@code JPEG2000SegmentMarker} instance for the
-	 *         {@code code} or {@code null} if it does not exist.
+	 * @return The {@code JPEG2000SegmentMarker} instance for the {@code code} or
+	 *         {@code null} if it does not exist.
 	 */
 	public static JPEG2000SegmentMarker get(final int code) {
 		return lookup.get(code);

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -186,10 +186,10 @@ public class TiffParser extends AbstractContextual {
 		in.seek(0);
 		final int endianOne = in.read();
 		final int endianTwo = in.read();
-		final boolean littleEndian =
-			endianOne == TiffConstants.LITTLE && endianTwo == TiffConstants.LITTLE; // II
-		final boolean bigEndian =
-			endianOne == TiffConstants.BIG && endianTwo == TiffConstants.BIG; // MM
+		final boolean littleEndian = endianOne == TiffConstants.LITTLE &&
+			endianTwo == TiffConstants.LITTLE; // II
+		final boolean bigEndian = endianOne == TiffConstants.BIG &&
+			endianTwo == TiffConstants.BIG; // MM
 		if (!littleEndian && !bigEndian) return null;
 
 		// check magic number (42)
@@ -292,17 +292,16 @@ public class TiffParser extends AbstractContextual {
 	/** Gets the offsets to every IFD in the file. */
 	public long[] getIFDOffsets() throws IOException {
 		// check TIFF header
-		final int bytesPerEntry =
-			bigTiff ? TiffConstants.BIG_TIFF_BYTES_PER_ENTRY
-				: TiffConstants.BYTES_PER_ENTRY;
+		final int bytesPerEntry = bigTiff ? TiffConstants.BIG_TIFF_BYTES_PER_ENTRY
+			: TiffConstants.BYTES_PER_ENTRY;
 
 		final Vector<Long> offsets = new Vector<>();
 		long offset = getFirstOffset();
 		while (offset > 0 && offset < in.length()) {
 			in.seek(offset);
 			offsets.add(offset);
-			final int nEntries =
-				bigTiff ? (int) in.readLong() : in.readUnsignedShort();
+			final int nEntries = bigTiff ? (int) in.readLong() : in
+				.readUnsignedShort();
 			in.skipBytes(nEntries * bytesPerEntry);
 			offset = getNextOffset(offset);
 		}
@@ -376,7 +375,8 @@ public class TiffParser extends AbstractContextual {
 		final IFD ifd = new IFD(log);
 
 		// save little-endian flag to internal LITTLE_ENDIAN tag
-		ifd.put(new Integer(IFD.LITTLE_ENDIAN), Boolean.valueOf(in.isLittleEndian()));
+		ifd.put(new Integer(IFD.LITTLE_ENDIAN), Boolean.valueOf(in
+			.isLittleEndian()));
 		ifd.put(new Integer(IFD.BIG_TIFF), Boolean.valueOf(bigTiff));
 
 		// read in directory entries for this IFD
@@ -386,9 +386,8 @@ public class TiffParser extends AbstractContextual {
 		log.trace("getIFDs: " + numEntries + " directory entries to read");
 		if (numEntries == 0 || numEntries == 1) return ifd;
 
-		final int bytesPerEntry =
-			bigTiff ? TiffConstants.BIG_TIFF_BYTES_PER_ENTRY
-				: TiffConstants.BYTES_PER_ENTRY;
+		final int bytesPerEntry = bigTiff ? TiffConstants.BIG_TIFF_BYTES_PER_ENTRY
+			: TiffConstants.BYTES_PER_ENTRY;
 		final int baseOffset = bigTiff ? 8 : 2;
 
 		for (int i = 0; i < numEntries; i++) {
@@ -421,9 +420,8 @@ public class TiffParser extends AbstractContextual {
 				log.trace("getIFDs: truncated " + (oldCount - count) +
 					" array elements for tag " + tag);
 				if (count < 0) count = oldCount;
-				entry =
-					new TiffIFDEntry(entry.getTag(), entry.getType(), count, entry
-						.getValueOffset());
+				entry = new TiffIFDEntry(entry.getTag(), entry.getType(), count, entry
+					.getValueOffset());
 			}
 			if (count < 0 || count > in.length()) break;
 
@@ -542,14 +540,14 @@ public class TiffParser extends AbstractContextual {
 			if (count == 1) return new Long(in.readLong());
 			long[] longs = null;
 
-			if (equalStrips &&
-				(entry.getTag() == IFD.STRIP_BYTE_COUNTS || entry.getTag() == IFD.TILE_BYTE_COUNTS))
+			if (equalStrips && (entry.getTag() == IFD.STRIP_BYTE_COUNTS || entry
+				.getTag() == IFD.TILE_BYTE_COUNTS))
 			{
 				longs = new long[1];
 				longs[0] = in.readLong();
 			}
-			else if (equalStrips &&
-				(entry.getTag() == IFD.STRIP_OFFSETS || entry.getTag() == IFD.TILE_OFFSETS))
+			else if (equalStrips && (entry.getTag() == IFD.STRIP_OFFSETS || entry
+				.getTag() == IFD.TILE_OFFSETS))
 			{
 				final OnDemandLongArray offsets = new OnDemandLongArray(in);
 				offsets.setSize(count);
@@ -630,9 +628,8 @@ public class TiffParser extends AbstractContextual {
 
 	// -- TiffParser methods - image reading --
 
-	public byte[]
-		getTile(final IFD ifd, byte[] buf, final int row, final int col)
-			throws FormatException, IOException
+	public byte[] getTile(final IFD ifd, byte[] buf, final int row, final int col)
+		throws FormatException, IOException
 	{
 		final byte[] jpegTable = (byte[]) ifd.getIFDValue(IFD.JPEG_TABLES);
 
@@ -691,9 +688,9 @@ public class TiffParser extends AbstractContextual {
 		in.read(tile);
 
 		codecOptions.maxBytes = Math.max(size, tile.length);
-		codecOptions.ycbcr =
-			ifd.getPhotometricInterpretation() == PhotoInterp.Y_CB_CR &&
-				ifd.getIFDIntValue(IFD.Y_CB_CR_SUB_SAMPLING) == 1 && ycbcrCorrection;
+		codecOptions.ycbcr = ifd
+			.getPhotometricInterpretation() == PhotoInterp.Y_CB_CR && ifd
+				.getIFDIntValue(IFD.Y_CB_CR_SUB_SAMPLING) == 1 && ycbcrCorrection;
 
 		if (jpegTable != null) {
 			final byte[] q = new byte[jpegTable.length + tile.length - 4];
@@ -715,13 +712,12 @@ public class TiffParser extends AbstractContextual {
 					final boolean littleEndian = ifd.isLittleEndian();
 					final int[] samples = new int[buf.length / pixel];
 					for (int i = 0; i < samples.length; i++) {
-						samples[i] =
-							Bytes.toInt(buf, i * realBytes, realBytes, littleEndian);
+						samples[i] = Bytes.toInt(buf, i * realBytes, realBytes,
+							littleEndian);
 					}
 
 					for (int i = 0; i < samples.length; i++) {
-						Bytes.unpack(samples[i], buf, i * pixel, pixel,
-							littleEndian);
+						Bytes.unpack(samples[i], buf, i * pixel, pixel, littleEndian);
 					}
 				}
 			}
@@ -811,8 +807,8 @@ public class TiffParser extends AbstractContextual {
 		// special case: if we only need one tile, and that tile doesn't need
 		// any special handling, then we can just read it directly and return
 		if ((x % tileWidth) == 0 && (y % tileLength) == 0 && width == tileWidth &&
-			height == imageLength && samplesPerPixel == 1 &&
-			(ifd.getBitsPerSample()[0] % 8) == 0 &&
+			height == imageLength && samplesPerPixel == 1 && (ifd
+				.getBitsPerSample()[0] % 8) == 0 &&
 			photoInterp != PhotoInterp.WHITE_IS_ZERO &&
 			photoInterp != PhotoInterp.CMYK && photoInterp != PhotoInterp.Y_CB_CR &&
 			compression == TiffCompression.UNCOMPRESSED)
@@ -823,14 +819,14 @@ public class TiffParser extends AbstractContextual {
 			if (stripOffsets != null && stripByteCounts != null) {
 				final long column = x / tileWidth;
 				final int firstTile = (int) ((y / tileLength) * numTileCols + column);
-				int lastTile =
-					(int) (((y + height) / tileLength) * numTileCols + column);
+				int lastTile = (int) (((y + height) / tileLength) * numTileCols +
+					column);
 				lastTile = Math.min(lastTile, stripOffsets.length - 1);
 
 				int offset = 0;
 				for (int tile = firstTile; tile <= lastTile; tile++) {
-					long byteCount =
-						equalStrips ? stripByteCounts[0] : stripByteCounts[tile];
+					long byteCount = equalStrips ? stripByteCounts[0]
+						: stripByteCounts[tile];
 					if (byteCount == numSamples && pixel > 1) {
 						byteCount *= pixel;
 					}
@@ -863,13 +859,13 @@ public class TiffParser extends AbstractContextual {
 		int bufferSizeSamplesPerPixel = samplesPerPixel;
 		if (ifd.getPlanarConfiguration() == 2) bufferSizeSamplesPerPixel = 1;
 		final int bpp = ifd.getBytesPerSample()[0];
-		final int bufferSize =
-			(int) tileWidth * (int) tileLength * bufferSizeSamplesPerPixel * bpp;
+		final int bufferSize = (int) tileWidth * (int) tileLength *
+			bufferSizeSamplesPerPixel * bpp;
 
 		cachedTileBuffer = new byte[bufferSize];
 
-		final IntRect tileBounds =
-			new IntRect(0, 0, (int) tileWidth, (int) tileLength);
+		final IntRect tileBounds = new IntRect(0, 0, (int) tileWidth,
+			(int) tileLength);
 
 		for (int row = 0; row < numTileRows; row++) {
 			// make the first row shorter to account for row overlap
@@ -919,8 +915,8 @@ public class TiffParser extends AbstractContextual {
 
 				for (int q = 0; q < effectiveChannels; q++) {
 					int src = q * tileSize + realX + realY;
-					int dest =
-						q * planeSize + pixel * (tileX - x) + outputRowLen * (tileY - y);
+					int dest = q * planeSize + pixel * (tileX - x) + outputRowLen *
+						(tileY - y);
 					if (planarConfig == 2) dest += (planeSize * (row / nrows));
 
 					// copying the tile directly will only work if there is no
@@ -966,8 +962,8 @@ public class TiffParser extends AbstractContextual {
 
 		final int nValueBytes = valueCount * entryType.getBytesPerElement();
 		final int threshhold = bigTiff ? 8 : 4;
-		final long offset =
-			nValueBytes > threshhold ? getNextOffset(0) : in.getFilePointer();
+		final long offset = nValueBytes > threshhold ? getNextOffset(0) : in
+			.getFilePointer();
 
 		return new TiffIFDEntry(entryTag, entryType, valueCount, offset);
 	}
@@ -1040,8 +1036,8 @@ public class TiffParser extends AbstractContextual {
 		if (photoInterp == PhotoInterp.CMYK) maxValue = Integer.MAX_VALUE;
 
 		int skipBits = (int) (8 - ((imageWidth * bps0 * nChannels) % 8));
-		if (skipBits == 8 ||
-			(bytes.length * 8 < bps0 * (nChannels * imageWidth + imageHeight)))
+		if (skipBits == 8 || (bytes.length * 8 < bps0 * (nChannels * imageWidth +
+			imageHeight)))
 		{
 			skipBits = 0;
 		}
@@ -1055,8 +1051,8 @@ public class TiffParser extends AbstractContextual {
 			reference = new int[] { 0, 0, 0, 0, 0, 0 };
 		}
 		final int[] subsampling = ifd.getIFDIntArray(IFD.Y_CB_CR_SUB_SAMPLING);
-		final TiffRational[] coefficients =
-			(TiffRational[]) ifd.getIFDValue(IFD.Y_CB_CR_COEFFICIENTS);
+		final TiffRational[] coefficients = (TiffRational[]) ifd.getIFDValue(
+			IFD.Y_CB_CR_COEFFICIENTS);
 		if (coefficients != null) {
 			lumaRed = coefficients[0].floatValue();
 			lumaGreen = coefficients[1].floatValue();
@@ -1084,7 +1080,8 @@ public class TiffParser extends AbstractContextual {
 						// bits per sample is not a multiple of 8
 
 						if ((channel == 0 && photoInterp == PhotoInterp.RGB_PALETTE) ||
-							(photoInterp != PhotoInterp.CFA_ARRAY && photoInterp != PhotoInterp.RGB_PALETTE))
+							(photoInterp != PhotoInterp.CFA_ARRAY &&
+								photoInterp != PhotoInterp.RGB_PALETTE))
 						{
 							value = bb.getBits(bps0) & 0xffff;
 							if ((ndx % imageWidth) == imageWidth - 1) {
@@ -1103,8 +1100,7 @@ public class TiffParser extends AbstractContextual {
 					}
 
 					if (outputIndex + numBytes <= samples.length) {
-						Bytes.unpack(value, samples, outputIndex, numBytes,
-							littleEndian);
+						Bytes.unpack(value, samples, outputIndex, numBytes, littleEndian);
 					}
 				}
 				else {
@@ -1132,8 +1128,8 @@ public class TiffParser extends AbstractContextual {
 
 							final int red = (int) (cr * (2 - 2 * lumaRed) + y);
 							final int blue = (int) (cb * (2 - 2 * lumaBlue) + y);
-							final int green =
-								(int) ((y - lumaBlue * blue - lumaRed * red) / lumaGreen);
+							final int green = (int) ((y - lumaBlue * blue - lumaRed * red) /
+								lumaGreen);
 
 							samples[idx] = (byte) (red & 0xff);
 							samples[nSamples + idx] = (byte) (green & 0xff);
@@ -1168,30 +1164,30 @@ public class TiffParser extends AbstractContextual {
 	}
 
 	/** Bit order mapping for reversed fill order. */
-	private static final byte[] REVERSE = { 0x00, -0x80, 0x40, -0x40, 0x20,
-		-0x60, 0x60, -0x20, 0x10, -0x70, 0x50, -0x30, 0x30, -0x50, 0x70, -0x10,
-		0x08, -0x78, 0x48, -0x38, 0x28, -0x58, 0x68, -0x18, 0x18, -0x68, 0x58,
-		-0x28, 0x38, -0x48, 0x78, -0x08, 0x04, -0x7c, 0x44, -0x3c, 0x24, -0x5c,
-		0x64, -0x1c, 0x14, -0x6c, 0x54, -0x2c, 0x34, -0x4c, 0x74, -0x0c, 0x0c,
-		-0x74, 0x4c, -0x34, 0x2c, -0x54, 0x6c, -0x14, 0x1c, -0x64, 0x5c, -0x24,
-		0x3c, -0x44, 0x7c, -0x04, 0x02, -0x7e, 0x42, -0x3e, 0x22, -0x5e, 0x62,
-		-0x1e, 0x12, -0x6e, 0x52, -0x2e, 0x32, -0x4e, 0x72, -0x0e, 0x0a, -0x76,
-		0x4a, -0x36, 0x2a, -0x56, 0x6a, -0x16, 0x1a, -0x66, 0x5a, -0x26, 0x3a,
-		-0x46, 0x7a, -0x06, 0x06, -0x7a, 0x46, -0x3a, 0x26, -0x5a, 0x66, -0x1a,
-		0x16, -0x6a, 0x56, -0x2a, 0x36, -0x4a, 0x76, -0x0a, 0x0e, -0x72, 0x4e,
-		-0x32, 0x2e, -0x52, 0x6e, -0x12, 0x1e, -0x62, 0x5e, -0x22, 0x3e, -0x42,
-		0x7e, -0x02, 0x01, -0x7f, 0x41, -0x3f, 0x21, -0x5f, 0x61, -0x1f, 0x11,
-		-0x6f, 0x51, -0x2f, 0x31, -0x4f, 0x71, -0x0f, 0x09, -0x77, 0x49, -0x37,
-		0x29, -0x57, 0x69, -0x17, 0x19, -0x67, 0x59, -0x27, 0x39, -0x47, 0x79,
-		-0x07, 0x05, -0x7b, 0x45, -0x3b, 0x25, -0x5b, 0x65, -0x1b, 0x15, -0x6b,
-		0x55, -0x2b, 0x35, -0x4b, 0x75, -0x0b, 0x0d, -0x73, 0x4d, -0x33, 0x2d,
-		-0x53, 0x6d, -0x13, 0x1d, -0x63, 0x5d, -0x23, 0x3d, -0x43, 0x7d, -0x03,
-		0x03, -0x7d, 0x43, -0x3d, 0x23, -0x5d, 0x63, -0x1d, 0x13, -0x6d, 0x53,
-		-0x2d, 0x33, -0x4d, 0x73, -0x0d, 0x0b, -0x75, 0x4b, -0x35, 0x2b, -0x55,
-		0x6b, -0x15, 0x1b, -0x65, 0x5b, -0x25, 0x3b, -0x45, 0x7b, -0x05, 0x07,
-		-0x79, 0x47, -0x39, 0x27, -0x59, 0x67, -0x19, 0x17, -0x69, 0x57, -0x29,
-		0x37, -0x49, 0x77, -0x09, 0x0f, -0x71, 0x4f, -0x31, 0x2f, -0x51, 0x6f,
-		-0x11, 0x1f, -0x61, 0x5f, -0x21, 0x3f, -0x41, 0x7f, -0x01 };
+	private static final byte[] REVERSE = { 0x00, -0x80, 0x40, -0x40, 0x20, -0x60,
+		0x60, -0x20, 0x10, -0x70, 0x50, -0x30, 0x30, -0x50, 0x70, -0x10, 0x08,
+		-0x78, 0x48, -0x38, 0x28, -0x58, 0x68, -0x18, 0x18, -0x68, 0x58, -0x28,
+		0x38, -0x48, 0x78, -0x08, 0x04, -0x7c, 0x44, -0x3c, 0x24, -0x5c, 0x64,
+		-0x1c, 0x14, -0x6c, 0x54, -0x2c, 0x34, -0x4c, 0x74, -0x0c, 0x0c, -0x74,
+		0x4c, -0x34, 0x2c, -0x54, 0x6c, -0x14, 0x1c, -0x64, 0x5c, -0x24, 0x3c,
+		-0x44, 0x7c, -0x04, 0x02, -0x7e, 0x42, -0x3e, 0x22, -0x5e, 0x62, -0x1e,
+		0x12, -0x6e, 0x52, -0x2e, 0x32, -0x4e, 0x72, -0x0e, 0x0a, -0x76, 0x4a,
+		-0x36, 0x2a, -0x56, 0x6a, -0x16, 0x1a, -0x66, 0x5a, -0x26, 0x3a, -0x46,
+		0x7a, -0x06, 0x06, -0x7a, 0x46, -0x3a, 0x26, -0x5a, 0x66, -0x1a, 0x16,
+		-0x6a, 0x56, -0x2a, 0x36, -0x4a, 0x76, -0x0a, 0x0e, -0x72, 0x4e, -0x32,
+		0x2e, -0x52, 0x6e, -0x12, 0x1e, -0x62, 0x5e, -0x22, 0x3e, -0x42, 0x7e,
+		-0x02, 0x01, -0x7f, 0x41, -0x3f, 0x21, -0x5f, 0x61, -0x1f, 0x11, -0x6f,
+		0x51, -0x2f, 0x31, -0x4f, 0x71, -0x0f, 0x09, -0x77, 0x49, -0x37, 0x29,
+		-0x57, 0x69, -0x17, 0x19, -0x67, 0x59, -0x27, 0x39, -0x47, 0x79, -0x07,
+		0x05, -0x7b, 0x45, -0x3b, 0x25, -0x5b, 0x65, -0x1b, 0x15, -0x6b, 0x55,
+		-0x2b, 0x35, -0x4b, 0x75, -0x0b, 0x0d, -0x73, 0x4d, -0x33, 0x2d, -0x53,
+		0x6d, -0x13, 0x1d, -0x63, 0x5d, -0x23, 0x3d, -0x43, 0x7d, -0x03, 0x03,
+		-0x7d, 0x43, -0x3d, 0x23, -0x5d, 0x63, -0x1d, 0x13, -0x6d, 0x53, -0x2d,
+		0x33, -0x4d, 0x73, -0x0d, 0x0b, -0x75, 0x4b, -0x35, 0x2b, -0x55, 0x6b,
+		-0x15, 0x1b, -0x65, 0x5b, -0x25, 0x3b, -0x45, 0x7b, -0x05, 0x07, -0x79,
+		0x47, -0x39, 0x27, -0x59, 0x67, -0x19, 0x17, -0x69, 0x57, -0x29, 0x37,
+		-0x49, 0x77, -0x09, 0x0f, -0x71, 0x4f, -0x31, 0x2f, -0x51, 0x6f, -0x11,
+		0x1f, -0x61, 0x5f, -0x21, 0x3f, -0x41, 0x7f, -0x01 };
 
 	private byte[] adjustFillOrder(final IFD ifd, final byte[] buf)
 		throws FormatException

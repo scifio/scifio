@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,40 +28,32 @@
  */
 
 /**
- * Provides the classes for reading and writing information between
- * image sources.
- * 
+ * Provides the classes for reading and writing information between image
+ * sources.
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
- *  <li>
- *  Added {@link io.scif.io.IStreamAccess} interface. This interface is used as a middle
- *  ground for {@link io.scif.io.IRandomAccess} implementations that will be stream based,
- *  and extracts many methods that were injected in an abstract layer in
- *  Bio-Formats.
- *  </li>
- *  <li>
- *  The static functionality in Location has been extracted to
- *  {@link io.scif.services.LocationService}
- *  </li>
+ * <li>Added {@link io.scif.io.IStreamAccess} interface. This interface is used
+ * as a middle ground for {@link io.scif.io.IRandomAccess} implementations that
+ * will be stream based, and extracts many methods that were injected in an
+ * abstract layer in Bio-Formats.</li>
+ * <li>The static functionality in Location has been extracted to
+ * {@link io.scif.services.LocationService}</li>
  * </ul>
- * 
  * <h3>Future plans</h3>
  * <ul>
- *  <li>
- *  {code IRandomAccess} naming. The {@code IRandomAccess} interface should
- *  define a {@code getName} and {@code setName} method, which will be
- *  implemented in the various handles.
- *  <p>
- *  This value should be chained up to the {@code RandomAccessInputStream}
- *  {@code toString} method.
- *  </p>
- *  </li>
- *  <li>
- *  Remove id maps from {@link io.scif.io.Location}. Should be able to construct with just
- *  the {@link io.scif.io.RandomAccessInputStream}.
- *  </li>
+ * <li>{code IRandomAccess} naming. The {@code IRandomAccess} interface should
+ * define a {@code getName} and {@code setName} method, which will be
+ * implemented in the various handles.
+ * <p>
+ * This value should be chained up to the {@code RandomAccessInputStream}
+ * {@code toString} method.
+ * </p>
+ * </li>
+ * <li>Remove id maps from {@link io.scif.io.Location}. Should be able to
+ * construct with just the {@link io.scif.io.RandomAccessInputStream}.</li>
  * </ul>
- * 
+ *
  * @author Mark Hiner
  */
+
 package io.scif.io;

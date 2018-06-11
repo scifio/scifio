@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -78,8 +78,8 @@ public class DefaultFilePatternService extends AbstractService implements
 		else if (!dir.equals("") && !dir.endsWith(File.separator)) {
 			dir += File.separator;
 		}
-		final Location dirFile =
-			new Location(getContext(), dir.equals("") ? "." : dir);
+		final Location dirFile = new Location(getContext(), dir.equals("") ? "."
+			: dir);
 
 		// list files in the given directory
 		final Location[] f = dirFile.listFiles();
@@ -201,10 +201,10 @@ public class DefaultFilePatternService extends AbstractService implements
 					else {
 						while (j < width && !same[j])
 							j++;
-						final String p =
-							findPattern(name, nameList, jx, indexList[i] + j, "");
-						final char c =
-							indexList[i] > 0 ? name.charAt(indexList[i] - 1) : '.';
+						final String p = findPattern(name, nameList, jx, indexList[i] + j,
+							"");
+						final char c = indexList[i] > 0 ? name.charAt(indexList[i] - 1)
+							: '.';
 						// check if this block represents the series axis
 						if (p == null && c != 'S' && c != 's' && c != 'E' && c != 'e') {
 							// unable to find an appropriate breakdown of
@@ -244,16 +244,16 @@ public class DefaultFilePatternService extends AbstractService implements
 
 	@Override
 	public String findPattern(final String[] names) {
-		final String dir =
-			names[0].substring(0, names[0].lastIndexOf(File.separator) + 1);
+		final String dir = names[0].substring(0, names[0].lastIndexOf(
+			File.separator) + 1);
 
 		final StringBuilder pattern = new StringBuilder();
 		pattern.append(Pattern.quote(dir));
 
 		for (int i = 0; i < names.length; i++) {
 			pattern.append("(?:");
-			final String name =
-				names[i].substring(names[i].lastIndexOf(File.separator) + 1);
+			final String name = names[i].substring(names[i].lastIndexOf(
+				File.separator) + 1);
 			pattern.append(Pattern.quote(name));
 			pattern.append(")");
 			if (i < names.length - 1) {
@@ -293,13 +293,12 @@ public class DefaultFilePatternService extends AbstractService implements
 			else patternSuffix = patternSuffix.substring(dot + 1);
 
 			final String checkPattern = findPattern(name, dir, nameList);
-			final String[] checkFiles =
-				new FilePattern(getContext(), checkPattern).getFiles();
+			final String[] checkFiles = new FilePattern(getContext(), checkPattern)
+				.getFiles();
 
-			if (!patterns.contains(pattern) &&
-				(!new Location(getContext(), pattern).exists() || base.equals(pattern)) &&
-				patternSuffix.equals(baseSuffix) &&
-				ArrayUtils.indexOf(checkFiles, base) >= 0)
+			if (!patterns.contains(pattern) && (!new Location(getContext(), pattern)
+				.exists() || base.equals(pattern)) && patternSuffix.equals(
+					baseSuffix) && ArrayUtils.indexOf(checkFiles, base) >= 0)
 			{
 				patterns.add(pattern);
 			}
@@ -317,8 +316,8 @@ public class DefaultFilePatternService extends AbstractService implements
 	{
 		if (ndx == end) return p;
 		for (int i = end - ndx; i >= 1; i--) {
-			final NumberFilter filter =
-				new NumberFilter(name.substring(0, ndx), name.substring(ndx + i));
+			final NumberFilter filter = new NumberFilter(name.substring(0, ndx), name
+				.substring(ndx + i));
 			final String[] list = matchFiles(nameList, filter);
 			final BigInteger[] numbers = new BigInteger[list.length];
 			for (int j = 0; j < list.length; j++) {
@@ -373,8 +372,8 @@ public class DefaultFilePatternService extends AbstractService implements
 	}
 
 	/** Filters the given list of filenames according to the specified filter. */
-	private String[]
-		matchFiles(final String[] inFiles, final NumberFilter filter)
+	private String[] matchFiles(final String[] inFiles,
+		final NumberFilter filter)
 	{
 		final List<String> list = new ArrayList<>();
 		for (final String inFile : inFiles) {

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -119,18 +119,16 @@ public class JPEG2000Codec extends AbstractCodec {
 				}
 			}
 			final DataBuffer buffer = new DataBufferByte(b, plane);
-			img =
-				AWTImageTools.constructImage(b.length, DataBuffer.TYPE_BYTE,
-					j2kOptions.width, j2kOptions.height, false, true, buffer,
-					j2kOptions.colorModel);
+			img = AWTImageTools.constructImage(b.length, DataBuffer.TYPE_BYTE,
+				j2kOptions.width, j2kOptions.height, false, true, buffer,
+				j2kOptions.colorModel);
 		}
 		else if (j2kOptions.bitsPerSample == 16) {
 			final short[][] s = new short[j2kOptions.channels][plane];
 			if (j2kOptions.interleaved) {
 				for (int q = 0; q < plane; q++) {
 					for (int c = 0; c < j2kOptions.channels; c++) {
-						s[c][q] =
-							Bytes.toShort(data, next, 2, j2kOptions.littleEndian);
+						s[c][q] = Bytes.toShort(data, next, 2, j2kOptions.littleEndian);
 						next += 2;
 					}
 				}
@@ -138,25 +136,22 @@ public class JPEG2000Codec extends AbstractCodec {
 			else {
 				for (int c = 0; c < j2kOptions.channels; c++) {
 					for (int q = 0; q < plane; q++) {
-						s[c][q] =
-							Bytes.toShort(data, next, 2, j2kOptions.littleEndian);
+						s[c][q] = Bytes.toShort(data, next, 2, j2kOptions.littleEndian);
 						next += 2;
 					}
 				}
 			}
 			final DataBuffer buffer = new DataBufferUShort(s, plane);
-			img =
-				AWTImageTools.constructImage(s.length, DataBuffer.TYPE_USHORT,
-					j2kOptions.width, j2kOptions.height, false, true, buffer,
-					j2kOptions.colorModel);
+			img = AWTImageTools.constructImage(s.length, DataBuffer.TYPE_USHORT,
+				j2kOptions.width, j2kOptions.height, false, true, buffer,
+				j2kOptions.colorModel);
 		}
 		else if (j2kOptions.bitsPerSample == 32) {
 			final int[][] s = new int[j2kOptions.channels][plane];
 			if (j2kOptions.interleaved) {
 				for (int q = 0; q < plane; q++) {
 					for (int c = 0; c < j2kOptions.channels; c++) {
-						s[c][q] =
-							Bytes.toInt(data, next, 4, j2kOptions.littleEndian);
+						s[c][q] = Bytes.toInt(data, next, 4, j2kOptions.littleEndian);
 						next += 4;
 					}
 				}
@@ -164,18 +159,16 @@ public class JPEG2000Codec extends AbstractCodec {
 			else {
 				for (int c = 0; c < j2kOptions.channels; c++) {
 					for (int q = 0; q < plane; q++) {
-						s[c][q] =
-							Bytes.toInt(data, next, 4, j2kOptions.littleEndian);
+						s[c][q] = Bytes.toInt(data, next, 4, j2kOptions.littleEndian);
 						next += 4;
 					}
 				}
 			}
 
 			final DataBuffer buffer = new UnsignedIntBuffer(s, plane);
-			img =
-				AWTImageTools.constructImage(s.length, DataBuffer.TYPE_INT,
-					j2kOptions.width, j2kOptions.height, false, true, buffer,
-					j2kOptions.colorModel);
+			img = AWTImageTools.constructImage(s.length, DataBuffer.TYPE_INT,
+				j2kOptions.width, j2kOptions.height, false, true, buffer,
+				j2kOptions.colorModel);
 		}
 
 		try {
@@ -245,9 +238,8 @@ public class JPEG2000Codec extends AbstractCodec {
 
 		try {
 			final ByteArrayInputStream bis = new ByteArrayInputStream(buf);
-			b =
-				(WritableRaster) jaiIIOService.readRaster(bis,
-					(JPEG2000CodecOptions) options);
+			b = (WritableRaster) jaiIIOService.readRaster(bis,
+				(JPEG2000CodecOptions) options);
 			single = AWTImageTools.getPixelBytes(b, options.littleEndian);
 			bpp = single[0].length / (b.getWidth() * b.getHeight());
 
@@ -255,12 +247,12 @@ public class JPEG2000Codec extends AbstractCodec {
 			b = null;
 		}
 		catch (final IOException e) {
-			throw new FormatException("Could not decompress JPEG2000 image. Please "
-				+ "make sure that jai_imageio.jar is installed.", e);
+			throw new FormatException("Could not decompress JPEG2000 image. Please " +
+				"make sure that jai_imageio.jar is installed.", e);
 		}
 		catch (final ServiceException e) {
-			throw new FormatException("Could not decompress JPEG2000 image. Please "
-				+ "make sure that jai_imageio.jar is installed.", e);
+			throw new FormatException("Could not decompress JPEG2000 image. Please " +
+				"make sure that jai_imageio.jar is installed.", e);
 		}
 
 		if (single.length == 1) return single[0];

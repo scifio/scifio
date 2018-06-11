@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -121,7 +121,8 @@ public class ImgOpenerTest {
 	 * Test opening images with various ImgOptions set.
 	 */
 	@Test
-	public void testImgOptions() throws IncompatibleTypeException, ImgIOException
+	public void testImgOptions() throws IncompatibleTypeException,
+		ImgIOException
 	{
 		final UnsignedByteType t = new UnsignedByteType();
 		testSubRegion(new ArrayImgFactory<>(t));
@@ -140,9 +141,8 @@ public class ImgOpenerTest {
 		final String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
 
 		// Open all images
-		final List<SCIFIOImgPlus<?>> imgs =
-			new MultiImgOpener().openImgs(id, new SCIFIOConfig()
-				.imgOpenerSetOpenAllImages(true));
+		final List<SCIFIOImgPlus<?>> imgs = new MultiImgOpener().openImgs(id,
+			new SCIFIOConfig().imgOpenerSetOpenAllImages(true));
 
 		// Check the size
 		assertEquals(5, imgs.size());
@@ -168,9 +168,8 @@ public class ImgOpenerTest {
 		final String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
 
 		// Open images 0 and 3
-		final List<SCIFIOImgPlus<?>> imgs =
-			new MultiImgOpener().openImgs(id, new SCIFIOConfig()
-				.imgOpenerSetRange("0,3"));
+		final List<SCIFIOImgPlus<?>> imgs = new MultiImgOpener().openImgs(id,
+			new SCIFIOConfig().imgOpenerSetRange("0,3"));
 
 		// Check the size
 		assertEquals(2, imgs.size());
@@ -184,12 +183,14 @@ public class ImgOpenerTest {
 	 * Tests using the {@link ImgOpener} when opening a non-String source.
 	 */
 	@Test
-	public void testOpenNonString() throws ImgIOException, IOException, FormatException {
+	public void testOpenNonString() throws ImgIOException, IOException,
+		FormatException
+	{
 		final Context c = imgOpener.getContext();
 		final SCIFIO scifio = new SCIFIO(c);
 
 		// Make a GIF byte array
-		//  - From http://giflib.sourceforge.net/whatsinagif/bits_and_bytes.html
+		// - From http://giflib.sourceforge.net/whatsinagif/bits_and_bytes.html
 		final byte[] bytes = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x0A,
 			0x00, 0x0A, 0x00, (byte) 0x91, 0x00, 0x00, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF, (byte) 0xFF, 0x00, 0x00, 0x00, 0x00, (byte) 0xFF, 0x00, 0x00,
@@ -200,9 +201,10 @@ public class ImgOpenerTest {
 			(byte) 0xA8, (byte) 0xDE, 0x60, (byte) 0x8C, 0x04, (byte) 0x91, 0x4C,
 			0x01, 0x00, 0x3B };
 
-		final RandomAccessInputStream stream = new RandomAccessInputStream(c, bytes);
+		final RandomAccessInputStream stream = new RandomAccessInputStream(c,
+			bytes);
 
-		//Get the appropriate format
+		// Get the appropriate format
 		final Format format = scifio.format().getFormat(stream);
 
 		// Create and initialize a reader
@@ -210,7 +212,7 @@ public class ImgOpenerTest {
 		r.setSource(stream);
 
 		// Open an ImgPlus from the reader
-		ImgPlus<?> img = imgOpener.openImgs(r).get(0);
+		final ImgPlus<?> img = imgOpener.openImgs(r).get(0);
 
 		assertNotNull(img);
 	}

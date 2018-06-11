@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -66,8 +66,8 @@ public class FakeFormatTest {
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,1&axes=X,Y,Channel.fake";
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta =
-			(FakeFormat.Metadata) reader.getMetadata();
+		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
@@ -85,8 +85,8 @@ public class FakeFormatTest {
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,4&axes=X,Y,Channel.fake";
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta =
-			(FakeFormat.Metadata) reader.getMetadata();
+		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
@@ -105,8 +105,8 @@ public class FakeFormatTest {
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,4,6&axes=X,Y,Channel,Time.fake";
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta =
-			(FakeFormat.Metadata) reader.getMetadata();
+		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(6, fMeta.getLuts()[0].length);
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
@@ -119,14 +119,15 @@ public class FakeFormatTest {
 	 * {@link Axes#CHANNEL} is a non-planar axis.
 	 */
 	@Test
-	public void testIndexedNonPlanarChannel() throws FormatException, IOException
+	public void testIndexedNonPlanarChannel() throws FormatException,
+		IOException
 	{
 		final String sampleImage =
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=2&lengths=50,50,4,6&axes=X,Y,Channel,Time.fake";
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta =
-			(FakeFormat.Metadata) reader.getMetadata();
+		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(24, fMeta.getLuts()[0].length);
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {

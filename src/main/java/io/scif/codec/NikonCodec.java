@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -100,29 +100,28 @@ public class NikonCodec extends AbstractCodec {
 		3864, 3879, 3893, 3908, 3923, 3937, 3952, 3967, 3981, 3996, 4011, 4026,
 		4041, 4055, 4070, 4085, 4095 };
 
-	private static final short[] LOSSY_DECODER_CONFIGURATION_12 = { 0, 1, 5, 1,
-		1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 5, 4, 3, 6, 2, 7, 1, 0, 8, 9, 11, 10,
+	private static final short[] LOSSY_DECODER_CONFIGURATION_12 = { 0, 1, 5, 1, 1,
+		1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 5, 4, 3, 6, 2, 7, 1, 0, 8, 9, 11, 10, 12 };
+
+	private static final short[] SPLIT_LOSSY_DECODER_CONFIGURATION_12 = { 0, 1, 5,
+		1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0x39, 0x5a, 0x38, 0x27, 0x16, 5, 4,
+		3, 2, 1, 0, 11, 12, 12 };
+
+	private static final short[] LOSSLESS_DECODER_CONFIGURATION_12 = { 0, 1, 4, 2,
+		3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10, 11,
 		12 };
 
-	private static final short[] SPLIT_LOSSY_DECODER_CONFIGURATION_12 = { 0, 1,
-		5, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0x39, 0x5a, 0x38, 0x27, 0x16, 5,
-		4, 3, 2, 1, 0, 11, 12, 12 };
+	private static final short[] LOSSY_DECODER_CONFIGURATION_14 = { 0, 1, 4, 3, 1,
+		1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 5, 6, 4, 7, 8, 3, 9, 2, 1, 0, 10, 11, 12,
+		13, 14 };
 
-	private static final short[] LOSSLESS_DECODER_CONFIGURATION_12 = { 0, 1, 4,
-		2, 3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10,
-		11, 12 };
+	private static final short[] SPLIT_LOSSY_DECODER_CONFIGURATION_14 = { 0, 1, 5,
+		1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 8, 0x5c, 0x4b, 0x3a, 0x29, 7, 6, 5,
+		4, 3, 2, 1, 0, 13, 14 };
 
-	private static final short[] LOSSY_DECODER_CONFIGURATION_14 = { 0, 1, 4, 3,
-		1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 5, 6, 4, 7, 8, 3, 9, 2, 1, 0, 10, 11,
-		12, 13, 14 };
-
-	private static final short[] SPLIT_LOSSY_DECODER_CONFIGURATION_14 = { 0, 1,
-		5, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 8, 0x5c, 0x4b, 0x3a, 0x29, 7, 6,
-		5, 4, 3, 2, 1, 0, 13, 14 };
-
-	private static final short[] LOSSLESS_DECODER_CONFIGURATION_14 = { 0, 1, 4,
-		2, 2, 3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 8, 5, 9, 4, 10, 3, 11, 12, 2,
-		0, 1, 13, 14 };
+	private static final short[] LOSSLESS_DECODER_CONFIGURATION_14 = { 0, 1, 4, 2,
+		2, 3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 8, 5, 9, 4, 10, 3, 11, 12, 2, 0,
+		1, 13, 14 };
 
 	@Parameter
 	private CodecService codecService;
@@ -152,8 +151,8 @@ public class NikonCodec extends AbstractCodec {
 		final CodecOptions options) throws FormatException, IOException
 	{
 		if (options == null || !(options instanceof NikonCodecOptions)) {
-			throw new FormatException("Options must be an instanceof "
-				+ "loci.formats.codec.NikonCodecOptions.");
+			throw new FormatException("Options must be an instanceof " +
+				"loci.formats.codec.NikonCodecOptions.");
 		}
 
 		final NikonCodecOptions nikon = (NikonCodecOptions) options;
@@ -187,8 +186,8 @@ public class NikonCodec extends AbstractCodec {
 		final BitWriter out = new BitWriter();
 
 		final int[] hPredictor = new int[2];
-		final int[] table =
-			nikon.curve == null ? DEFAULT_LINEARIZATION_TABLE : nikon.curve;
+		final int[] table = nikon.curve == null ? DEFAULT_LINEARIZATION_TABLE
+			: nikon.curve;
 
 		for (int row = 0; row < nikon.height; row++) {
 			if (row == nikon.split) {

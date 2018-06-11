@@ -29,7 +29,6 @@
 
 package io.scif.services;
 
-import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;

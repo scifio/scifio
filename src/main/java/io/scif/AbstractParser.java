@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -77,8 +77,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public M parse(final String fileName, final Metadata meta)
-		throws IOException, FormatException
+	public M parse(final String fileName, final Metadata meta) throws IOException,
+		FormatException
 	{
 		return parse(fileName, meta, new SCIFIOConfig());
 	}
@@ -141,8 +141,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public String[]
-		getImageUsedFiles(final int imageIndex, final boolean noPixels)
+	public String[] getImageUsedFiles(final int imageIndex,
+		final boolean noPixels)
 	{
 		return noPixels ? null : new String[] { getMetadata().getSource()
 			.getFileName() };
@@ -196,9 +196,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public M
-		parse(final String fileName, final M meta, final SCIFIOConfig config)
-			throws IOException, FormatException
+	public M parse(final String fileName, final M meta, final SCIFIOConfig config)
+		throws IOException, FormatException
 	{
 		RandomAccessInputStream stream = getSource();
 
@@ -213,8 +212,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 			}
 		}
 
-		if (stream == null) stream =
-			new RandomAccessInputStream(getContext(), fileName);
+		if (stream == null) stream = new RandomAccessInputStream(getContext(),
+			fileName);
 
 		return parse(stream, meta, config);
 	}
@@ -317,8 +316,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public M parse(final File file, final SCIFIOConfig config)
-		throws IOException, FormatException
+	public M parse(final File file, final SCIFIOConfig config) throws IOException,
+		FormatException
 	{
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
@@ -326,9 +325,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public M
-		parse(final RandomAccessInputStream stream, final SCIFIOConfig config)
-			throws IOException, FormatException
+	public M parse(final RandomAccessInputStream stream,
+		final SCIFIOConfig config) throws IOException, FormatException
 	{
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
@@ -343,9 +341,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public M
-		parse(final File file, final Metadata meta, final SCIFIOConfig config)
-			throws IOException, FormatException
+	public M parse(final File file, final Metadata meta,
+		final SCIFIOConfig config) throws IOException, FormatException
 	{
 		return parse(file, SCIFIOMetadataTools.<M> castMeta(meta), config);
 	}

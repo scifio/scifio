@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -56,35 +56,20 @@ public class ReadDoubleTest {
 
 	private static final byte[] PAGE = new byte[] {
 		// 0.0 (0x0000000000000000L)
-		(byte) 0x00, (byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00,
 		// 1.0 (0x3FF0000000000000L)
-		(byte) 0x3F, (byte) 0xF0, (byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
+		(byte) 0x3F, (byte) 0xF0, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00,
 		// -1.0 (0XBFF0000000000000L)
-		(byte) 0xBF, (byte) 0xF0, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
-		(byte) 0x00,
+		(byte) 0xBF, (byte) 0xF0, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00,
 		// 3.1415926535897930 (0x400921FB54442D18L)
 		(byte) 0x40, (byte) 0x09, (byte) 0x21, (byte) 0xFB, (byte) 0x54,
-		(byte) 0x44,
-		(byte) 0x2D,
-		(byte) 0x18,
+		(byte) 0x44, (byte) 0x2D, (byte) 0x18,
 		// MAX_VALUE (0x7FEFFFFFFFFFFFFFL)
 		(byte) 0x7F, (byte) 0xEF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-		(byte) 0xFF, (byte) 0xFF,
-		(byte) 0xFF,
+		(byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
 		// NEGATIVE_INFINITY (0xFFF0000000000000L)
 		(byte) 0xFF, (byte) 0xF0, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 		(byte) 0x00, (byte) 0x00, (byte) 0x00,

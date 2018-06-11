@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -63,8 +63,8 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 
 			bb.order(iMeta.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
 				: ByteOrder.BIG_ENDIAN);
-			bb.asCharBuffer()
-				.get(data.getCurrentStorageArray(), offset, bytes.length);
+			bb.asCharBuffer().get(data.getCurrentStorageArray(), offset,
+				bytes.length);
 		}
 		else {
 			final int pixelType = iMeta.getPixelType();
@@ -72,9 +72,8 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 			final int offset = planesRead * (bytes.length / bpp);
 
 			for (int index = 0; index < bytes.length / bpp; index++) {
-				final char value =
-					(char) utils().decodeWord(bytes, index * bpp, pixelType,
-						iMeta.isLittleEndian());
+				final char value = (char) utils().decodeWord(bytes, index * bpp,
+					pixelType, iMeta.isLittleEndian());
 				data.setValue(offset + index, value);
 			}
 		}

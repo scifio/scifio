@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -95,7 +95,8 @@ public class FilePattern {
 	 * Creates a pattern object using the given filename and directory path as a
 	 * template.
 	 */
-	public FilePattern(final Context context, final String name, final String dir)
+	public FilePattern(final Context context, final String name,
+		final String dir)
 	{
 		this(context, new SCIFIO(context).filePattern().findPattern(name, dir));
 	}
@@ -162,8 +163,8 @@ public class FilePattern {
 		buildFiles("", num, fileList);
 		files = fileList.toArray(new String[0]);
 
-		if (files.length == 0 &&
-			new Location(scifio.getContext(), pattern).exists())
+		if (files.length == 0 && new Location(scifio.getContext(), pattern)
+			.exists())
 		{
 			files = new String[] { pattern };
 		}
@@ -242,15 +243,15 @@ public class FilePattern {
 
 	/** Gets the pattern's text string after all numerical ranges. */
 	public String getSuffix() {
-		return endIndex.length > 0 ? pattern
-			.substring(endIndex[endIndex.length - 1]) : pattern;
+		return endIndex.length > 0 ? pattern.substring(endIndex[endIndex.length -
+			1]) : pattern;
 	}
 
 	/** Gets the pattern's text string before the given numerical block. */
 	public String getPrefix(final int i) {
 		if (i < 0 || i >= startIndex.length) return null;
-		final int s =
-			i > 0 ? endIndex[i - 1] : (pattern.lastIndexOf(File.separator) + 1);
+		final int s = i > 0 ? endIndex[i - 1] : (pattern.lastIndexOf(
+			File.separator) + 1);
 		final int e = startIndex[i];
 		return s <= e ? pattern.substring(s, e) : null;
 	}
@@ -287,7 +288,8 @@ public class FilePattern {
 			int end;
 
 			// Check if an escaped path has been defined as part of the regex.
-			if (pattern.startsWith("\\Q") && endRegex > 0 && endRegex <= endNotRegex)
+			if (pattern.startsWith("\\Q") && endRegex > 0 &&
+				endRegex <= endNotRegex)
 			{
 				dir = pattern.substring(2, endRegex);
 				end = endRegex + 2;
@@ -320,8 +322,8 @@ public class FilePattern {
 
 			for (final String f : files) {
 				final Location path = new Location(scifio.getContext(), dir, f);
-				if (regex.matcher(f).matches() ||
-					regex.matcher(path.getAbsolutePath()).matches())
+				if (regex.matcher(f).matches() || regex.matcher(path.getAbsolutePath())
+					.matches())
 				{
 					if (path.exists()) fileList.add(path.getAbsolutePath());
 					else fileList.add(f);
@@ -391,8 +393,8 @@ public class FilePattern {
 					for (int k = 0; k <= 2; k++) {
 						for (int l = 1; l <= 12; l++) {
 							final String sl = (l < 10 ? "0" : "") + l;
-							nameList[count++] =
-								"hypothetical" + sl + k + j + "c" + i + ".ext";
+							nameList[count++] = "hypothetical" + sl + k + j + "c" + i +
+								".ext";
 						}
 					}
 				}

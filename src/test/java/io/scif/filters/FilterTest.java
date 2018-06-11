@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -69,10 +69,10 @@ public class FilterTest {
 
 		final Context ctx = scifio.getContext();
 
-		final PluginInfo<Filter> enabledInfo =
-			new PluginInfo<>(EnabledFilter.class, Filter.class);
-		final PluginInfo<Filter> disabledInfo =
-			new PluginInfo<>(DisabledFilter.class, Filter.class);
+		final PluginInfo<Filter> enabledInfo = new PluginInfo<>(EnabledFilter.class,
+			Filter.class);
+		final PluginInfo<Filter> disabledInfo = new PluginInfo<>(
+			DisabledFilter.class, Filter.class);
 
 		ctx.getPluginIndex().add(enabledInfo);
 		ctx.getPluginIndex().add(disabledInfo);
@@ -89,9 +89,8 @@ public class FilterTest {
 	public void testSetSource() throws FormatException, IOException {
 		final String id2 = "testImg&lengths=256,128,5&axes=X,Y,Time.fake";
 
-		readerFilter =
-			scifio.initializer().initializeReader(id,
-				new SCIFIOConfig().checkerSetOpen(true));
+		readerFilter = scifio.initializer().initializeReader(id, new SCIFIOConfig()
+			.checkerSetOpen(true));
 
 		((ReaderFilter) readerFilter).enable(PlaneSeparator.class);
 
@@ -118,11 +117,11 @@ public class FilterTest {
 		// Make sure that our enabled plugin is found, and the disabled one
 		// isn't
 		while (Filter.class.isAssignableFrom(readerFilter.getClass())) {
-			if (EnabledFilter.class.isAssignableFrom(readerFilter.getClass())) enabledProperly =
-				true;
+			if (EnabledFilter.class.isAssignableFrom(readerFilter.getClass()))
+				enabledProperly = true;
 
-			if (DisabledFilter.class.isAssignableFrom(readerFilter.getClass())) disabledProperly =
-				false;
+			if (DisabledFilter.class.isAssignableFrom(readerFilter.getClass()))
+				disabledProperly = false;
 
 			readerFilter = (Reader) ((Filter) readerFilter).getParent();
 		}

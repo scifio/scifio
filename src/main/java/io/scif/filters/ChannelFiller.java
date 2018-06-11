@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -106,16 +106,15 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds) throws FormatException,
-		IOException
+		final Interval bounds) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds)
-		throws FormatException, IOException
+		final Plane plane, final Interval bounds) throws FormatException,
+		IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
 	}
@@ -139,8 +138,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds, final SCIFIOConfig config)
-		throws FormatException, IOException
+		final Interval bounds, final SCIFIOConfig config) throws FormatException,
+		IOException
 	{
 		final Plane plane = createPlane(getMetadata().get(imageIndex), bounds);
 		return openPlane(imageIndex, planeIndex, plane, bounds, config);
@@ -153,8 +152,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 	{
 		// If the wrapped Metadata wasn't indexed, we can use the parent reader
 		// directly
-		if (getParentMeta().get(imageIndex).isFalseColor() ||
-			!getParentMeta().get(imageIndex).isIndexed())
+		if (getParentMeta().get(imageIndex).isFalseColor() || !getParentMeta().get(
+			imageIndex).isIndexed())
 		{
 			if (!haveCached(imageIndex, planeIndex, bounds)) {
 				lastPlaneBounds = new FinalInterval(bounds);
@@ -169,8 +168,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 		// If we have the cached base plane we can use it to expand, otherwise
 		// we'll
 		// have to open the plane still.
-		final int lutLength =
-			((ChannelFillerMetadata) getMetadata()).getLutLength();
+		final int lutLength = ((ChannelFillerMetadata) getMetadata())
+			.getLutLength();
 
 		if (!haveCached(imageIndex, planeIndex, bounds)) {
 			updateLastPlaneInfo(imageIndex, lutLength, bounds);
@@ -193,19 +192,19 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final byte[] buf = plane.getBytes();
 		int pt = 0;
 
-		final int bytesPerIndex =
-			getParentMeta().get(imageIndex).getBitsPerPixel() / 8;
+		final int bytesPerIndex = getParentMeta().get(imageIndex)
+			.getBitsPerPixel() / 8;
 
 		final ColorTable lut = lastPlane.getColorTable();
 		final byte[] index = lastPlane.getBytes();
 
 		// Expand the index values to fill the buffer
 		if (getMetadata().get(imageIndex).getInterleavedAxisCount() > 0) {
-			for (int i = 0; i < index.length / bytesPerIndex && pt < buf.length; i++)
+			for (int i = 0; i < index.length / bytesPerIndex &&
+				pt < buf.length; i++)
 			{
-				final int iVal =
-					Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
-						getMetadata().get(imageIndex).isLittleEndian());
+				final int iVal = Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
+					getMetadata().get(imageIndex).isLittleEndian());
 				for (int j = 0; j < lutLength; j++) {
 					buf[pt++] = (byte) lut.get(j, iVal);
 				}
@@ -213,11 +212,11 @@ public class ChannelFiller extends AbstractReaderFilter {
 		}
 		else {
 			for (int j = 0; j < lutLength; j++) {
-				for (int i = 0; i < index.length / bytesPerIndex && pt < buf.length; i++)
+				for (int i = 0; i < index.length / bytesPerIndex &&
+					pt < buf.length; i++)
 				{
-					final int iVal =
-						Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
-							getMetadata().get(imageIndex).isLittleEndian());
+					final int iVal = Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
+						getMetadata().get(imageIndex).isLittleEndian());
 					buf[pt++] = (byte) lut.get(j, iVal);
 				}
 			}
@@ -232,8 +231,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	/* lutLength is 0 until a plane is opened */
 	@Override
-	protected void
-		setSourceHelper(final String source, final SCIFIOConfig config)
+	protected void setSourceHelper(final String source,
+		final SCIFIOConfig config)
 	{
 		try {
 			cleanUp();

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -96,9 +96,8 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 				else {
 					Reader r = null;
 					try {
-						r =
-							initializeService.initializeReader(m.getSource().getFileName(),
-								new SCIFIOConfig().checkerSetOpen(true));
+						r = initializeService.initializeReader(m.getSource().getFileName(),
+							new SCIFIOConfig().checkerSetOpen(true));
 						cTable = r.openPlane(0, 0).getColorTable();
 						r.close();
 					}
@@ -123,12 +122,12 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 					if (ArrayColorTable.class.isAssignableFrom(cTable.getClass())) {
 						final int bitsPerElement = ((ArrayColorTable<?>) cTable).getBits();
 						final boolean signed = FormatTools.isSigned(iMeta.getPixelType());
-						final boolean floating =
-							FormatTools.isFloatingPoint(iMeta.getPixelType());
+						final boolean floating = FormatTools.isFloatingPoint(iMeta
+							.getPixelType());
 
 						try {
-							iMeta.setPixelType(FormatTools.pixelTypeFromBytes(
-								bitsPerElement / 8, signed, floating));
+							iMeta.setPixelType(FormatTools.pixelTypeFromBytes(bitsPerElement /
+								8, signed, floating));
 						}
 						catch (final FormatException e) {
 							log().warn(
@@ -142,8 +141,8 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 					// Channel is already a planar axis.
 					final int cIndex = iMeta.getAxisIndex(Axes.CHANNEL);
 					if (cIndex >= 0 && cIndex < iMeta.getPlanarAxisCount()) {
-						iMeta.setAxisLength(Axes.CHANNEL,
-							iMeta.getAxisLength(Axes.CHANNEL) * lutLength);
+						iMeta.setAxisLength(Axes.CHANNEL, iMeta.getAxisLength(
+							Axes.CHANNEL) * lutLength);
 					}
 					else {
 						if (cIndex >= 0) {
@@ -155,8 +154,8 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 						// planar
 						// axis list.
 						iMeta.addAxis(Axes.CHANNEL, lutLength);
-						iMeta.setAxis(iMeta.getPlanarAxisCount(), iMeta
-							.getAxis(Axes.CHANNEL));
+						iMeta.setAxis(iMeta.getPlanarAxisCount(), iMeta.getAxis(
+							Axes.CHANNEL));
 						iMeta.setPlanarAxisCount(iMeta.getPlanarAxisCount() + 1);
 					}
 				}

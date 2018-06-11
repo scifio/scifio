@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -57,8 +57,7 @@ import org.scijava.plugin.Plugin;
  * @author Melissa Linkert
  * @author Mark Hiner
  */
-@Plugin(type = Format.class, name = "Tile JPEG",
-	priority = Priority.LOW)
+@Plugin(type = Format.class, name = "Tile JPEG", priority = Priority.LOW)
 public class JPEGTileFormat extends AbstractFormat {
 
 	// -- AbstractFormat Methods --
@@ -98,8 +97,8 @@ public class JPEGTileFormat extends AbstractFormat {
 			iMeta.setLittleEndian(false);
 			iMeta.setAxisLength(Axes.X, decoder.getWidth());
 			iMeta.setAxisLength(Axes.Y, decoder.getHeight());
-			iMeta.setAxisLength(Axes.CHANNEL, decoder.getScanline(0).length /
-				iMeta.getAxisLength(Axes.X));
+			iMeta.setAxisLength(Axes.CHANNEL, decoder.getScanline(0).length / iMeta
+				.getAxisLength(Axes.X));
 			iMeta.setPixelType(FormatTools.UINT8);
 			iMeta.setMetadataComplete(true);
 			iMeta.setIndexed(false);
@@ -145,8 +144,8 @@ public class JPEGTileFormat extends AbstractFormat {
 		// -- Reader API methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
@@ -155,8 +154,8 @@ public class JPEGTileFormat extends AbstractFormat {
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
 					w = (int) bounds.max(xAxis), h = (int) bounds.max(yAxis);
-			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, bounds);
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
+				bounds);
 
 			final int c = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 

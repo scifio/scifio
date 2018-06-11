@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -327,13 +327,14 @@ public class DICOMFormat extends AbstractFormat {
 				case FormatTools.INT8:
 				case FormatTools.UINT8:
 					if (lut8 == null) {
-						// Need to create  the lut8
+						// Need to create the lut8
 						if (isInverted()) {
 							// If inverted then lut shall be inverted
 							if (lut == null) {
 								// If lut does not exists create an inverted one
 								lut = createInvertedLut8();
-							} else {
+							}
+							else {
 								// If lut does exists inverted it
 								invertLut8(lut);
 							}
@@ -346,13 +347,14 @@ public class DICOMFormat extends AbstractFormat {
 				case FormatTools.INT16:
 				case FormatTools.UINT16:
 					if (lut16 == null) {
-						// Need to create  the lut16
+						// Need to create the lut16
 						if (isInverted()) {
 							// If inverted then lut shall be inverted
 							if (shortLut == null) {
 								// If lut does not exists create an inverted one
 								shortLut = createInvertedLut16();
-							} else {
+							}
+							else {
 								// If lut does exists inverted it
 								invertLut16(shortLut);
 							}
@@ -366,20 +368,18 @@ public class DICOMFormat extends AbstractFormat {
 
 			return null;
 		}
-		
-		private static byte[][] createInvertedLut8() 
-		{
-			byte[][] lut = new byte[3][256];
+
+		private static byte[][] createInvertedLut8() {
+			final byte[][] lut = new byte[3][256];
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
-					lut[i][lut[i].length - 1 - j] = (byte)(j & 0xff);
+					lut[i][lut[i].length - 1 - j] = (byte) (j & 0xff);
 				}
 			}
 			return lut;
 		}
 
-		private static void invertLut8(byte[][] lut) 
-		{
+		private static void invertLut8(final byte[][] lut) {
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
 					final byte v0 = lut[i][j];
@@ -390,19 +390,17 @@ public class DICOMFormat extends AbstractFormat {
 			}
 		}
 
-		private static short[][] createInvertedLut16() 
-		{
-			short[][] lut = new short[3][65536];
+		private static short[][] createInvertedLut16() {
+			final short[][] lut = new short[3][65536];
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
-					lut[i][lut[i].length - 1 - j] = (short)(j & 0xffff);
+					lut[i][lut[i].length - 1 - j] = (short) (j & 0xffff);
 				}
 			}
 			return lut;
 		}
 
-		private static void invertLut16(short[][] lut) 
-		{
+		private static void invertLut16(final short[][] lut) {
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
 					final short v0 = lut[i][j];
@@ -586,7 +584,7 @@ public class DICOMFormat extends AbstractFormat {
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
-				FormatException
+			FormatException
 		{
 			meta.createImageMetadata(1);
 
@@ -911,8 +909,7 @@ public class DICOMFormat extends AbstractFormat {
 					.getOriginalDate() != null && getMetadata()
 						.getOriginalTime() != null && config.groupableIsGroupFiles())
 			{
-				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<>();
+				final Hashtable<Integer, Vector<String>> fileList = new Hashtable<>();
 				final Integer s = new Integer(getMetadata().getOriginalSeries());
 				fileList.put(s, new Vector<String>());
 
@@ -960,8 +957,7 @@ public class DICOMFormat extends AbstractFormat {
 				getMetadata().setFileList(fileList);
 			}
 			else if (getMetadata().getFileList() == null) {
-				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<>();
+				final Hashtable<Integer, Vector<String>> fileList = new Hashtable<>();
 				fileList.put(0, new Vector<String>());
 				fileList.get(0).add(getSource().getFileName());
 				getMetadata().setFileList(fileList);
@@ -1015,7 +1011,8 @@ public class DICOMFormat extends AbstractFormat {
 				log().debug("Checking file " + file);
 				if (!f.equals(getSource().getFileName()) && !file.equals(getSource()
 					.getFileName()) && getFormat().createChecker().isFormat(file) &&
-					Arrays.binarySearch(patternFiles, file.replaceAll("\\\\", "\\\\\\\\")) >= 0)
+					Arrays.binarySearch(patternFiles, file.replaceAll("\\\\",
+						"\\\\\\\\")) >= 0)
 				{
 					addFileToList(fileList, file, checkSeries);
 				}
@@ -1240,7 +1237,7 @@ public class DICOMFormat extends AbstractFormat {
 
 			if (id != null) {
 				if (vr == DICOMUtils.IMPLICIT_VR) {
-					String vrName = TYPES.vr(tag.get());
+					final String vrName = TYPES.vr(tag.get());
 					vr = (vrName.charAt(0) << 8) + vrName.charAt(1);
 					tag.setVR(vr);
 				}
@@ -1372,7 +1369,8 @@ public class DICOMFormat extends AbstractFormat {
 				final int fileNumber = (int) (planeIndex / meta.getImagesPerFile());
 				planeIndex = planeIndex % meta.getImagesPerFile();
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
-				final io.scif.Reader r = initializeService.initializeReader(file, new SCIFIOConfig().checkerSetOpen(true));
+				final io.scif.Reader r = initializeService.initializeReader(file,
+					new SCIFIOConfig().checkerSetOpen(true));
 				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
 					bounds, config);
 			}
@@ -1533,15 +1531,14 @@ public class DICOMFormat extends AbstractFormat {
 		}
 
 		private static DICOMTag getNextTag(final RandomAccessInputStream stream,
-			final boolean bigEndianTransferSyntax) throws FormatException,
-				IOException
+			final boolean bigEndianTransferSyntax) throws FormatException, IOException
 		{
 			return getNextTag(stream, bigEndianTransferSyntax, false);
 		}
 
 		private static DICOMTag getNextTag(final RandomAccessInputStream stream,
 			final boolean bigEndianTransferSyntax, final boolean isOddLocations)
-				throws FormatException, IOException
+			throws FormatException, IOException
 		{
 			final long fp = stream.getFilePointer();
 			int groupWord = stream.readShort() & 0xffff;

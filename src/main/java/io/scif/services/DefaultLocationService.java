@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -201,8 +201,8 @@ public class DefaultLocationService extends AbstractService implements
 			log.trace("no handle was mapped for this ID");
 			final String mapId = getMappedId(id);
 
-			final List<PluginInfo<IStreamAccess>> streamInfos =
-				getContext().getPluginIndex().getPlugins(IStreamAccess.class);
+			final List<PluginInfo<IStreamAccess>> streamInfos = getContext()
+				.getPluginIndex().getPlugins(IStreamAccess.class);
 
 			if (allowArchiveHandles) {
 				for (final PluginInfo<IStreamAccess> info : streamInfos) {
@@ -216,8 +216,8 @@ public class DefaultLocationService extends AbstractService implements
 			}
 
 			try {
-				if (handle == null) handle =
-					new NIOFileHandle(nioService, mapId, writable ? "rw" : "r");
+				if (handle == null) handle = new NIOFileHandle(nioService, mapId,
+					writable ? "rw" : "r");
 			}
 			catch (final IOException e) {
 				// File doesn't exist on disk, so we'll create a virtual handle

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -120,8 +120,8 @@ public class TiffRational extends Number implements Comparable<TiffRational> {
 	/** Indicates whether some other object is "equal to" this one. */
 	@Override
 	public boolean equals(final Object o) {
-		return o != null && o instanceof TiffRational &&
-			compareTo((TiffRational) o) == 0;
+		return o != null && o instanceof TiffRational && compareTo(
+			(TiffRational) o) == 0;
 	}
 
 	/** Reasonable hash value for use with hashtables. */

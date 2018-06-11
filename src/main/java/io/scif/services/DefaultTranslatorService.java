@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -131,8 +131,8 @@ public class DefaultTranslatorService extends
 		}
 
 		// Just look up the translator to try and find an exact match
-		final Map<Class<? extends Metadata>, Translator> destMap =
-			sourceToDestMap.get(source);
+		final Map<Class<? extends Metadata>, Translator> destMap = sourceToDestMap
+			.get(source);
 
 		if (destMap != null) {
 			return destMap.get(dest);
@@ -149,17 +149,17 @@ public class DefaultTranslatorService extends
 	 * @return - Translator capable of translating between the given source and
 	 *         destination
 	 */
-	private Translator
-		lookup(Translator t, final Class<? extends Metadata> source,
-			final Class<? extends Metadata> dest)
+	private Translator lookup(Translator t,
+		final Class<? extends Metadata> source,
+		final Class<? extends Metadata> dest)
 	{
 		if (t == null) {
 			// Loop over the translators in priority order to see if we have a
 			// suitable candidate
 			for (int i = 0; i < getInstances().size() && t == null; i++) {
 				final Translator translator = getInstances().get(i);
-				if (translator.source().isAssignableFrom(source) &&
-					translator.dest().isAssignableFrom(dest))
+				if (translator.source().isAssignableFrom(source) && translator.dest()
+					.isAssignableFrom(dest))
 				{
 					t = translator;
 				}
@@ -174,8 +174,7 @@ public class DefaultTranslatorService extends
 	 * instantiation.
 	 */
 	private void createTranslatorMap() {
-		sourceToDestMap =
-			new HashMap<>();
+		sourceToDestMap = new HashMap<>();
 		for (final Translator translator : getInstances()) {
 			addToMap(translator.source(), translator.dest(), sourceToDestMap,
 				translator);
@@ -191,13 +190,10 @@ public class DefaultTranslatorService extends
 	 * @param map - first-level (outer) map
 	 * @param translator - value for second-level (inner) map
 	 */
-	private
-		void
-		addToMap(
-			final Class<? extends Metadata> key1,
-			final Class<? extends Metadata> key2,
-			final Map<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>> map,
-			final Translator translator)
+	private void addToMap(final Class<? extends Metadata> key1,
+		final Class<? extends Metadata> key2,
+		final Map<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>> map,
+		final Translator translator)
 	{
 		Map<Class<? extends Metadata>, Translator> innerMap = map.get(key1);
 

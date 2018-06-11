@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -77,8 +77,7 @@ public class DefaultRefManagerService extends AbstractService implements
 	 * Maps managed objects to the reference types which refer to them, ensuring
 	 * individual instances are not managed in the same way.
 	 */
-	private final Map<Object, Set<Class<?>>> managed =
-		new WeakHashMap<>();
+	private final Map<Object, Set<Class<?>>> managed = new WeakHashMap<>();
 
 	/**
 	 * A list of all managed references.
@@ -97,11 +96,11 @@ public class DefaultRefManagerService extends AbstractService implements
 	@Override
 	public void manage(final Object toManage, final Object... params) {
 		// Check known RefProviders for all appropriate constructors
-		for (final RefProvider refProvider : pluginService
-			.createInstancesOfType(RefProvider.class))
+		for (final RefProvider refProvider : pluginService.createInstancesOfType(
+			RefProvider.class))
 		{
-			if (!isManaged(toManage, refProvider.getClass()) &&
-				refProvider.handles(toManage, params))
+			if (!isManaged(toManage, refProvider.getClass()) && refProvider.handles(
+				toManage, params))
 			{
 				// found a match
 				final Reference ref = refProvider.makeRef(toManage, queue, params);

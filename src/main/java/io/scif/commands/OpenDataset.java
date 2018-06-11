@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package io.scif.commands;
 
 import io.scif.config.SCIFIOConfig;
@@ -56,12 +57,12 @@ import org.scijava.ui.UIService;
 
 /**
  * {@link Command} for opening a given {@code File} as a {@link Dataset}.
- * 
+ *
  * @author Mark Hiner
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT),
-	@Menu(label = "Import"), @Menu(label = "Image... ") })
+@Plugin(type = Command.class, menu = { @Menu(label = MenuConstants.FILE_LABEL,
+	weight = MenuConstants.FILE_WEIGHT), @Menu(label = "Import"), @Menu(
+		label = "Image... ") })
 public class OpenDataset extends ContextCommand {
 
 	@Parameter
@@ -85,18 +86,18 @@ public class OpenDataset extends ContextCommand {
 	@Parameter(label = "Compute min/max values", required = false)
 	private Boolean computeMinMax;
 
-	//TODO callback to enable/disable these fields based on crop value
+	// TODO callback to enable/disable these fields based on crop value
 	@Parameter(required = false, min = "0")
-	private Integer x = 0;
+	private final Integer x = 0;
 
 	@Parameter(required = false, min = "0")
-	private Integer y = 0;
+	private final Integer y = 0;
 
 	@Parameter(required = false, min = "0")
-	private Integer w = 0;
+	private final Integer w = 0;
 
 	@Parameter(required = false, min = "0")
-	private Integer h = 0;
+	private final Integer h = 0;
 
 	@Parameter(required = false, label = "Image indices")
 	private String range;
@@ -106,7 +107,7 @@ public class OpenDataset extends ContextCommand {
 
 	@Parameter(required = false, label = "Image mode", choices = { "Auto",
 		"Planar", "Cell" })
-	private String mode = "Auto";
+	private final String mode = "Auto";
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
@@ -119,7 +120,8 @@ public class OpenDataset extends ContextCommand {
 		if (range != null && !range.isEmpty()) {
 			try {
 				config.imgOpenerSetRange(range);
-			} catch (IllegalArgumentException e) {
+			}
+			catch (final IllegalArgumentException e) {
 				logService.warn("Ignoring bad range: " + range);
 			}
 		}
@@ -127,7 +129,7 @@ public class OpenDataset extends ContextCommand {
 		// Crop if desired
 		if (crop != null && crop) {
 			if (validRange()) {
-				Map<AxisType, Range> region = new HashMap<AxisType, Range>();
+				final Map<AxisType, Range> region = new HashMap<>();
 				region.put(Axes.X, new Range(new Long(x), new Long(x + w - 1)));
 				region.put(Axes.Y, new Range(new Long(y), new Long(y + h - 1)));
 				config.imgOpenerSetRegion(new ImageRegion(region));
@@ -156,7 +158,7 @@ public class OpenDataset extends ContextCommand {
 		try {
 			dataset = datasetIOService.open(source.getAbsolutePath(), config);
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			logService.error(e);
 			error(e.getMessage());
 		}
@@ -164,7 +166,7 @@ public class OpenDataset extends ContextCommand {
 		// If autoscaling is requested, clear out any channel min/max on the Dataset
 		// so that a DatasetView will know to autoscale.
 		if (autoscale != null && autoscale) {
-			for (int c=0; c<dataset.getCompositeChannelCount(); c++) {
+			for (int c = 0; c < dataset.getCompositeChannelCount(); c++) {
 				dataset.setChannelMinimum(c, Double.NaN);
 				dataset.setChannelMaximum(c, Double.NaN);
 			}
@@ -175,8 +177,8 @@ public class OpenDataset extends ContextCommand {
 	 * @return true if all params are non-null and positive.
 	 */
 	private boolean validRange() {
-		return (x != null && y != null && w != null && h != null) &&
-			(x >= 0 && y >= 0 && w >= 0 && h >= 0);
+		return (x != null && y != null && w != null && h != null) && (x >= 0 &&
+			y >= 0 && w >= 0 && h >= 0);
 	}
 
 	// -- Helper methods --

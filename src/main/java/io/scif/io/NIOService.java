@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,8 +49,8 @@ public interface NIOService extends SCIFIOService {
 	 * Allocates or maps the desired file data into memory.
 	 * <p>
 	 * This method provides a facade to byte buffer allocation that enables
-	 * {@code FileChannel.map()} usage on platforms where it's unlikely to
-	 * give us problems and heap allocation where it is.
+	 * {@code FileChannel.map()} usage on platforms where it's unlikely to give us
+	 * problems and heap allocation where it is.
 	 * </p>
 	 *
 	 * @param channel File channel to allocate or map byte buffers from.

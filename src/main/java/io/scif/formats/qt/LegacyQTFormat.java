@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -69,12 +69,11 @@ import org.scijava.util.ReflectedUniverse;
 
 /**
  * LegacyQTReader is a file format reader for QuickTime movie files. To use it,
- * QuickTime for Java must be installed. Much of this code was based on the <a
- * href="http://imagej.net/plugins/movie-opener.html">QuickTime Movie Opener for
- * ImageJ</a>.
+ * QuickTime for Java must be installed. Much of this code was based on the
+ * <a href="http://imagej.net/plugins/movie-opener.html">QuickTime Movie Opener
+ * for ImageJ</a>.
  */
-@Plugin(type = Format.class, name = "QuickTime",
-	priority = Priority.LOW)
+@Plugin(type = Format.class, name = "QuickTime", priority = Priority.LOW)
 public class LegacyQTFormat extends AbstractFormat {
 
 	// -- AbstractFormat Methods --
@@ -174,8 +173,8 @@ public class LegacyQTFormat extends AbstractFormat {
 				r.exec("openMovieFile = OpenMovieFile.asRead(qtf)");
 				r.exec("m = Movie.fromFile(openMovieFile)");
 
-				final int numTracks =
-					((Integer) r.exec("m.getTrackCount()")).intValue();
+				final int numTracks = ((Integer) r.exec("m.getTrackCount()"))
+					.intValue();
 				int trackMostLikely = 0;
 				int trackNum = 0;
 				while (++trackNum <= numTracks && trackMostLikely == 0) {
@@ -194,9 +193,8 @@ public class LegacyQTFormat extends AbstractFormat {
 
 				r.exec("moviePlayer = new MoviePlayer(m)");
 				r.setVar("dim", new Dimension(w.intValue(), h.intValue()));
-				final ImageProducer qtip =
-					(ImageProducer) r
-						.exec("qtip = new QTImageProducer(moviePlayer, dim)");
+				final ImageProducer qtip = (ImageProducer) r.exec(
+					"qtip = new QTImageProducer(moviePlayer, dim)");
 				meta.setImage(Toolkit.getDefaultToolkit().createImage(qtip));
 
 				r.setVar("zero", 0);
@@ -208,8 +206,8 @@ public class LegacyQTFormat extends AbstractFormat {
 				Integer q = new Integer(time);
 				do {
 					v.add(q);
-					r.exec("timeInfo = imageTrack.getNextInterestingTime("
-						+ "StdQTConstants.nextTimeMediaSample, timeInfo.time, one)");
+					r.exec("timeInfo = imageTrack.getNextInterestingTime(" +
+						"StdQTConstants.nextTimeMediaSample, timeInfo.time, one)");
 					q = (Integer) r.getVar("timeInfo.time");
 					time = q.intValue();
 				}
@@ -251,8 +249,8 @@ public class LegacyQTFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final Interval bounds, final SCIFIOConfig config)
-			throws FormatException, IOException
+			final Interval bounds, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final ReflectedUniverse r = qtJavaService.getUniverse();
 			final Metadata meta = getMetadata();
@@ -267,9 +265,9 @@ public class LegacyQTFormat extends AbstractFormat {
 			catch (final ReflectException re) {
 				throw new FormatException("Open movie failed", re);
 			}
-			final BufferedImage bimg =
-				AWTImageTools.getSubimage(AWTImageTools.makeBuffered(meta.getImage()),
-					meta.get(imageIndex).isLittleEndian(), bounds);
+			final BufferedImage bimg = AWTImageTools.getSubimage(AWTImageTools
+				.makeBuffered(meta.getImage()), meta.get(imageIndex).isLittleEndian(),
+				bounds);
 
 			plane.populate(meta.get(imageIndex), bimg, bounds);
 			return plane;
@@ -368,8 +366,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final Interval bounds) throws FormatException,
-			IOException
+			final Interval bounds) throws FormatException, IOException
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
 				if (r == null) {
@@ -385,10 +382,8 @@ public class LegacyQTFormat extends AbstractFormat {
 
 					r.exec("movFile = new QTFile(path)");
 					r.exec("kMoviePlayer = StdQTConstants.kMoviePlayer");
-					final int resFlag =
-						((Integer) r
-							.exec("StdQTConstants.createMovieFileDontCreateResFile"))
-							.intValue();
+					final int resFlag = ((Integer) r.exec(
+						"StdQTConstants.createMovieFileDontCreateResFile")).intValue();
 					r.setVar("flags", resFlag);
 					r.exec("movie = Movie.createMovieFile(movFile, kMoviePlayer, flags)");
 					r.setVar("timeScale", TIME_SCALE);
@@ -418,9 +413,9 @@ public class LegacyQTFormat extends AbstractFormat {
 
 					r.setVar("rate", 30);
 
-					r.exec("seq = new CSequence(gw, bounds, pixSize, codec, "
-						+ "CodecComponent.bestFidelityCodec, quality, quality, rate, null, "
-						+ "zero)");
+					r.exec("seq = new CSequence(gw, bounds, pixSize, codec, " +
+						"CodecComponent.bestFidelityCodec, quality, quality, rate, null, " +
+						"zero)");
 
 					r.exec("imgDesc = seq.getDescription()");
 				}
@@ -436,21 +431,20 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final Interval bounds)
-			throws FormatException, IOException
+			final Plane plane, final Interval bounds) throws FormatException,
+			IOException
 		{
 			BufferedImage img = null;
 			final Metadata meta = getMetadata();
 
 			if (!(plane instanceof BufferedImagePlane)) {
 				final int type = meta.get(imageIndex).getPixelType();
-				img =
-					AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(imageIndex)
-						.getAxisLength(Axes.X), (int) meta.get(imageIndex).getAxisLength(
-						Axes.Y), (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL),
-						meta.get(imageIndex).getInterleavedAxisCount() > 0, FormatTools
-							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
-							.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
+				img = AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(
+					imageIndex).getAxisLength(Axes.X), (int) meta.get(imageIndex)
+						.getAxisLength(Axes.Y), (int) meta.get(imageIndex).getAxisLength(
+							Axes.CHANNEL), meta.get(imageIndex).getInterleavedAxisCount() > 0,
+					FormatTools.getBytesPerPixel(type), FormatTools.isFloatingPoint(type),
+					meta.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
 			}
 			else {
 				img = ((BufferedImagePlane) plane).getData();
@@ -465,8 +459,8 @@ public class LegacyQTFormat extends AbstractFormat {
 				r.exec("pixelData = pixMap.getPixelData()");
 
 				r.exec("intsPerRow = pixelData.getRowBytes()");
-				final int intsPerRow =
-					((Integer) r.getVar("intsPerRow")).intValue() / 4;
+				final int intsPerRow = ((Integer) r.getVar("intsPerRow")).intValue() /
+					4;
 
 				final byte[][] px = AWTImageTools.getBytes(img);
 
@@ -484,8 +478,8 @@ public class LegacyQTFormat extends AbstractFormat {
 
 				if (pixels2 == null) pixels2 = new int[intsPerRow * height];
 				r.exec("nativeLittle = EndianOrder.isNativeLittleEndian()");
-				final boolean nativeLittle =
-					((Boolean) r.getVar("nativeLittle")).booleanValue();
+				final boolean nativeLittle = ((Boolean) r.getVar("nativeLittle"))
+					.booleanValue();
 				if (nativeLittle) {
 					int offset1, offset2;
 					for (int row = 0; row < height; row++) {
@@ -509,7 +503,8 @@ public class LegacyQTFormat extends AbstractFormat {
 
 				r.exec("pixelData.copyFromArray(zero, pixels2, zero, len)");
 				r.exec("flags = StdQTConstants.codecFlagUpdatePrevious");
-				r.exec("cfInfo = seq.compressFrame(gw, bounds, flags, compressedImage)");
+				r.exec(
+					"cfInfo = seq.compressFrame(gw, bounds, flags, compressedImage)");
 
 				// see developer.apple.com/qa/qtmcc/qtmcc20.html
 				r.exec("similarity = cfInfo.getSimilarity()");
@@ -525,8 +520,8 @@ public class LegacyQTFormat extends AbstractFormat {
 				}
 				else r.exec("sync = StdQTConstants.mediaSampleNotSync");
 				r.setVar("one", 1);
-				r.exec("videoMedia.addSample(imageHandle, zero, dataSize, "
-					+ "rate, imgDesc, one, sync)");
+				r.exec("videoMedia.addSample(imageHandle, zero, dataSize, " +
+					"rate, imgDesc, one, sync)");
 			}
 			catch (final ReflectException e) {
 				log().debug("", e);
@@ -601,15 +596,15 @@ public class LegacyQTFormat extends AbstractFormat {
 			final int w = (int) source.get(0).getAxisLength(Axes.X);
 			final int h = (int) source.get(0).getAxisLength(Axes.Y);
 			final int bpp = source.get(0).getBitsPerPixel() / 8;
-			final byte[][] data =
-				new byte[(int) source.get(0).getAxisLength(Axes.CHANNEL)][w * h * bpp];
-			final boolean fp =
-				FormatTools.isFloatingPoint(source.get(0).getPixelType());
+			final byte[][] data = new byte[(int) source.get(0).getAxisLength(
+				Axes.CHANNEL)][w * h * bpp];
+			final boolean fp = FormatTools.isFloatingPoint(source.get(0)
+				.getPixelType());
 			final boolean little = source.get(0).isLittleEndian();
 			final boolean signed = FormatTools.isSigned(source.get(0).getPixelType());
 
-			final Image img =
-				AWTImageTools.makeImage(data, w, h, bpp, fp, little, signed);
+			final Image img = AWTImageTools.makeImage(data, w, h, bpp, fp, little,
+				signed);
 
 			dest.setImage(img);
 		}

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -68,9 +68,8 @@ public class SignedColorModel extends ColorModel {
 			type = DataBuffer.TYPE_USHORT;
 		}
 
-		helper =
-			new ComponentColorModel(AWTImageTools.makeColorSpace(nChannels),
-				nChannels == 4, false, Transparency.TRANSLUCENT, type);
+		helper = new ComponentColorModel(AWTImageTools.makeColorSpace(nChannels),
+			nChannels == 4, false, Transparency.TRANSLUCENT, type);
 
 		this.pixelBits = pixelBits;
 		this.nChannels = nChannels;
@@ -81,7 +80,8 @@ public class SignedColorModel extends ColorModel {
 	// -- ColorModel API methods --
 
 	@Override
-	public synchronized Object getDataElements(final int rgb, final Object pixel)
+	public synchronized Object getDataElements(final int rgb,
+		final Object pixel)
 	{
 		return helper.getDataElements(rgb, pixel);
 	}
@@ -95,17 +95,16 @@ public class SignedColorModel extends ColorModel {
 	}
 
 	@Override
-	public WritableRaster
-		createCompatibleWritableRaster(final int w, final int h)
+	public WritableRaster createCompatibleWritableRaster(final int w,
+		final int h)
 	{
 		if (pixelBits == 16) {
 			final int[] bandOffsets = new int[nChannels];
 			for (int i = 0; i < nChannels; i++)
 				bandOffsets[i] = i;
 
-			final SampleModel m =
-				new ComponentSampleModel(DataBuffer.TYPE_SHORT, w, h, nChannels, w *
-					nChannels, bandOffsets);
+			final SampleModel m = new ComponentSampleModel(DataBuffer.TYPE_SHORT, w,
+				h, nChannels, w * nChannels, bandOffsets);
 			final DataBuffer db = new DataBufferShort(w * h, nChannels);
 			return Raster.createWritableRaster(m, db, null);
 		}

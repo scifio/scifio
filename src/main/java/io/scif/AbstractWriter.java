@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -109,8 +109,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		if (buf == null) throw new FormatException("Buffer cannot be null.");
 		long planes = metadata.get(imageIndex).getPlaneCount();
 
-		if (metadata.get(imageIndex).isMultichannel()) planes *=
-			metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
+		if (metadata.get(imageIndex).isMultichannel()) planes *= metadata.get(
+			imageIndex).getAxisLength(Axes.CHANNEL);
 
 		if (planeIndex < 0) throw new FormatException(String.format(
 			"Plane index:%d must be >= 0", planeIndex));
@@ -129,8 +129,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * image.
 	 */
 	protected void initialize(final int imageIndex, final long planeIndex,
-		final Interval bounds) throws FormatException,
-		IOException
+		final Interval bounds) throws FormatException, IOException
 	{
 		initialized[imageIndex][(int) planeIndex] = true;
 	}
@@ -162,8 +161,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 
 	@Override
 	public void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds)
-		throws FormatException, IOException
+		final Plane plane, final Interval bounds) throws FormatException,
+		IOException
 	{
 		initialize(imageIndex, planeIndex, bounds);
 		writePlane(imageIndex, planeIndex, plane, bounds);
@@ -280,8 +279,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 		initialized = new boolean[metadata.getImageCount()][];
 		for (int i = 0; i < metadata.getImageCount(); i++) {
-			initialized[i] =
-				new boolean[(int) metadata.get(imageIndex).getPlaneCount()];
+			initialized[i] = new boolean[(int) metadata.get(imageIndex)
+				.getPlaneCount()];
 		}
 	}
 
@@ -386,8 +385,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 			final int pixelType = metadata.get(i).getPixelType();
 
 			if (!ArrayUtils.contains(getPixelTypes(compression), pixelType)) {
-				throw new FormatException("Unsupported image type '" +
-					FormatTools.getPixelTypeString(pixelType) + "'.");
+				throw new FormatException("Unsupported image type '" + FormatTools
+					.getPixelTypeString(pixelType) + "'.");
 			}
 		}
 	}
