@@ -38,17 +38,10 @@ import io.scif.ByteArrayReader;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
-import io.scif.common.Constants;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.IRandomAccess;
-import io.scif.io.RandomAccessInputStream;
-import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,8 +49,9 @@ import java.util.List;
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
 
@@ -218,7 +212,7 @@ public class TextFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int blockLen = 8192;
@@ -256,13 +250,10 @@ public class TextFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		@Parameter
-		private LocationService locationService;
-
 		// -- AbstractParser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -271,7 +262,7 @@ public class TextFormat extends AbstractFormat {
 
 			// read file into memory
 			log().info("Reading file");
-			final List<String> lines = readFile(stream.getFileName());
+			final List<String> lines = readFile(stream);
 
 			// parse file header
 			log().info("Parsing file header");
@@ -338,39 +329,21 @@ public class TextFormat extends AbstractFormat {
 			}
 		}
 
-		private List<String> readFile(final String id) throws IOException {
+		private List<String> readFile(final DataHandle<Location> handle)
+			throws IOException
+		{
 			final List<String> lines = new ArrayList<>();
 			long time = System.currentTimeMillis();
-			final IRandomAccess handle = locationService.getMappedFile(id);
-			if (handle == null) {
-				// HACK: Read using vanilla BufferedReader, since it's faster.
-				final String mapId = locationService.getMappedId(id);
-				final BufferedReader in = new BufferedReader(new InputStreamReader(
-					new FileInputStream(mapId), Constants.ENCODING));
-				int no = 0;
-				while (true) {
-					no++;
-					time = checkTime(time, no, 0, 0);
-					final String line = in.readLine();
-					if (line == null) break; // eof
-					lines.add(line);
-				}
-				in.close();
-			}
-			else {
-				// read data using RandomAccessInputStream (data may not be a
-				// file)
-				final RandomAccessInputStream in = new RandomAccessInputStream(
-					getContext(), handle);
-				int no = 0;
-				while (true) {
-					no++;
-					time = checkTime(time, no, in.getFilePointer(), in.length());
-					final String line = in.readLine();
-					if (line == null) break; // eof
-					lines.add(line);
-				}
-				in.close();
+
+			// read data using RandomAccessInputStream (data may not be a
+			// file)
+			int no = 0;
+			while (true) {
+				no++;
+				time = checkTime(time, no, handle.offset(), handle.length());
+				final String line = handle.readLine();
+				if (line == null) break; // eof
+				lines.add(line);
 			}
 			return lines;
 		}
