@@ -40,7 +40,6 @@ import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -50,6 +49,9 @@ import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -155,7 +157,7 @@ public class PCXFormat extends AbstractFormat {
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int blockLen = 1;
@@ -169,7 +171,7 @@ public class PCXFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -179,7 +181,7 @@ public class PCXFormat extends AbstractFormat {
 			final ImageMetadata iMeta = meta.get(0);
 
 			iMeta.setLittleEndian(true);
-			stream.order(true);
+			stream.setOrder(ByteOrder.LITTLE_ENDIAN);
 			stream.seek(1);
 			final int version = stream.read();
 			stream.skipBytes(1);
@@ -198,7 +200,7 @@ public class PCXFormat extends AbstractFormat {
 			meta.setBytesPerLine(stream.readShort());
 			final int paletteType = stream.readShort();
 
-			meta.setOffset(stream.getFilePointer() + 58);
+			meta.setOffset(stream.offset() + 58);
 
 			if (version == 5 && meta.getnColorPlanes() == 1) {
 				stream.seek(stream.length() - 768);
@@ -241,7 +243,7 @@ public class PCXFormat extends AbstractFormat {
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
 				bounds);
 
-			getStream().seek(meta.getOffset());
+			getHandle().seek(meta.getOffset());
 
 			// PCX uses a simple RLE compression algorithm
 
@@ -249,10 +251,10 @@ public class PCXFormat extends AbstractFormat {
 				imageIndex).getAxisLength(Axes.Y) * meta.getnColorPlanes()];
 			int pt = 0;
 			while (pt < b.length) {
-				int val = getStream().read() & 0xff;
+				int val = getHandle().read() & 0xff;
 				if (((val & 0xc0) >> 6) == 3) {
 					final int len = val & 0x3f;
-					val = getStream().read() & 0xff;
+					val = getHandle().read() & 0xff;
 					for (int q = 0; q < len; q++) {
 						b[pt++] = (byte) val;
 						if ((pt % meta.getBytesPerLine()) == 0) {
@@ -263,10 +265,12 @@ public class PCXFormat extends AbstractFormat {
 				else b[pt++] = (byte) (val & 0xff);
 			}
 
-			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
-			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
+			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
+			final int x = (int) bounds.min(xIndex);
+			final int y = (int) bounds.min(yIndex);
+			final int w = (int) bounds.dimension(xIndex);
+			final int h = (int) bounds.dimension(yIndex);
 			final int src = y * meta.getnColorPlanes() * meta.getBytesPerLine();
 			for (int row = 0; row < h; row++) {
 				int rowOffset = row * meta.getnColorPlanes() * meta.getBytesPerLine();
