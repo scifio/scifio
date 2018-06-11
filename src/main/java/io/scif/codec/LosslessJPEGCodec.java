@@ -31,10 +31,11 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -140,11 +141,11 @@ public class LosslessJPEGCodec extends AbstractCodec {
 	 * {@link CodecOptions#interleaved interleaved}
 	 * {@link CodecOptions#littleEndian littleEndian}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (in == null) throw new IllegalArgumentException(
 			"No data to decompress.");
@@ -161,10 +162,10 @@ public class LosslessJPEGCodec extends AbstractCodec {
 
 		int[] dcTable = null, acTable = null;
 
-		while (in.getFilePointer() < in.length() - 1) {
+		while (in.offset() < in.length() - 1) {
 			final int code = in.readShort() & 0xffff;
 			int length = in.readShort() & 0xffff;
-			final long fp = in.getFilePointer();
+			final long fp = in.offset();
 			if (length > 0xff00) {
 				length = 0;
 				in.seek(fp - 2);
@@ -185,7 +186,7 @@ public class LosslessJPEGCodec extends AbstractCodec {
 
 				// read image data
 
-				byte[] toDecode = new byte[(int) (in.length() - in.getFilePointer())];
+				byte[] toDecode = new byte[(int) (in.length() - in.offset())];
 				in.read(toDecode);
 
 				// scrub out byte stuffing

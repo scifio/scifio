@@ -31,10 +31,11 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,11 +57,11 @@ public class MSRLECodec extends AbstractCodec {
 	 * {@link CodecOptions#width width} {@link CodecOptions#height height}
 	 * {@link CodecOptions#previousImage previousImage}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (in == null) throw new IllegalArgumentException(
 			"No data to decompress.");
@@ -78,7 +79,7 @@ public class MSRLECodec extends AbstractCodec {
 			options.previousImage = new byte[frameSize];
 		}
 
-		while (rowPt >= 0 && in.getFilePointer() < in.length() &&
+		while (rowPt >= 0 && in.offset() < in.length() &&
 			pixelPt < options.previousImage.length)
 		{
 			stream = in.read() & 0xff;

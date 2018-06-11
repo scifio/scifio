@@ -30,10 +30,11 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -51,7 +52,7 @@ public class PassthroughCodec extends AbstractCodec {
 	}
 
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
+	public byte[] decompress(final DataHandle<Location> in,
 		final CodecOptions options) throws FormatException, IOException
 	{
 		throw new RuntimeException("Not implemented.");

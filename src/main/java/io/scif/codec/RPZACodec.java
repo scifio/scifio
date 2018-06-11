@@ -31,10 +31,11 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -60,11 +61,11 @@ public class RPZACodec extends AbstractCodec {
 	 * The CodecOptions parameter should have the following fields set:
 	 * {@link CodecOptions#width width} {@link CodecOptions#height height}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (in == null) throw new IllegalArgumentException(
 			"No data to decompress.");
@@ -94,20 +95,20 @@ public class RPZACodec extends AbstractCodec {
 
 //		totalBlocks = ((options.width + 3) / 4) * ((options.height + 3) / 4);
 
-		while (in.getFilePointer() + 2 < in.length()) {
+		while (in.offset() + 2 < in.length()) {
 			opcode = in.readByte();
 			nBlocks = (opcode & 0x1f) + 1;
 
 			if ((opcode & 0x80) == 0) {
-				if (in.getFilePointer() >= in.length()) break;
+				if (in.offset() >= in.length()) break;
 				colorA = (opcode << 8) | in.read();
 				opcode = 0;
-				if (in.getFilePointer() >= in.length()) break;
+				if (in.offset() >= in.length()) break;
 				if ((in.read() & 0x80) != 0) {
 					opcode = 0x20;
 					nBlocks = 1;
 				}
-				in.seek(in.getFilePointer() - 1);
+				in.seek(in.offset() - 1);
 			}
 
 			switch (opcode & 0xe0) {
@@ -117,7 +118,7 @@ public class RPZACodec extends AbstractCodec {
 					}
 					break;
 				case 0xa0:
-					if (in.getFilePointer() + 2 >= in.length()) break;
+					if (in.offset() + 2 >= in.length()) break;
 					colorA = in.readShort();
 					while (nBlocks-- > 0) {
 						blockPtr = rowPtr + pixelPtr;
@@ -137,7 +138,7 @@ public class RPZACodec extends AbstractCodec {
 					break;
 				case 0xc0:
 				case 0x20:
-					if (in.getFilePointer() + 2 >= in.length()) break;
+					if (in.offset() + 2 >= in.length()) break;
 					if ((opcode & 0xe0) == 0xc0) {
 						colorA = in.readShort();
 					}
@@ -167,7 +168,7 @@ public class RPZACodec extends AbstractCodec {
 					while (nBlocks-- > 0) {
 						blockPtr = rowPtr + pixelPtr;
 						for (pixelY = 0; pixelY < 4; pixelY++) {
-							if (in.getFilePointer() >= in.length()) break;
+							if (in.offset() >= in.length()) break;
 							index = in.read();
 							for (pixelX = 0; pixelX < 4; pixelX++) {
 								idx = (index >> (2 * (3 - pixelX))) & 3;
@@ -188,7 +189,7 @@ public class RPZACodec extends AbstractCodec {
 					for (pixelY = 0; pixelY < 4; pixelY++) {
 						for (pixelX = 0; pixelX < 4; pixelX++) {
 							if ((pixelY != 0) || (pixelX != 0)) {
-								if (in.getFilePointer() + 2 >= in.length()) break;
+								if (in.offset() + 2 >= in.length()) break;
 								colorA = in.readShort();
 							}
 							if (blockPtr >= pixels.length) break;

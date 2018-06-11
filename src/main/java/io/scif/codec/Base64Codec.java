@@ -30,10 +30,11 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -147,7 +148,7 @@ public class Base64Codec extends AbstractCodec {
 	}
 
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
+	public byte[] decompress(final DataHandle<Location> in,
 		final CodecOptions options) throws FormatException, IOException
 	{
 		if (in == null) throw new IllegalArgumentException(
@@ -164,9 +165,7 @@ public class Base64Codec extends AbstractCodec {
 		byte b1 = base64Alphabet[block[p++]];
 		byte b2 = base64Alphabet[block[p++]];
 
-		while (b1 != -1 && b2 != -1 && (in.getFilePointer() - nRead + p < in
-			.length()))
-		{
+		while (b1 != -1 && b2 != -1 && (in.offset() - nRead + p < in.length())) {
 			marker0 = block[p++];
 			marker1 = block[p++];
 
@@ -176,7 +175,7 @@ public class Base64Codec extends AbstractCodec {
 			}
 
 			decodedData.add((byte) (b1 << 2 | b2 >> 4));
-			if (p >= nRead && in.getFilePointer() >= in.length()) break;
+			if (p >= nRead && in.offset() >= in.length()) break;
 			if (marker0 != PAD && marker1 != PAD) {
 				b3 = base64Alphabet[marker0];
 				b4 = base64Alphabet[marker1];

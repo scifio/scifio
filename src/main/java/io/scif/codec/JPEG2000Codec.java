@@ -32,7 +32,6 @@ package io.scif.codec;
 import io.scif.FormatException;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.UnsignedIntBuffer;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.services.JAIIIOService;
 import io.scif.services.ServiceException;
 
@@ -45,6 +44,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -189,11 +190,11 @@ public class JPEG2000Codec extends AbstractCodec {
 	 * {@link CodecOptions#interleaved interleaved}
 	 * {@link CodecOptions#littleEndian littleEndian}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (in == null) {
 			throw new IllegalArgumentException("No data to decompress.");
@@ -203,7 +204,7 @@ public class JPEG2000Codec extends AbstractCodec {
 		}
 
 		byte[] buf = null;
-		final long fp = in.getFilePointer();
+		final long fp = in.offset();
 		if (options.maxBytes == 0) {
 			buf = new byte[(int) (in.length() - fp)];
 		}

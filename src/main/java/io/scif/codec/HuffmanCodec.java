@@ -31,11 +31,12 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -72,10 +73,10 @@ public class HuffmanCodec extends AbstractCodec {
 	 * {@link HuffmanCodecOptions#table table} {@link CodecOptions#bitsPerSample
 	 * bitsPerSample} {@link CodecOptions#maxBytes maxBytes}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
+	public byte[] decompress(final DataHandle<Location> in,
 		final CodecOptions options) throws FormatException, IOException
 	{
 		if (in == null) throw new IllegalArgumentException(

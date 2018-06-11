@@ -31,17 +31,18 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.gui.AWTImageTools;
-import io.scif.io.RandomAccessInputStream;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleInputStream;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -95,30 +96,31 @@ public class JPEGCodec extends AbstractCodec {
 	 * {@link CodecOptions#interleaved interleaved}
 	 * {@link CodecOptions#littleEndian littleEndian}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		BufferedImage b;
-		final long fp = in.getFilePointer();
+		final long offset = in.offset();
 		try {
 			try {
 				while (in.read() != (byte) 0xff || in.read() != (byte) 0xd8) {
 					/* Read to data. */
 				}
-				in.seek(in.getFilePointer() - 2);
+				in.seek(in.offset() - 2);
 			}
 			catch (final EOFException e) {
-				in.seek(fp);
+				in.seek(offset);
 			}
 
-			b = ImageIO.read(new BufferedInputStream(new DataInputStream(in), 8192));
+			b = ImageIO.read(new BufferedInputStream(new DataHandleInputStream<>(in),
+				8192));
 		}
 		catch (final IOException exc) {
 			// probably a lossless JPEG; delegate to LosslessJPEGCodec
-			in.seek(fp);
+			in.seek(offset);
 			final Codec codec = codecService.getCodec(LosslessJPEGCodec.class);
 			return codec.decompress(in, options);
 		}

@@ -31,10 +31,11 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -70,11 +71,11 @@ public class MJPBCodec extends AbstractCodec {
 	 * bitsPerSample} {@link CodecOptions#littleEndian littleEndian}
 	 * {@link CodecOptions#interleaved interleaved}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (options == null) options = CodecOptions.getDefaultOptions();
 		if (!(options instanceof MJPBCodecOptions)) {
@@ -85,7 +86,7 @@ public class MJPBCodec extends AbstractCodec {
 		byte[] raw = null;
 		byte[] raw2 = null;
 
-		final long fp = in.getFilePointer();
+		final long fp = in.offset();
 
 		try {
 			in.skipBytes(4);
@@ -96,7 +97,7 @@ public class MJPBCodec extends AbstractCodec {
 			final String s1 = in.readString(4);
 			in.skipBytes(12);
 			final String s2 = in.readString(4);
-			in.seek(in.getFilePointer() - 4);
+			in.seek(in.offset() - 4);
 			if (s1.equals("mjpg") || s2.equals("mjpg")) {
 				int extra = 16;
 				if (s1.startsWith("m")) {
@@ -165,8 +166,8 @@ public class MJPBCodec extends AbstractCodec {
 				}
 
 				in.seek(fp + sod);
-				int numBytes = (int) (offset - in.getFilePointer());
-				if (offset == 0) numBytes = (int) (in.length() - in.getFilePointer());
+				int numBytes = (int) (offset - in.offset());
+				if (offset == 0) numBytes = (int) (in.length() - in.offset());
 				raw = new byte[numBytes];
 				in.read(raw);
 
@@ -174,9 +175,9 @@ public class MJPBCodec extends AbstractCodec {
 					in.seek(fp + offset + 36);
 					final int n = in.readInt();
 					in.skipBytes(n);
-					in.seek(in.getFilePointer() - 40);
+					in.seek(in.offset() - 40);
 
-					numBytes = (int) (in.length() - in.getFilePointer());
+					numBytes = (int) (in.length() - in.offset());
 					raw2 = new byte[numBytes];
 					in.read(raw2);
 				}

@@ -31,10 +31,12 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -59,17 +61,18 @@ public class MSVideoCodec extends AbstractCodec {
 	 * {@link CodecOptions#bitsPerSample bitsPerSample}
 	 * {@link CodecOptions#previousImage previousImage}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (in == null) throw new IllegalArgumentException(
 			"No data to decompress.");
 		if (options == null) options = CodecOptions.getDefaultOptions();
 
-		in.order(true);
+		final ByteOrder order = in.getOrder();
+		in.setOrder(ByteOrder.LITTLE_ENDIAN);
 
 		int row = 0;
 		int column = 0;
@@ -80,14 +83,14 @@ public class MSVideoCodec extends AbstractCodec {
 		final short[] shorts = new short[plane];
 
 		while (true) {
-			if (in.getFilePointer() >= in.length() || row >= options.width ||
+			if (in.offset() >= in.length() || row >= options.width ||
 				column >= options.height)
 			{
 				break;
 			}
 			final short a = (short) (in.read() & 0xff);
 			final short b = (short) (in.read() & 0xff);
-			if (a == 0 && b == 0 && in.getFilePointer() >= in.length()) break;
+			if (a == 0 && b == 0 && in.offset() >= in.length()) break;
 			if (b >= 0x84 && b < 0x88) {
 				// indicates that we are skipping some blocks
 
@@ -271,6 +274,8 @@ public class MSVideoCodec extends AbstractCodec {
 			}
 		}
 
+		// restore original order
+		in.setOrder(order);
 		return b;
 	}
 

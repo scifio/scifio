@@ -30,7 +30,6 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -42,6 +41,9 @@ import java.util.Hashtable;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.IntRect;
@@ -62,7 +64,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 	private TileCache tiles;
 
-	private RandomAccessInputStream in;
+	private DataHandle<Location> in;
 
 	public JPEGTileDecoder(final Context ctx) {
 		setContext(ctx);
@@ -70,41 +72,32 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 	// -- JPEGTileDecoder API methods --
 
-	public void initialize(final String id, final int imageWidth) {
-		try {
-			initialize(new RandomAccessInputStream(getContext(), id), imageWidth);
-		}
-		catch (final IOException e) {
-			log.debug("", e);
-		}
-	}
-
-	public void initialize(final RandomAccessInputStream in,
+	public void initialize(final DataHandle<Location> handle,
 		final int imageWidth)
 	{
-		initialize(in, 0, imageWidth);
+		initialize(handle, 0, imageWidth);
 	}
 
-	public void initialize(final RandomAccessInputStream in, final int y,
+	public void initialize(final DataHandle<Location> handle, final int y,
 		final int h)
 	{
-		this.in = in;
+		this.in = handle;
 		tiles = new TileCache(getContext(), y, h);
 
 		// pre-process the stream to make sure that the
 		// image width and height are non-zero
 
 		try {
-			final long fp = in.getFilePointer();
+			final long fp = in.offset();
 			final boolean littleEndian = in.isLittleEndian();
-			in.order(false);
+			in.setOrder(ByteOrder.BIG_ENDIAN);
 
-			while (in.getFilePointer() < in.length() - 1) {
+			while (in.offset() < in.length() - 1) {
 				final int code = in.readShort() & 0xffff;
 				final int length = in.readShort() & 0xffff;
-				final long pointer = in.getFilePointer();
+				final long offset = in.offset();
 				if (length > 0xff00 || code < 0xff00) {
-					in.seek(pointer - 3);
+					in.seek(offset - 3);
 					continue;
 				}
 				if (code == 0xffc0) {
@@ -117,8 +110,8 @@ public class JPEGTileDecoder extends AbstractContextual {
 					}
 					break;
 				}
-				else if (pointer + length - 2 < in.length()) {
-					in.seek(pointer + length - 2);
+				else if (offset + length - 2 < in.length()) {
+					in.seek(offset + length - 2);
 				}
 				else {
 					break;
@@ -126,14 +119,15 @@ public class JPEGTileDecoder extends AbstractContextual {
 			}
 
 			in.seek(fp);
-			in.order(littleEndian);
+			in.setLittleEndian(littleEndian);
 		}
 		catch (final IOException e) {}
 
 		try {
 			final Toolkit toolkit = Toolkit.getDefaultToolkit();
-			final byte[] data = new byte[this.in.available()];
-			this.in.readFully(data);
+			// read remaining bytes, potentially wrong!
+			final byte[] data = new byte[(int) (in.length() - in.offset())];
+			in.readFully(data);
 			final Image image = toolkit.createImage(data);
 			final ImageProducer producer = image.getSource();
 
@@ -141,7 +135,9 @@ public class JPEGTileDecoder extends AbstractContextual {
 			producer.startProduction(consumer);
 			while (producer.isConsumer(consumer)) { /* Loop over image consumers */}
 		}
-		catch (final IOException e) {}
+		catch (final IOException e) {
+			log.error("Could not read JPEGTile: " + e);
+		}
 	}
 
 	public byte[] getScanline(final int y) {
