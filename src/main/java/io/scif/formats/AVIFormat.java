@@ -52,16 +52,14 @@ import io.scif.codec.MSRLECodec;
 import io.scif.codec.MSVideoCodec;
 import io.scif.common.Constants;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
-import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.awt.image.IndexColorModel;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import net.imagej.axis.Axes;
 import net.imglib2.FinalInterval;
@@ -70,6 +68,11 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -164,10 +167,10 @@ public class AVIFormat extends AbstractFormat {
 		// -- AVI Metadata --
 
 		/* Offset to each plane. */
-		private Vector<Long> offsets;
+		private List<Long> offsets;
 
 		/* Number of bytes in each plane. */
-		private Vector<Long> lengths;
+		private List<Long> lengths;
 
 		private short bmpBitsPerPixel;
 
@@ -213,19 +216,19 @@ public class AVIFormat extends AbstractFormat {
 			this.bmpScanLineSize = bmpScanLineSize;
 		}
 
-		public Vector<Long> getOffsets() {
+		public List<Long> getOffsets() {
 			return offsets;
 		}
 
-		public void setOffsets(final Vector<Long> offsets) {
+		public void setOffsets(final List<Long> offsets) {
 			this.offsets = offsets;
 		}
 
-		public Vector<Long> getLengths() {
+		public List<Long> getLengths() {
 			return lengths;
 		}
 
-		public void setLengths(final Vector<Long> lengths) {
+		public void setLengths(final List<Long> lengths) {
 			this.lengths = lengths;
 		}
 
@@ -435,14 +438,14 @@ public class AVIFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> handle)
 			throws IOException
 		{
 			final int blockLen = 12;
-			if (!FormatTools.validStream(stream, blockLen, false)) return false;
-			final String type = stream.readString(4);
-			stream.skipBytes(4);
-			final String format = stream.readString(4);
+			if (!FormatTools.validStream(handle, blockLen, false)) return false;
+			final String type = handle.readString(4);
+			handle.skipBytes(4);
+			final String format = handle.readString(4);
 			return type.equals(AVI_MAGIC_STRING) && format.equals("AVI ");
 		}
 
@@ -460,21 +463,21 @@ public class AVIFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> handle,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			stream.order(true);
+			handle.setOrder(ByteOrder.LITTLE_ENDIAN);
 
 			log().info("Verifying AVI format");
 
 			meta.setLastPlaneIndex(-1);
-			meta.setLengths(new Vector<Long>());
-			meta.setOffsets(new Vector<Long>());
+			meta.setLengths(new ArrayList<>());
+			meta.setOffsets(new ArrayList<>());
 
 			meta.createImageMetadata(1);
 
-			while (stream.getFilePointer() < stream.length() - 8) {
+			while (handle.offset() < handle.length() - 8) {
 				// NB: size x and size y are implicitly set here
 				readChunk(meta);
 			}
@@ -506,35 +509,36 @@ public class AVIFormat extends AbstractFormat {
 			final ImageMetadata m = meta.get(0);
 			final MetaTable globalTable = meta.getTable();
 
+			final DataHandle<Location> source = getSource();
 			if (type.equals("RIFF")) {
 				if (!fcc.startsWith("AVI")) {
 					throw new FormatException("Sorry, AVI RIFF format not found.");
 				}
 			}
-			else if (getSource().getFilePointer() == 12) {
+			else if (source.offset() == 12) {
 				throw new FormatException("Not an AVI file");
 			}
 			else {
-				if (getSource().getFilePointer() + size - 4 <= getSource().length()) {
-					getSource().skipBytes(size - 4);
+				if (source.offset() + size - 4 <= source.length()) {
+					source.skipBytes(size - 4);
 				}
 				return;
 			}
 
-			pos = getSource().getFilePointer();
+			pos = source.offset();
 			long spos = pos;
 
 			log().info("Searching for image data");
 
-			while ((getSource().length() - getSource().getFilePointer()) > 4) {
-				listString = getSource().readString(4);
+			while ((source.length() - source.offset()) > 4) {
+				listString = source.readString(4);
 				if (listString.equals("RIFF")) {
-					getSource().seek(getSource().getFilePointer() - 4);
+					source.seek(source.offset() - 4);
 					return;
 				}
-				getSource().seek(pos);
+				source.seek(pos);
 				if (listString.equals(" JUN")) {
-					getSource().skipBytes(1);
+					source.skipBytes(1);
 					pos++;
 				}
 
@@ -542,14 +546,14 @@ public class AVIFormat extends AbstractFormat {
 					readTypeAndSize();
 
 					if (type.equals("JUNK")) {
-						getSource().skipBytes(size);
+						source.skipBytes(size);
 					}
 				}
 				else if (listString.equals("LIST")) {
-					spos = getSource().getFilePointer();
+					spos = source.offset();
 					readChunkHeader();
 
-					getSource().seek(spos);
+					source.seek(spos);
 					if (fcc.equals("hdrl")) {
 						readChunkHeader();
 
@@ -557,38 +561,36 @@ public class AVIFormat extends AbstractFormat {
 							if (fcc.equals("hdrl")) {
 								readTypeAndSize();
 								if (type.equals("avih")) {
-									spos = getSource().getFilePointer();
+									spos = source.offset();
 
-									globalTable.put("Microseconds per frame", getSource()
-										.readInt());
-									globalTable.put("Max. bytes per second", getSource()
-										.readInt());
+									globalTable.put("Microseconds per frame", source.readInt());
+									globalTable.put("Max. bytes per second", source.readInt());
 
-									getSource().skipBytes(8);
+									source.skipBytes(8);
 
-									globalTable.put("Total frames", getSource().readInt());
-									globalTable.put("Initial frames", getSource().readInt());
+									globalTable.put("Total frames", source.readInt());
+									globalTable.put("Initial frames", source.readInt());
 
-									getSource().skipBytes(8);
-									m.addAxis(Axes.X, getSource().readInt());
+									source.skipBytes(8);
+									m.addAxis(Axes.X, source.readInt());
 
-									globalTable.put("Frame height", getSource().readInt());
-									globalTable.put("Scale factor", getSource().readInt());
-									globalTable.put("Frame rate", getSource().readInt());
-									globalTable.put("Start time", getSource().readInt());
-									globalTable.put("Length", getSource().readInt());
+									globalTable.put("Frame height", source.readInt());
+									globalTable.put("Scale factor", source.readInt());
+									globalTable.put("Frame rate", source.readInt());
+									globalTable.put("Start time", source.readInt());
+									globalTable.put("Length", source.readInt());
 
 									globalTable.put("Frame width", m.getAxisLength(Axes.X));
 
-									if (spos + size <= getSource().length()) {
-										getSource().seek(spos + size);
+									if (spos + size <= source.length()) {
+										source.seek(spos + size);
 									}
 								}
 							}
 						}
 					}
 					else if (fcc.equals("strl")) {
-						final long startPos = getSource().getFilePointer();
+						final long startPos = source.offset();
 						final long streamSize = size;
 
 						readChunkHeader();
@@ -598,49 +600,48 @@ public class AVIFormat extends AbstractFormat {
 								readTypeAndSize();
 
 								if (type.equals("strh")) {
-									spos = getSource().getFilePointer();
-									getSource().skipBytes(40);
+									spos = source.offset();
+									source.skipBytes(40);
 
-									globalTable.put("Stream quality", getSource().readInt());
-									meta.setBytesPerPlane(getSource().readInt());
+									globalTable.put("Stream quality", source.readInt());
+									meta.setBytesPerPlane(source.readInt());
 									globalTable.put("Stream sample size", meta
 										.getBytesPerPlane());
 
-									if (spos + size <= getSource().length()) {
-										getSource().seek(spos + size);
+									if (spos + size <= source.length()) {
+										source.seek(spos + size);
 									}
 								}
 
 								readTypeAndSize();
 								if (type.equals("strf")) {
-									spos = getSource().getFilePointer();
+									spos = source.offset();
 
 									if (meta.get(0).getAxisIndex(Axes.Y) != -1) {
-										getSource().skipBytes(size);
+										source.skipBytes(size);
 										readTypeAndSize();
 										while (type.equals("indx")) {
-											getSource().skipBytes(size);
+											source.skipBytes(size);
 											readTypeAndSize();
 										}
-										pos = getSource().getFilePointer() - 4;
-										getSource().seek(pos - 4);
+										pos = source.offset() - 4;
+										source.seek(pos - 4);
 										continue;
 									}
 
-									getSource().skipBytes(4);
-									meta.setBmpWidth(getSource().readInt());
-									m.addAxis(Axes.Y, getSource().readInt());
-									getSource().skipBytes(2);
-									meta.setBmpBitsPerPixel(getSource().readShort());
-									meta.setBmpCompression(getSource().readInt());
-									getSource().skipBytes(4);
+									source.skipBytes(4);
+									meta.setBmpWidth(source.readInt());
+									m.addAxis(Axes.Y, source.readInt());
+									source.skipBytes(2);
+									meta.setBmpBitsPerPixel(source.readShort());
+									meta.setBmpCompression(source.readInt());
+									source.skipBytes(4);
 
-									globalTable.put("Horizontal resolution", getSource()
-										.readInt());
-									globalTable.put("Vertical resolution", getSource().readInt());
+									globalTable.put("Horizontal resolution", source.readInt());
+									globalTable.put("Vertical resolution", source.readInt());
 
-									meta.setBmpColorsUsed(getSource().readInt());
-									getSource().skipBytes(4);
+									meta.setBmpColorsUsed(source.readInt());
+									source.skipBytes(4);
 
 									globalTable.put("Bitmap compression value", meta
 										.getBmpCompression());
@@ -694,10 +695,10 @@ public class AVIFormat extends AbstractFormat {
 
 										for (int i = 0; i < meta.getBmpColorsUsed(); i++) {
 											if (meta.getBmpCompression() != Y8) {
-												lut[2][i] = getSource().readByte();
-												lut[1][i] = getSource().readByte();
-												lut[0][i] = getSource().readByte();
-												getSource().skipBytes(1);
+												lut[2][i] = source.readByte();
+												lut[1][i] = source.readByte();
+												lut[0][i] = source.readByte();
+												source.skipBytes(1);
 											}
 											else {
 												lut[0][i] = (byte) i;
@@ -709,31 +710,31 @@ public class AVIFormat extends AbstractFormat {
 										meta.lut = new ColorTable8(lut[0], lut[1], lut[2]);
 									}
 
-									getSource().seek(spos + size);
+									source.seek(spos + size);
 								}
 							}
 
-							spos = getSource().getFilePointer();
+							spos = source.offset();
 							readTypeAndSize();
 							if (type.equals("strd")) {
-								getSource().skipBytes(size);
+								source.skipBytes(size);
 							}
 							else {
-								getSource().seek(spos);
+								source.seek(spos);
 							}
 
-							spos = getSource().getFilePointer();
+							spos = source.offset();
 							readTypeAndSize();
 							if (type.equals("strn") || type.equals("indx")) {
-								getSource().skipBytes(size);
+								source.skipBytes(size);
 							}
 							else {
-								getSource().seek(spos);
+								source.seek(spos);
 							}
 						}
 
-						if (startPos + streamSize + 8 <= getSource().length()) {
-							getSource().seek(startPos + 8 + streamSize);
+						if (startPos + streamSize + 8 <= source.length()) {
+							source.seek(startPos + 8 + streamSize);
 						}
 					}
 					else if (fcc.equals("movi")) {
@@ -741,16 +742,16 @@ public class AVIFormat extends AbstractFormat {
 
 						if (type.equals("LIST")) {
 							if (fcc.equals("movi")) {
-								spos = getSource().getFilePointer();
-								if (spos >= getSource().length() - 12) break;
+								spos = source.offset();
+								if (spos >= source.length() - 12) break;
 								readChunkHeader();
 								if (!(type.equals("LIST") && (fcc.equals("rec ") || fcc.equals(
 									"movi"))))
 								{
-									getSource().seek(spos);
+									source.seek(spos);
 								}
 
-								spos = getSource().getFilePointer();
+								spos = source.offset();
 								boolean end = false;
 								while (!end) {
 									readTypeAndSize();
@@ -758,7 +759,7 @@ public class AVIFormat extends AbstractFormat {
 									while (type.startsWith("ix") || type.endsWith("tx") || type
 										.equals("JUNK"))
 									{
-										getSource().skipBytes(size);
+										source.skipBytes(size);
 										readTypeAndSize();
 									}
 
@@ -770,31 +771,30 @@ public class AVIFormat extends AbstractFormat {
 										foundPixels = true;
 										if (check.startsWith("d")) {
 											if (size > 0 || meta.getBmpCompression() != 0) {
-												meta.getOffsets().add(new Long(getSource()
-													.getFilePointer()));
-												meta.getLengths().add(new Long(size));
-												getSource().skipBytes(size);
+												meta.getOffsets().add(source.offset());
+												meta.getLengths().add((long) size);
+												source.skipBytes(size);
 											}
 										}
 
-										spos = getSource().getFilePointer();
-										if (spos + 8 >= getSource().length()) return;
+										spos = source.offset();
+										if (spos + 8 >= source.length()) return;
 
 										readTypeAndSize();
 										if (type.equals("JUNK")) {
-											getSource().skipBytes(size);
-											spos = getSource().getFilePointer();
-											if (spos + 8 >= getSource().length()) return;
+											source.skipBytes(size);
+											spos = source.offset();
+											if (spos + 8 >= source.length()) return;
 											readTypeAndSize();
 										}
 										check = type.substring(2);
 										if (check.equals("0d")) {
-											getSource().seek(spos + 1);
+											source.seek(spos + 1);
 											readTypeAndSize();
 											check = type.substring(2);
 										}
 									}
-									getSource().seek(spos);
+									source.seek(spos);
 									if (!oldType.startsWith("ix") && !foundPixels) {
 										end = true;
 									}
@@ -804,30 +804,28 @@ public class AVIFormat extends AbstractFormat {
 					}
 					else {
 						final int oldSize = size;
-						size = getSource().readInt() - 8;
+						size = source.readInt() - 8;
 						if (size > oldSize) {
 							size = oldSize;
-							getSource().seek(getSource().getFilePointer() - 4);
+							source.seek(source.offset() - 4);
 						}
 						// skipping unknown block
-						if (size + 8 >= 0) getSource().skipBytes(8 + size);
+						if (size + 8 >= 0) source.skipBytes(8 + size);
 					}
 				}
 				else {
 					// skipping unknown block
 					readTypeAndSize();
-					if (getSource().getFilePointer() + 8 < getSource().length() && !type
-						.equals("idx1"))
-					{
+					if (source.offset() + 8 < source.length() && !type.equals("idx1")) {
 						readTypeAndSize();
 					}
 					else if (!type.equals("idx1")) break;
-					if (getSource().getFilePointer() + size + 4 <= getSource().length()) {
-						getSource().skipBytes(size);
+					if (source.offset() + size + 4 <= source.length()) {
+						source.skipBytes(size);
 					}
 					if (type.equals("idx1")) break;
 				}
-				pos = getSource().getFilePointer();
+				pos = source.offset();
 			}
 		}
 
@@ -872,9 +870,9 @@ public class AVIFormat extends AbstractFormat {
 
 			final long fileOff = meta.getOffsets().get((int) planeIndex).longValue();
 			final long end = planeIndex < meta.getOffsets().size() - 1 ? meta
-				.getOffsets().get((int) planeIndex + 1) : getStream().length();
+				.getOffsets().get((int) planeIndex + 1) : getHandle().length();
 			final long maxBytes = end - fileOff;
-			getStream().seek(fileOff);
+			getHandle().seek(fileOff);
 
 			if (meta.getBmpCompression() != 0 && meta.getBmpCompression() != Y8) {
 				uncompress(imageIndex, planeIndex, plane, x, y, w, h);
@@ -890,7 +888,7 @@ public class AVIFormat extends AbstractFormat {
 
 				final int len = rawSize / (int) meta.get(imageIndex).getAxisLength(
 					Axes.Y);
-				getStream().read(b);
+				getHandle().read(b);
 
 				final BitBuffer bb = new BitBuffer(b);
 				bb.skipBits(meta.getBmpBitsPerPixel() * len * (meta.get(imageIndex)
@@ -916,7 +914,7 @@ public class AVIFormat extends AbstractFormat {
 				.getInterleavedAxisCount() > 0 ? meta.get(imageIndex).getAxisLength(
 					Axes.CHANNEL) : 1);
 
-			getStream().skipBytes((int) ((meta.get(imageIndex).getAxisLength(Axes.X) +
+			getHandle().skipBytes((int) ((meta.get(imageIndex).getAxisLength(Axes.X) +
 				pad) * (meta.getBmpBitsPerPixel() / 8) * (meta.get(imageIndex)
 					.getAxisLength(Axes.Y) - h - y)));
 
@@ -926,7 +924,7 @@ public class AVIFormat extends AbstractFormat {
 				{
 					final int outputRow = (int) (meta.getBmpCompression() == Y8 ? row
 						: meta.get(imageIndex).getAxisLength(Axes.Y) - row - 1);
-					getStream().read(buf, outputRow * scanline, scanline);
+					getHandle().read(buf, outputRow * scanline, scanline);
 				}
 
 				// swap channels
@@ -955,8 +953,8 @@ public class AVIFormat extends AbstractFormat {
 					skip /= meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 				}
 				for (int i = h - 1; i >= 0; i--) {
-					getStream().skipBytes(x * (meta.getBmpBitsPerPixel() / 8));
-					getStream().read(buf, i * scanline, scanline);
+					getHandle().skipBytes(x * (meta.getBmpBitsPerPixel() / 8));
+					getHandle().read(buf, i * scanline, scanline);
 					if (meta.getBmpBitsPerPixel() == 24) {
 						for (int j = 0; j < w; j++) {
 							final byte r = buf[i * scanline + j * 3 + 2];
@@ -964,7 +962,7 @@ public class AVIFormat extends AbstractFormat {
 							buf[i * scanline + j * 3] = r;
 						}
 					}
-					if (i > 0) getStream().skipBytes(skip);
+					if (i > 0) getHandle().skipBytes(skip);
 				}
 			}
 
@@ -1023,7 +1021,7 @@ public class AVIFormat extends AbstractFormat {
 					options.previousImage = meta.getLastPlaneBytes();
 				}
 
-				buf = AVIUtils.extractCompression(meta, options, getStream(), tmpPlane,
+				buf = AVIUtils.extractCompression(meta, options, getHandle(), tmpPlane,
 					planeIndex, new int[] { x, y, w, h });
 			}
 
@@ -1116,13 +1114,16 @@ public class AVIFormat extends AbstractFormat {
 
 		private int microSecPerFrame;
 
-		private Vector<Long> savedbLength;
+		private List<Long> savedbLength;
 
 		private long idx1Pos;
 
 		private long endPos;
 
 		private long saveidx1Length;
+
+		@Parameter
+		private DataHandleService dataHandleService;
 
 		// -- AbstractWriter Methods --
 
@@ -1152,8 +1153,7 @@ public class AVIFormat extends AbstractFormat {
 			final int nChannels = (int) plane.getImageMetadata().getAxisLength(
 				Axes.CHANNEL);
 
-			// Write the data. Each 3-byte triplet in the bitmap array
-			// represents the
+			// Write the data. Each 3-byte triplet in the bitmap array represents the
 			// relative intensities of blue, green, and red, respectively, for a
 			// pixel.
 			// The color bytes are in reverse order from the Windows convention.
@@ -1161,12 +1161,13 @@ public class AVIFormat extends AbstractFormat {
 			final int width = xDim - xPad;
 			final int height = buf.length / (width * bytesPerPixel);
 
-			getStream().seek(idx1Pos);
-			getStream().writeBytes(DATA_SIGNATURE);
-			savedbLength.add(new Long(getStream().getFilePointer()));
+			final DataHandle<Location> handle = getHandle();
+			handle.seek(idx1Pos);
+			handle.writeBytes(DATA_SIGNATURE);
+			savedbLength.add(handle.offset());
 
 			// Write the data length
-			getStream().writeInt(bytesPerPixel * xDim * yDim);
+			handle.writeInt(bytesPerPixel * xDim * yDim);
 
 			final int rowPad = xPad * bytesPerPixel;
 
@@ -1189,34 +1190,34 @@ public class AVIFormat extends AbstractFormat {
 					}
 					rowBuffer[col * bytesPerPixel + bytesPerPixel - 1] = r;
 				}
-				getStream().write(rowBuffer);
+				handle.write(rowBuffer);
 			}
 
 			planesWritten++;
 
 			// Write the idx1 CHUNK
 			// Write the 'idx1' signature
-			idx1Pos = getStream().getFilePointer();
-			getStream().seek(SAVE_LIST2_SIZE);
-			getStream().writeInt((int) (idx1Pos - (SAVE_LIST2_SIZE + 4)));
+			idx1Pos = handle.offset();
+			handle.seek(SAVE_LIST2_SIZE);
+			handle.writeInt((int) (idx1Pos - (SAVE_LIST2_SIZE + 4)));
 
-			getStream().seek(idx1Pos);
-			getStream().writeBytes("idx1");
+			handle.seek(idx1Pos);
+			handle.writeBytes("idx1");
 
-			saveidx1Length = getStream().getFilePointer();
+			saveidx1Length = handle.offset();
 
 			// Write the length of the idx1 CHUNK not including the idx1
 			// signature
-			getStream().writeInt(4 + (planesWritten * 16));
+			handle.writeInt(4 + (planesWritten * 16));
 
 			for (int z = 0; z < planesWritten; z++) {
 				// In the ckid field write the 4 character code to identify the
 				// chunk
 				// 00db or 00dc
-				getStream().writeBytes(DATA_SIGNATURE);
+				handle.writeBytes(DATA_SIGNATURE);
 				// Write the flags - select AVIIF_KEYFRAME
-				if (z == 0) getStream().writeInt(0x10);
-				else getStream().writeInt(0x00);
+				if (z == 0) handle.writeInt(0x10);
+				else handle.writeInt(0x00);
 
 				// AVIIF_KEYFRAME 0x00000010L
 				// The flag indicates key frames in the video sequence.
@@ -1228,27 +1229,27 @@ public class AVIFormat extends AbstractFormat {
 				// AVIIF_LIST 0x00000001L Marks a LIST CHUNK.
 				// AVIIF_TWOCC 2L
 				// AVIIF_COMPUSE 0x0FFF0000L These bits are for compressor use.
-				getStream().writeInt((int) (savedbLength.get(z) - 4 - SAVE_MOVI));
+				handle.writeInt((int) (savedbLength.get(z) - 4 - SAVE_MOVI));
 
 				// Write the offset (relative to the 'movi' field) to the
 				// relevant
 				// CHUNK. Write the length of the relevant CHUNK. Note that this
 				// length
 				// is also written at savedbLength
-				getStream().writeInt(bytesPerPixel * xDim * yDim);
+				handle.writeInt(bytesPerPixel * xDim * yDim);
 			}
-			endPos = getStream().getFilePointer();
-			getStream().seek(SAVE_FILE_SIZE);
-			getStream().writeInt((int) (endPos - (SAVE_FILE_SIZE + 4)));
+			endPos = handle.offset();
+			handle.seek(SAVE_FILE_SIZE);
+			handle.writeInt((int) (endPos - (SAVE_FILE_SIZE + 4)));
 
-			getStream().seek(saveidx1Length);
-			getStream().writeInt((int) (endPos - (saveidx1Length + 4)));
+			handle.seek(saveidx1Length);
+			handle.writeInt((int) (endPos - (saveidx1Length + 4)));
 
 			// write the total number of planes
-			getStream().seek(FRAME_OFFSET);
-			getStream().writeInt(planesWritten);
-			getStream().seek(FRAME_OFFSET_2);
-			getStream().writeInt(planesWritten);
+			handle.seek(FRAME_OFFSET);
+			handle.writeInt(planesWritten);
+			handle.seek(FRAME_OFFSET_2);
+			handle.writeInt(planesWritten);
 		}
 
 		@Override
@@ -1275,19 +1276,18 @@ public class AVIFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void setDest(final RandomAccessOutputStream out,
-			final int imageIndex, final SCIFIOConfig config) throws FormatException,
-			IOException
+		public void setDest(final DataHandle<Location> out, final int imageIndex,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			super.setDest(out, imageIndex, config);
-			savedbLength = new Vector<>();
+			savedbLength = new ArrayList<>();
 
 			final Metadata meta = getMetadata();
 
+			// FIXME is this correct behavior?
 			if (out.length() > 0) {
-				final RandomAccessInputStream in = new RandomAccessInputStream(
-					getContext(), meta.getDatasetName());
-				in.order(true);
+				final DataHandle<Location> in = dataHandleService.create(out.get());
+				in.setOrder(ByteOrder.LITTLE_ENDIAN);
 				in.seek(FRAME_OFFSET);
 				planesWritten = in.readInt();
 
@@ -1308,17 +1308,18 @@ public class AVIFormat extends AbstractFormat {
 				out.seek(idx1Pos);
 			}
 
-			out.order(true);
+			out.setOrder(ByteOrder.LITTLE_ENDIAN);
 
-			tDim = (int) meta.get(imageIndex).getAxisLength(Axes.Z);
-			zDim = (int) meta.get(imageIndex).getAxisLength(Axes.TIME);
-			yDim = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
-			xDim = (int) meta.get(imageIndex).getAxisLength(Axes.X);
-			final String type = FormatTools.getPixelTypeString(meta.get(imageIndex)
+			final ImageMetadata imageMetadata = meta.get(imageIndex);
+			tDim = (int) imageMetadata.getAxisLength(Axes.Z);
+			zDim = (int) imageMetadata.getAxisLength(Axes.TIME);
+			yDim = (int) imageMetadata.getAxisLength(Axes.Y);
+			xDim = (int) imageMetadata.getAxisLength(Axes.X);
+			final String type = FormatTools.getPixelTypeString(imageMetadata
 				.getPixelType());
 			final int pixelType = FormatTools.pixelTypeFromString(type);
 			bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
-			bytesPerPixel *= meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
+			bytesPerPixel *= imageMetadata.getAxisLength(Axes.CHANNEL);
 
 			xPad = 0;
 			final int xMod = xDim % 4;
@@ -1341,8 +1342,7 @@ public class AVIFormat extends AbstractFormat {
 			if (out.length() == 0) {
 				out.writeBytes("RIFF"); // signature
 				// Bytes 4 thru 7 contain the length of the file. This length
-				// does
-				// not include bytes 0 thru 7.
+				// does not include bytes 0 thru 7.
 				out.writeInt(0); // for now write 0 for size
 				out.writeBytes("AVI "); // RIFF type
 				// Write the first LIST chunk, which contains
@@ -1376,22 +1376,23 @@ public class AVIFormat extends AbstractFormat {
 				// 10H AVIF_HASINDEX: The AVI file has an idx1 chunk containing
 				// an index at the end of the file. For good performance, all
 				// AVI files should contain an index.
+				//
 				// 20H AVIF_MUSTUSEINDEX: Index CHUNK, rather than the physical
 				// ordering of the chunks in the file, must be used to determine
-				// the
-				// order of the frames.
+				// the order of the frames.
+				//
 				// 100H AVIF_ISINTERLEAVED: Indicates that the AVI file is
-				// interleaved.
-				// This is used to read data from a CD-ROM more efficiently.
+				// interleaved. This is used to read data from a CD-ROM more
+				// efficiently.
+				//
 				// 800H AVIF_TRUSTCKTYPE: USE CKType to find key frames
 				// 10000H AVIF_WASCAPTUREFILE: The AVI file is used for
-				// capturing
-				// real-time video. Applications should warn the user before
-				// writing over a file with this fla set because the user
+				// capturing real-time video. Applications should warn the user before
+				// writing over a file with this flag set because the user
 				// probably defragmented this file.
+				//
 				// 20000H AVIF_COPYRIGHTED: The AVI file contains copyrighted
-				// data
-				// and software. When, this flag is used, software should not
+				// data and software. When, this flag is used, software should not
 				// permit the data to be duplicated.
 
 				// dwTotalFrames - total frame number
@@ -1534,10 +1535,8 @@ public class AVIFormat extends AbstractFormat {
 				out.writeShort((short) 0); // right
 				out.writeShort((short) 0); // bottom
 
-				// Write the size of the stream format CHUNK not including the
-				// first 8
-				// bytes for strf and the size. Note that the end of the stream
-				// format
+				// Write the size of the stream format CHUNK not including the first 8
+				// bytes for strf and the size. Note that the end of the stream format
 				// CHUNK is followed by strn.
 				out.writeBytes("strf"); // Write the stream format chunk
 
@@ -1648,7 +1647,7 @@ public class AVIFormat extends AbstractFormat {
 
 				out.writeInt(4); // For now write 0
 				out.writeBytes("movi"); // Write CHUNK type 'movi'
-				idx1Pos = out.getFilePointer();
+				idx1Pos = out.offset();
 			}
 		}
 	}
@@ -1674,11 +1673,11 @@ public class AVIFormat extends AbstractFormat {
 		protected void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
-			final Vector<Long> offsets = new Vector<>();
-			final Vector<Long> lengths = new Vector<>();
+			final List<Long> offsets = new ArrayList<>();
+			final List<Long> lengths = new ArrayList<>();
 			dest.setOffsets(offsets);
 			dest.setLengths(lengths);
-			dest.createImageMetadata(1);
+			dest.add(source.get(0).copy());
 
 			int sizeX = (int) source.get(0).getAxisLength(Axes.X);
 			final int sizeY = (int) source.get(0).getAxisLength(Axes.Y);
@@ -1689,35 +1688,30 @@ public class AVIFormat extends AbstractFormat {
 			}
 			long offset = 0;
 
-			dest.get(0).setAxisLength(Axes.X, sizeX);
-			dest.get(0).setAxisLength(Axes.Y, sizeY);
-
 			final int npad = sizeX % 4;
-
 			if (npad != 0) sizeX += (4 - npad);
 
-			dest.setBmpBitsPerPixel((short) (bpp * source.get(0).getAxisLength(
-				Axes.CHANNEL)));
+			final int numChannels = (int) source.get(0).getAxisLength(Axes.CHANNEL);
+			dest.setBmpBitsPerPixel((short) (bpp * numChannels));
 
 			dest.setBmpWidth(sizeX * (bpp / 8));
-			dest.setBmpScanLineSize(dest.getBmpWidth() * (int) source.get(0)
-				.getAxisLength(Axes.CHANNEL));
+			dest.setBmpScanLineSize(dest.getBmpWidth() * numChannels);
 
 			try {
 				if (dest.getSource() == null) offset = 0;
-				else offset = dest.getSource().getFilePointer();
+				else offset = dest.getSource().offset();
 			}
 			catch (final IOException e) {
 				log().error("Error retrieving AVI plane offset", e);
 			}
 
 			// Channels are folded into bmpBitsPerPixel, so they should be
-			// omitted
-			// from the plane count.
+			// omitted from the plane count.
+			final ImageMetadata destImageMeta = dest.get(0);
 			long nonplanarChannels = 1;
-			if (!dest.get(0).isMultichannel()) {
-				nonplanarChannels = source.get(0).getAxisLength(Axes.CHANNEL);
-				length *= source.get(0).getAxisLength(Axes.CHANNEL);
+			if (!destImageMeta.isMultichannel()) {
+				nonplanarChannels = numChannels;
+				length *= numChannels;
 			}
 
 			for (int i = 0; i < source.get(0).getPlaneCount() /
@@ -1729,7 +1723,9 @@ public class AVIFormat extends AbstractFormat {
 				offset += length;
 			}
 
-			dest.setBmpColorsUsed((int) Math.pow(2.0, bpp));
+			if (numChannels > 1) {
+				dest.setBmpColorsUsed((int) Math.pow(2.0, bpp));
+			}
 
 			dest.setBmpCompression(0);
 
@@ -1737,7 +1733,6 @@ public class AVIFormat extends AbstractFormat {
 				final ColorTable ct = ((HasColorTable) source).getColorTable(0, 0);
 				dest.setBmpColorsUsed(ct.getLength());
 			}
-
 			dest.setBytesPerPlane((int) length / 8);
 		}
 	}
@@ -1780,14 +1775,14 @@ public class AVIFormat extends AbstractFormat {
 		}
 
 		public static byte[] extractCompression(final Metadata meta,
-			final CodecOptions options, final RandomAccessInputStream stream,
+			final CodecOptions options, final DataHandle<Location> stream,
 			final ByteArrayPlane plane, final long planeIndex, final int[] dims)
 			throws IOException, FormatException
 		{
 			final int bmpCompression = meta.getBmpCompression();
 
 			final long fileOff = meta.getOffsets().get((int) planeIndex).longValue();
-			final long filePointer = stream.getFilePointer();
+			final long filePointer = stream.offset();
 			stream.seek(fileOff);
 
 			byte[] buf = null;
@@ -1916,11 +1911,10 @@ public class AVIFormat extends AbstractFormat {
 			// a
 			// smaller one
 			final int[] lastDims = meta.getLastDimensions();
-			boolean smaller = false;
-			smaller = smaller && dims[0] > lastDims[0];
-			smaller = smaller && dims[1] > lastDims[1];
-			smaller = smaller && dims[2] < lastDims[2];
-			smaller = smaller && dims[3] < lastDims[3];
+			final boolean smaller = dims[0] > lastDims[0] //
+				&& dims[1] > lastDims[1] //
+				&& dims[2] < lastDims[2] //
+				&& dims[3] < lastDims[3];
 			return !smaller;
 		}
 	}
