@@ -36,15 +36,15 @@ import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 
-import java.io.File;
 import java.io.IOException;
 
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 
 import org.scijava.Context;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -156,11 +156,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 				getContext().inject(wrapper);
 				wrapper.wrap(r.getMetadata());
 			}
-			catch (final InstantiationException e) {
-				log().error("Failed to create MetadataWrapper of type: " + metaClass,
-					e);
-			}
-			catch (final IllegalAccessException e) {
+			catch (InstantiationException | IllegalAccessException e) {
 				log().error("Failed to create MetadataWrapper of type: " + metaClass,
 					e);
 			}
@@ -260,8 +256,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public RandomAccessInputStream getStream() {
-		return getParent().getStream();
+	public DataHandle<Location> getHandle() {
+		return getParent().getHandle();
 	}
 
 	@Override
@@ -353,8 +349,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane readPlane(final DataHandle<Location> s, final int imageIndex,
-		final long[] planeMin, final long[] planeMax, final Plane plane)
-		throws IOException
+		final Interval bounds, final Plane plane) throws IOException
 	{
 		readPlaneHelper();
 		return getParent().readPlane(s, imageIndex, bounds, plane);

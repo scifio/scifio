@@ -33,6 +33,8 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
+import org.scijava.io.location.Location;
+
 /**
  * Abstract super-class for all {@link io.scif.Groupable} components.
  *
@@ -44,14 +46,14 @@ public abstract class AbstractGroupable extends AbstractHasSource implements
 {
 
 	@Override
-	public int fileGroupOption(final String id) throws FormatException,
+	public int fileGroupOption(final Location id) throws FormatException,
 		IOException
 	{
 		return FormatTools.CANNOT_GROUP;
 	}
 
 	@Override
-	public boolean isSingleFile(final String id) throws FormatException,
+	public boolean isSingleFile(final Location id) throws FormatException,
 		IOException
 	{
 		return true;

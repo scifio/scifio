@@ -30,14 +30,16 @@
 package io.scif;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.SCIFIOMetadataTools;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Parser} implementations.
@@ -57,44 +59,35 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	/** Last Metadata instance parsed by this parser. */
 	private M metadata;
 
+	@Parameter
+	private DataHandleService handles;
+
 	// -- Parser API Methods --
 
 	@Override
-	public M parse(final String fileName) throws IOException, FormatException {
+	public M parse(final Location fileName) throws IOException, FormatException {
 		return parse(fileName, new SCIFIOConfig());
 	}
 
 	@Override
-	public M parse(final File file) throws IOException, FormatException {
-		return parse(file, new SCIFIOConfig());
-	}
-
-	@Override
-	public M parse(final RandomAccessInputStream stream) throws IOException,
+	public M parse(final DataHandle<Location> stream) throws IOException,
 		FormatException
 	{
 		return parse(stream, new SCIFIOConfig());
 	}
 
 	@Override
-	public M parse(final String fileName, final Metadata meta) throws IOException,
+	public M parse(final Location loc, final Metadata meta) throws IOException,
 		FormatException
 	{
-		return parse(fileName, meta, new SCIFIOConfig());
+		return parse(loc, meta, new SCIFIOConfig());
 	}
 
 	@Override
-	public M parse(final File file, final Metadata meta) throws IOException,
-		FormatException
-	{
-		return parse(file, meta, new SCIFIOConfig());
-	}
-
-	@Override
-	public M parse(final RandomAccessInputStream stream, final Metadata meta)
+	public M parse(final DataHandle<Location> handle, final Metadata meta)
 		throws IOException, FormatException
 	{
-		return parse(stream, meta, new SCIFIOConfig());
+		return parse(handle, meta, new SCIFIOConfig());
 	}
 
 	@Override
@@ -103,65 +96,70 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public RandomAccessInputStream getSource() {
+	public DataHandle<Location> getSource() {
 		final Metadata m = getMetadata();
 		if (m == null) return null;
 		return m.getSource();
 	}
 
 	@Override
-	public void updateSource(final String source) throws IOException {
-		metadata.setSource(new RandomAccessInputStream(getContext(), source));
+	public Location getSourceLocation() {
+		return getMetadata() == null ? null : getMetadata().getSourceLocation();
 	}
 
 	@Override
-	public String[] getUsedFiles() {
-		return getUsedFiles(false);
+	public void updateSource(final Location source) throws IOException {
+		metadata.setSourceLocation(source);
+		metadata.setSource(handles.readBuffer(source));
 	}
 
 	@Override
-	public String[] getUsedFiles(final boolean noPixels) {
-		final Vector<String> files = new Vector<>();
+	public Location[] getUsedFiles() {
+		return getUsedLocations(false);
+	}
+
+	@Override
+	public Location[] getUsedLocations(final boolean noPixels) {
+		final Set<Location> files = new HashSet<>();
 		for (int i = 0; i < metadata.getImageCount(); i++) {
-			final String[] s = getImageUsedFiles(i, noPixels);
+			final Location[] s = getImageUsedFiles(i, noPixels);
 			if (s != null) {
-				for (final String file : s) {
-					if (!files.contains(file)) {
-						files.add(file);
-					}
+				for (final Location file : s) {
+					// Set takes care of duplicates
+					files.add(file);
 				}
 			}
 		}
-		return files.toArray(new String[files.size()]);
+		return files.toArray(new Location[files.size()]);
 	}
 
 	@Override
-	public String[] getImageUsedFiles(final int imageIndex) {
+	public Location[] getImageUsedFiles(final int imageIndex) {
 		return getImageUsedFiles(imageIndex, false);
 	}
 
 	@Override
-	public String[] getImageUsedFiles(final int imageIndex,
+	public Location[] getImageUsedFiles(final int imageIndex,
 		final boolean noPixels)
 	{
-		return noPixels ? null : new String[] { getMetadata().getSource()
-			.getFileName() };
+		return noPixels ? null : new Location[] { getMetadata()
+			.getSourceLocation() };
 	}
 
 	@Override
-	public FileInfo[] getAdvancedUsedFiles(final boolean noPixels) {
-		final String[] files = getUsedFiles(noPixels);
+	public LocationInfo[] getAdvancedUsedLocations(final boolean noPixels) {
+		final Location[] files = getUsedLocations(noPixels);
 		if (files == null) return null;
-		return getFileInfo(files);
+		return getLocationInfo(files);
 	}
 
 	@Override
-	public FileInfo[] getAdvancedImageUsedFiles(final int imageIndex,
+	public LocationInfo[] getAdvancedImageUsedLocations(final int imageIndex,
 		final boolean noPixels)
 	{
-		final String[] files = getImageUsedFiles(imageIndex, noPixels);
+		final Location[] files = getImageUsedFiles(imageIndex, noPixels);
 		if (files == null) return null;
-		return getFileInfo(files);
+		return getLocationInfo(files);
 	}
 
 	@Override
@@ -174,65 +172,59 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	// -- TypedParser API Methods --
-	@Override
-	public M parse(final String fileName, final M meta) throws IOException,
-		FormatException
-	{
-		return parse(fileName, meta, new SCIFIOConfig());
-	}
 
 	@Override
-	public M parse(final File file, final M meta) throws IOException,
-		FormatException
-	{
-		return parse(file, meta, new SCIFIOConfig());
-	}
-
-	@Override
-	public M parse(final RandomAccessInputStream stream, final M meta)
+	public M parse(final DataHandle<Location> handle, final M meta)
 		throws IOException, FormatException
 	{
-		return parse(stream, meta, new SCIFIOConfig());
+		return parse(handle, meta, new SCIFIOConfig());
 	}
 
 	@Override
-	public M parse(final String fileName, final M meta, final SCIFIOConfig config)
+	public M parse(final Location loc, final M meta, final SCIFIOConfig config)
 		throws IOException, FormatException
 	{
-		RandomAccessInputStream stream = getSource();
+		DataHandle<Location> handle = getSource();
 
-		if (stream != null) {
-			if (stream.getFileName().equals(fileName)) {
-				stream.seek(0);
+		// reset / change the internal handle
+		if (handle != null) {
+			if (handle.get().equals(loc)) {
+				handle.seek(0);
 			}
 			else {
 				close();
-				stream.close();
-				stream = null;
+				handle.close();
+				handle = null;
 			}
 		}
 
-		if (stream == null) stream = new RandomAccessInputStream(getContext(),
-			fileName);
+		// set basic info
+		meta.setFiltered(config.parserIsFiltered());
+		if (meta.getContext() == null) meta.setContext(getContext());
+		meta.setDatasetName(loc.getName());
+		metadata = meta;
+		meta.setSourceLocation(loc);
 
-		return parse(stream, meta, config);
+		if (handle == null) { // no source set or source changed
+			handle = handles.readBuffer(loc);
+			if (handle == null) {
+				// no handle found for this location, expected for
+				// "Location-only" formats
+				meta.populateImageMetadata();
+				return meta;
+			}
+		}
+		return parse(handle, meta, config);
 	}
 
 	@Override
-	public M parse(final File file, final M meta, final SCIFIOConfig config)
-		throws IOException, FormatException
-	{
-		return parse(file.getPath(), meta);
-	}
-
-	@Override
-	public M parse(final RandomAccessInputStream stream, final M meta,
+	public M parse(final DataHandle<Location> handle, final M meta,
 		final SCIFIOConfig config) throws IOException, FormatException
 	{
-		final RandomAccessInputStream in = getSource();
+		final DataHandle<Location> in = getSource();
 
-		if (in == null || !in.getFileName().equals(stream.getFileName())) {
-			init(stream);
+		if (in == null || !in.get().equals(handle.get())) {
+			init(handle);
 
 			if (config.parserIsSaveOriginalMetadata()) {
 				// TODO store all metadata in OMEXML store..
@@ -240,18 +232,17 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 				// annotations
 			}
 		}
-
-		// TODO relying on Abstract-level API
+		// we need to set this here, because we can not know if parse(Location) was
+		// called before.
 		meta.setFiltered(config.parserIsFiltered());
-		if (meta.getContext() == null) metadata.setContext(getContext());
-		meta.setSource(stream);
-		meta.setDatasetName(stream.getFileName());
-
+		if (meta.getContext() == null) meta.setContext(getContext());
+		meta.setDatasetName(handle.get().getName());
+		meta.setSource(handle);
+		meta.setSourceLocation(handle.get());
 		metadata = meta;
-		typedParse(stream, meta, config);
 
+		typedParse(handle, meta, config);
 		meta.populateImageMetadata();
-
 		return meta;
 	}
 
@@ -265,9 +256,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	// -- AbstractParser Methods --
 
 	/**
-	 * A helper method, called by
-	 * {@link #parse(RandomAccessInputStream, TypedMetadata)}. Allows for
-	 * boilerplate code to come after parsing, specifically calls to
+	 * A helper method, called by {@link #parse(DataHandle, TypedMetadata)}.
+	 * Allows for boilerplate code to come after parsing, specifically calls to
 	 * {@link Metadata#populateImageMetadata()}.
 	 * <p>
 	 * This method should be implemented to populate any format-specific Metadata.
@@ -277,56 +267,47 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	 * layer, Override {@code #parse(String, TypedMetadata)} instead.
 	 * </p>
 	 */
-	protected abstract void typedParse(RandomAccessInputStream stream, M meta,
+	protected abstract void typedParse(DataHandle<Location> handle, M meta,
 		SCIFIOConfig config) throws IOException, FormatException;
 
 	/* Sets the input stream for this parser if provided a new stream */
-	private void init(final RandomAccessInputStream stream) throws IOException {
+	private void init(final DataHandle<Location> handle) throws IOException {
 
 		// Check to see if the stream is already open
 		if (getMetadata() != null) {
-			final String[] usedFiles = getUsedFiles();
-			for (final String fileName : usedFiles) {
-				if (stream.getFileName().equals(fileName)) return;
+			final Location[] usedFiles = getUsedFiles();
+			for (final Location fileName : usedFiles) {
+				if (handle.get().equals(fileName)) return;
 			}
 		}
 
 		close();
 	}
 
-	/* Builds a FileInfo array around the provided array of file names */
-	private FileInfo[] getFileInfo(final String[] files) {
-		final FileInfo[] infos = new FileInfo[files.length];
+	/* Builds a LocationInfo array around the provided array of locations*/
+	private LocationInfo[] getLocationInfo(final Location[] locations) {
+		final LocationInfo[] infos = new LocationInfo[locations.length];
 		for (int i = 0; i < infos.length; i++) {
-			infos[i] = new FileInfo();
-			infos[i].filename = files[i];
+			infos[i] = new LocationInfo();
+			infos[i].locationName = locations[i].getName();
 			infos[i].reader = getFormat().getReaderClass();
-			infos[i].usedToInitialize = files[i].endsWith(getSource().getFileName());
+			infos[i].usedToInitialize = locations[i].equals(getSourceLocation());
 		}
 		return infos;
 	}
 
 	@Override
-	public M parse(final String fileName, final SCIFIOConfig config)
+	public M parse(final Location loc, final SCIFIOConfig config)
 		throws IOException, FormatException
 	{
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
-		return parse(fileName, meta, config);
+		return parse(loc, meta, config);
 	}
 
 	@Override
-	public M parse(final File file, final SCIFIOConfig config) throws IOException,
-		FormatException
-	{
-		@SuppressWarnings("unchecked")
-		final M meta = (M) getFormat().createMetadata();
-		return parse(file, meta, config);
-	}
-
-	@Override
-	public M parse(final RandomAccessInputStream stream,
-		final SCIFIOConfig config) throws IOException, FormatException
+	public M parse(final DataHandle<Location> stream, final SCIFIOConfig config)
+		throws IOException, FormatException
 	{
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
@@ -334,24 +315,27 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public M parse(final String fileName, final Metadata meta,
+	public M parse(final Location loc, final Metadata meta,
 		final SCIFIOConfig config) throws IOException, FormatException
 	{
-		return parse(fileName, SCIFIOMetadataTools.<M> castMeta(meta), config);
+		return parse(loc, SCIFIOMetadataTools.<M> castMeta(meta), config);
 	}
 
 	@Override
-	public M parse(final File file, final Metadata meta,
+	public M parse(final DataHandle<Location> handle, final Metadata meta,
 		final SCIFIOConfig config) throws IOException, FormatException
 	{
-		return parse(file, SCIFIOMetadataTools.<M> castMeta(meta), config);
+		return parse(handle, SCIFIOMetadataTools.<M> castMeta(meta), config);
 	}
 
-	@Override
-	public M parse(final RandomAccessInputStream stream, final Metadata meta,
-		final SCIFIOConfig config) throws IOException, FormatException
-	{
-		return parse(stream, SCIFIOMetadataTools.<M> castMeta(meta), config);
+	/**
+	 * Allows implementations of this class that override
+	 * {@link #parse(Location, Metadata, SCIFIOConfig)} to set the metadata.
+	 * 
+	 * @param meta the metadata object for this parser
+	 */
+	protected void setMetaData(final Metadata meta) {
+		metadata = SCIFIOMetadataTools.<M> castMeta(meta);
 	}
 
 }

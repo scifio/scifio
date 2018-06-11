@@ -185,21 +185,11 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 				fmt.setAccessible(true);
 				fmt.set(t, this);
 			}
-			catch (final NoSuchFieldException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
-			}
-			catch (final SecurityException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
-			}
-			catch (final IllegalArgumentException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
-			}
-			catch (final IllegalAccessException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
+			catch (NoSuchFieldException | SecurityException | IllegalArgumentException
+					| IllegalAccessException e)
+			{
+				throw new FormatException(//
+					"Failed to populate DefaultComponent field", e);
 			}
 		}
 		return t;

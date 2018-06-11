@@ -31,6 +31,9 @@ package io.scif;
 
 import io.scif.services.FormatService;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -63,5 +66,36 @@ public abstract class AbstractHasFormat extends AbstractSCIFIOPlugin implements
 		final Format format = getFormat();
 		if (format == null) return NO_FORMAT;
 		return format.getFormatName();
+	}
+
+	/**
+	 * Safely casts a {@link Location} to a {@link BrowsableLocation}, throwing a
+	 * {@link FormatException} if the cast is not possible.
+	 *
+	 * @param loc the location to cast to {@link BrowsableLocation}
+	 * @throws FormatException
+	 */
+	protected BrowsableLocation asBrowsableLocation(final Location loc)
+		throws FormatException
+	{
+		if (loc instanceof BrowsableLocation) {
+			return (BrowsableLocation) loc;
+		}
+		throw new FormatException("The format: '" + getFormatName() +
+			"' requires a browsable Location!");
+	}
+
+	/**
+	 * Convenience overload of {@link #asBrowsableLocation(Location)} that
+	 * operates on a handle.
+	 *
+	 * @param handle
+	 * @return
+	 * @throws FormatException
+	 */
+	protected BrowsableLocation asBrowsableLocation(
+		final DataHandle<Location> handle) throws FormatException
+	{
+		return asBrowsableLocation(handle.get());
 	}
 }

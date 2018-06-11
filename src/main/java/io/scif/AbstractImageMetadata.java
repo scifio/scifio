@@ -593,7 +593,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		populate(toCopy.getName(), toCopy.getAxes(), toCopy.getAxesLengths(), toCopy
 			.getPixelType(), toCopy.isOrderCertain(), toCopy.isLittleEndian(), toCopy
 				.isIndexed(), toCopy.isFalseColor(), toCopy.isMetadataComplete());
-		// FIXME: Use setters, not direct assignment.
 		this.table = new DefaultMetaTable(toCopy.getTable());
 		this.thumbnail = toCopy.isThumbnail();
 		this.thumbSizeX = toCopy.getThumbSizeX();
@@ -619,7 +618,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		final boolean indexed, final boolean falseColor,
 		final boolean metadataComplete)
 	{
-		// FIXME: Use setters, not direct assignment.
 		this.name = name;
 		this.axes = new ArrayList<>(axes);
 		setAxisLengths(lengths.clone());

@@ -30,14 +30,17 @@
 package io.scif;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
-import java.io.File;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 
@@ -55,6 +58,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 {
 
 	// -- Fields --
+	@Parameter
+	private DataHandleService handles;
 
 	/** Metadata for the current image source. */
 	private M metadata;
@@ -166,8 +171,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public String getCurrentFile() {
-		return getStream() == null ? null : getStream().getFileName();
+	public Location getCurrentFile() {
+		return metadata == null ? null : metadata.getSourceLocation();
 	}
 
 	@Override
@@ -179,7 +184,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public RandomAccessInputStream getStream() {
+	public DataHandle<Location> getHandle() {
 		return metadata == null ? null : metadata.getSource();
 	}
 
@@ -232,68 +237,60 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public void setSource(final String fileName) throws IOException {
-		setSource(fileName, new SCIFIOConfig());
+	public void setSource(final Location loc) throws IOException {
+		setSource(loc, new SCIFIOConfig());
 	}
 
 	@Override
-	public void setSource(final File file) throws IOException {
-		setSource(file, new SCIFIOConfig());
-	}
-
-	@Override
-	public void setSource(final RandomAccessInputStream stream)
-		throws IOException
-	{
+	public void setSource(final DataHandle<Location> stream) throws IOException {
 		setSource(stream, new SCIFIOConfig());
 	}
 
 	@Override
-	public void setSource(final String fileName, final SCIFIOConfig config)
+	public void setSource(final Location loc, final SCIFIOConfig config)
 		throws IOException
 	{
 
-		if (getStream() != null && getStream().getFileName() != null && getStream()
-			.getFileName().equals(fileName))
+		if (getHandle() != null && getCurrentFile() != null && getCurrentFile()
+			.equals(loc))
 		{
-			getStream().seek(0);
+			getHandle().seek(0);
 			return;
 		}
 
 		close();
-		final RandomAccessInputStream stream = new RandomAccessInputStream(
-			getContext(), fileName);
+
+		// setting a new source
 		try {
-			setMetadata(getFormat().createParser().parse(stream, config));
+			// TODO add option to not buffer?
+			final DataHandle<Location> stream = handles.readBuffer(loc);
+			if (stream == null) {
+				// loc only
+				setMetadata(getFormat().createParser().parse(loc, config));
+			}
+			else {
+				setMetadata(getFormat().createParser().parse(stream, config));
+				setSource(stream);
+			}
 		}
 		catch (final FormatException e) {
-			stream.close();
 			throw new IOException(e);
 		}
-		setSource(stream);
 	}
 
 	@Override
-	public void setSource(final File file, final SCIFIOConfig config)
-		throws IOException
-	{
-		setSource(file.getName(), config);
-	}
-
-	@Override
-	public void setSource(final RandomAccessInputStream stream,
+	public void setSource(final DataHandle<Location> handle,
 		final SCIFIOConfig config) throws IOException
 	{
-		final String currentSource = getStream() == null ? null : getStream()
-			.getFileName();
-		final String newSource = stream.getFileName();
+		final Location currentSource = getCurrentFile();
+		final Location newSource = handle.get();
 		if (metadata != null && (currentSource == null || newSource == null ||
-			!getStream().getFileName().equals(stream.getFileName()))) close();
+			!currentSource.equals(newSource))) close();
 
 		if (metadata == null) {
 			try {
 				@SuppressWarnings("unchecked")
-				final M meta = (M) getFormat().createParser().parse(stream, config);
+				final M meta = (M) getFormat().createParser().parse(handle, config);
 				setMetadata(meta);
 			}
 			catch (final FormatException e) {
@@ -303,14 +300,15 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final Interval bounds, final Plane plane) throws IOException
+	public Plane readPlane(final DataHandle<Location> s, final int imageIndex,
+		final Interval bounds, final Plane plane)
+		throws IOException
 	{
 		return readPlane(s, imageIndex, bounds, this.<P> castToTypedPlane(plane));
 	}
 
 	@Override
-	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
+	public Plane readPlane(final DataHandle<Location> s, final int imageIndex,
 		final Interval bounds, final int scanlinePad, final Plane plane)
 		throws IOException
 	{
@@ -374,14 +372,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
+	public P readPlane(final DataHandle<Location> s, final int imageIndex,
 		final Interval bounds, final P plane) throws IOException
 	{
 		return readPlane(s, imageIndex, bounds, 0, plane);
 	}
 
 	@Override
-	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
+	public P readPlane(final DataHandle<Location> s, final int imageIndex,
 		final Interval bounds, final int scanlinePad, final P plane)
 		throws IOException
 	{

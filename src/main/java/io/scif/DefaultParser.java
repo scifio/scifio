@@ -30,9 +30,11 @@
 package io.scif;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * Default {@link io.scif.Parser} implementation.
@@ -69,7 +71,7 @@ public class DefaultParser extends AbstractParser<DefaultMetadata> implements
 	 * Non-functional typedParse implementation.
 	 */
 	@Override
-	protected void typedParse(final RandomAccessInputStream stream,
+	protected void typedParse(final DataHandle<Location> stream,
 		final DefaultMetadata meta, final SCIFIOConfig config) throws IOException,
 		FormatException
 	{
