@@ -11,7 +11,7 @@
 
 	<groupId>io.scif</groupId>
 	<artifactId>scifio</artifactId>
-	<version>0.37.4-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a library for scientific N-dimensional image I/O.</description>
@@ -87,8 +87,8 @@
 
 	<mailingLists>
 		<mailingList>
-			<name>Image.sc Forum</name>
-			<archive>https://forum.image.sc/tags/scifio</archive>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/tags/scifio</archive>
 		</mailingList>
 	</mailingLists>
 
@@ -118,6 +118,9 @@
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
 
 		<scijava-common.version>2.76.0</scijava-common.version>
+		<imglib2.version>5.1.0</imglib2.version>
+		<imglib2-cache.version>1.0.0-beta-8</imglib2-cache.version>
+		<imagej-common.version>0.25.0</imagej-common.version>
 	</properties>
 
 	<repositories>
