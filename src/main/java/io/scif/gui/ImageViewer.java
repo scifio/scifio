@@ -75,6 +75,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.service.SciJavaService;
@@ -256,8 +258,18 @@ public class ImageViewer extends JFrame implements ActionListener,
 		this.canCloseReader = canCloseReader;
 	}
 
-	/** Opens the given data source using the current format reader. */
+	/**
+	 * Convenience overload of {@link #open(Location)} for backwards
+	 * compatibility.
+	 *
+	 * @param id
+	 */
 	public void open(final String id) {
+		open(new FileLocation(id));
+	}
+
+	/** Opens the given data source using the current format reader. */
+	public void open(final Location id) {
 		wait(true);
 		try {
 			canCloseReader = true;
@@ -290,10 +302,20 @@ public class ImageViewer extends JFrame implements ActionListener,
 	}
 
 	/**
+	 * Convenience overload of {@link #save}, saves the current image to the given
+	 * local file destination.
+	 *
+	 * @param id
+	 */
+	public void save(final String id) {
+		save(new FileLocation(id));
+	}
+
+	/**
 	 * Saves the current images to the given destination using the current format
 	 * writer.
 	 */
-	public void save(final String id) {
+	public void save(final Location id) {
 		if (images == null) return;
 		wait(true);
 		try {
@@ -318,10 +340,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 			}
 			myWriter.close();
 		}
-		catch (final FormatException exc) {
-			logService.info("", exc);
-		}
-		catch (final IOException exc) {
+		catch (FormatException | IOException exc) {
 			logService.info("", exc);
 		}
 		wait(false);
@@ -337,7 +356,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	 * metadata from the specified format reader.
 	 */
 	public void setImages(final Reader reader, final BufferedImage[] img) {
-		filename = reader == null ? null : reader.getCurrentFile();
+		filename = reader == null ? null : reader.getCurrentFile().getName();
 		myReader = reader;
 		images = img;
 
@@ -354,7 +373,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 		updateLabel(-1, -1);
 		sb.setLength(0);
 		if (filename != null) {
-			sb.append(reader.getCurrentFile());
+			sb.append(reader.getCurrentFile().getName());
 			sb.append(" ");
 		}
 		final String format = reader == null ? null : reader.getFormat()
@@ -432,12 +451,9 @@ public class ImageViewer extends JFrame implements ActionListener,
 				final File file = chooser.getSelectedFile();
 				try {
 					myWriter = initializeService.initializeWriter(myReader.getMetadata(),
-						file.getAbsolutePath());
+						new FileLocation(file));
 				}
-				catch (final FormatException e1) {
-					logService.error(e);
-				}
-				catch (final IOException e1) {
+				catch (FormatException | IOException e1) {
 					logService.error(e);
 				}
 				if (file != null) save(file.getAbsolutePath(), myWriter);
