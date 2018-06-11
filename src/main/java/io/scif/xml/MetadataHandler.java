@@ -29,7 +29,8 @@
 
 package io.scif.xml;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
@@ -46,7 +47,7 @@ class MetadataHandler extends BaseHandler {
 
 	private String currentQName;
 
-	private final Hashtable<String, String> metadata = new Hashtable<>();
+	private final HashMap<String, String> metadata = new HashMap<>();
 
 	public MetadataHandler() {
 		this(new StderrLogService());
@@ -58,7 +59,7 @@ class MetadataHandler extends BaseHandler {
 
 	// -- MetadataHandler API methods --
 
-	public Hashtable<String, String> getMetadata() {
+	public Map<String, String> getMetadata() {
 		return metadata;
 	}
 

@@ -30,7 +30,6 @@
 package io.scif.xml;
 
 import io.scif.common.Constants;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -45,7 +44,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -72,6 +71,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -105,15 +106,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	@Parameter
 	private LogService log;
 
-	private final ThreadLocal<HashMap<URI, Schema>> schemas =
-		new ThreadLocal<HashMap<URI, Schema>>()
-		{
-
-			@Override
-			protected HashMap<URI, Schema> initialValue() {
-				return new HashMap<>();
-			}
-		};
+	private final ThreadLocal<HashMap<URI, Schema>> schemas = ThreadLocal
+		.withInitial(HashMap::new);
 
 	// -- XML to/from DOM --
 
@@ -302,9 +296,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	// -- Parsing --
 
 	@Override
-	public Hashtable<String, String> parseXML(final String xml)
-		throws IOException
-	{
+	public Map<String, String> parseXML(final String xml) throws IOException {
 		final MetadataHandler handler = new MetadataHandler();
 		parseXML(xml, handler);
 		return handler.getMetadata();
@@ -318,7 +310,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	}
 
 	@Override
-	public void parseXML(final RandomAccessInputStream stream,
+	public void parseXML(final DataHandle<Location> stream,
 		final DefaultHandler handler) throws IOException
 	{
 		parseXML((InputStream) stream, handler);
