@@ -29,6 +29,7 @@
 
 package io.scif.formats;
 
+import io.scif.AbstractChecker;
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
@@ -44,8 +45,8 @@ import io.scif.MetadataService;
 import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.Location;
-import io.scif.io.RandomAccessInputStream;
+import io.scif.io.location.TestImgLocation;
+import io.scif.io.location.TestImgLocation.Builder;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -62,45 +63,36 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
 
 /**
- * FakeFormat is the file format reader for faking input data. It is mainly
- * useful for testing, as image sources can be defined in memory through String
- * notation, without requiring an actual dataset to exist on disk.
+ * TestImgFormat is the file format reader for creatign test input data. It is
+ * mainly useful for testing, as image sources can be defined in memory, without
+ * requiring an actual dataset to exist on disk.
  * <p>
- * Examples:
- * </p>
- * <ul>
- * <li>{@code 'multi-image&images=11&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'}</li>
- * <li>{@code '8bit-signed&pixelType=int8&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'}</li>
- * <li>{@code '8bit-unsigned&pixelType=uint8&axes=X,Y,Z,Channel&lengths=1,50,3,5.fake'}</li>
- * <li>{@code '16bit-signed&pixelType=int16&axes=X,Y,Z,Channel,Time&lengths=1,50,3,7.fake'}</li>
- * <li>{@code '16bit-unsigned&pixelType=uint16&sizeZ=3&axes=X,Y,&lengths=1,1.fake'}</li>
- * <li>{@code '32bit-signed&pixelType=int32&sizeZ=3&axes=X,Y,Z,,Time&lengths=50,50.fake'}</li>
- * <li>{@code '32bit-unsigned&pixelType=uint32&axes=X,Y,Z&lengths=50,50,3.fake'}</li>
- * <li>{@code '32bit-floating&pixelType=float&axes=X,Y&lengths=1,1.fake'}</li>
- * <li>{@code '64bit-floating&pixelType=double&axes=X,Y,Time&lengths=256,256,3.fake'}</li>
- * <li>{@code 'rgb-image&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake'}</li>
- * <li>{@code 'rgb-interleaved&lengths=3,512,512&axes=Channel,X,Y&planarDims=3.fake'}</li>
- * </ul>
- *
+ * Defining a TestImg is done via the {@link TestImgLocation} class.
+ * <p>
+ * 
  * @author Mark Hiner
  * @author Curtis Rueden
+ * @author Gabriel Einsdorf
+ * @see TestImgLocation
  */
 @Plugin(type = Format.class, name = "Simulated data")
-public class FakeFormat extends AbstractFormat {
+public class TestImgFormat extends AbstractFormat {
 
 	// -- Constants --
 
 	private static final long SEED = 0xcafebabe;
 
-	private static final String DEFAULT_NAME = "Untitled";
-
 	// -- Constructor --
 
-	public FakeFormat() {
+	public TestImgFormat() {
 		super();
 	}
 
@@ -108,14 +100,14 @@ public class FakeFormat extends AbstractFormat {
 
 	@Override
 	protected String[] makeSuffixArray() {
-		return new String[] { "fake" };
+		return new String[] { "scifiotestimg" };
 	}
 
 	// -- Nested Classes --
 
 	/**
 	 * Metadata class for Fake format. Actually holds no information about the
-	 * "image" as everything is stored in the attached RandomAccessInputStream.
+	 * "image" as everything is stored in the attached DataHandle<Location>.
 	 * <p>
 	 * Fake specification should be accessed by {@link Metadata#getSource()}
 	 * </p>
@@ -256,11 +248,9 @@ public class FakeFormat extends AbstractFormat {
 			final MetadataService metadataService = getContext().getService(
 				MetadataService.class);
 
-			setDefaults();
-
 			// parse key/value pairs from fake filename
-			final Map<String, Object> fakeMap = FakeUtils.extractFakeInfo(
-				metadataService, getDatasetName());
+			final Map<String, Object> fakeMap =
+				((TestImgLocation) getSourceLocation()).getMetadataMap();
 
 			metadataService.populate(this, fakeMap);
 
@@ -324,7 +314,7 @@ public class FakeFormat extends AbstractFormat {
 						luts[i] = new ColorTable8[planeCount];
 						indexToValue = new int[planeCount][num];
 						valueToIndex = new int[planeCount][num];
-						FakeUtils.createIndexValueMap(indexToValue);
+						TestImgUtils.createIndexValueMap(indexToValue);
 						// linear ramp
 						for (int p = 0; p < planeCount; p++) {
 							final byte[][] lutBytes = new byte[lutLength][num];
@@ -347,7 +337,7 @@ public class FakeFormat extends AbstractFormat {
 						luts[i] = new ColorTable16[planeCount];
 						indexToValue = new int[planeCount][num];
 						valueToIndex = new int[planeCount][num];
-						FakeUtils.createIndexValueMap(indexToValue);
+						TestImgUtils.createIndexValueMap(indexToValue);
 						// linear ramp
 						for (int p = 0; p < planeCount; p++) {
 							final short[][] lutShorts = new short[lutLength][num];
@@ -364,67 +354,35 @@ public class FakeFormat extends AbstractFormat {
 				setLuts(luts);
 
 				if (valueToIndex != null) {
-					FakeUtils.createInverseIndexMap(indexToValue, valueToIndex);
+					TestImgUtils.createInverseIndexMap(indexToValue, valueToIndex);
 					setValueToIndex(valueToIndex);
 				}
 				// NB: Other pixel types will have null LUTs.
 			}
 		}
 
-		// -- Helper methods --
+	}
 
-		/**
-		 * Sets default values for all fields. Necessary as field values may be
-		 * erased post-initialization (e.g. by closing).
-		 */
-		private void setDefaults() {
-			axes = new String[] { "X", "Y" };
-			lengths = new long[] { 512, 512 };
-			scales = new double[] { 1.0, 1.0 };
-			units = new String[] { "um", "um" };
-			planarDims = -1;
-			interleavedDims = -1;
-			thumbSizeX = 0;
-			thumbSizeY = 0;
-			pixelType = FormatTools.getPixelTypeString(FormatTools.UINT8);
-			indexed = false;
-			falseColor = false;
-			little = true;
-			metadataComplete = true;
-			thumbnail = false;
-			orderCertain = true;
-			lutLength = 3;
-			scaleFactor = 1;
-			images = 1;
+	public static class Checker extends AbstractChecker {
+
+		@Override
+		public boolean suffixSufficient() {
+			return false;
 		}
 
-		// -- Deprecated methods --
-
-		/**
-		 * Gets the lookup table for the first image of this dataset.
-		 *
-		 * @return An array of ColorTables. Indexed by plane number.
-		 * @deprecated Use {@link #getLuts()}
-		 */
-		@Deprecated
-		public ColorTable[] getLut() {
-			return luts == null ? null : luts[0];
+		@Override
+		public boolean suffixNecessary() {
+			return false;
 		}
 
-		/**
-		 * Sets the lookup table for the first image of this dataset.
-		 *
-		 * @param lut - An array of ColorTables. Indexed by plane number.
-		 * @deprecated Use {@link #setLuts(ColorTable[][])}
-		 */
-		@Deprecated
-		public void setLut(final ColorTable[] lut) {
-			if (this.luts != null) {
-				this.luts[0] = lut;
-			}
-			else {
-				this.luts = new ColorTable[][] { lut };
-			}
+		@Override
+		public boolean isFormat(Location loc, SCIFIOConfig config) {
+			return loc instanceof TestImgLocation;
+		}
+
+		@Override
+		public boolean isFormat(final Location loc) {
+			return loc instanceof TestImgLocation;
 		}
 	}
 
@@ -436,9 +394,9 @@ public class FakeFormat extends AbstractFormat {
 
 		// -- Parser API Methods --
 
-		/* @See Parser#Parse(RandomAccessInputStream, M) */
+		/* @See Parser#Parse(DataHandle<Location>, M) */
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -486,7 +444,7 @@ public class FakeFormat extends AbstractFormat {
 		}
 
 		private void openPlaneHelper(final int imageIndex, final long planeIndex,
-			final Metadata meta, final Plane plane, final Interval bounds,
+			final Metadata meta, final Plane plane, Interval bounds,
 			final long[] npIndices, final long[] planeIndices, final int planarPos,
 			long xPos, long yPos)
 		{
@@ -553,18 +511,13 @@ public class FakeFormat extends AbstractFormat {
 							if (grid < npIndices.length) {
 								pixel = min + npIndices[grid];
 								// The following code allows for scaling the box
-								// pixels to the
-								// max intensity of the image. This allows for much
-								// easier
-								// plane differentiation in manual testing, but
-								// breaks or
-								// complicates automated pixel verification, which
-								// is the
-								// primary purpose of these boxes. This code could
-								// be
-								// factored out into special "drawBox" methods, with
-								// behavior
-								// configurable by Fake parameters.
+								// pixels to the max intensity of the image. This allows for
+								// much easier plane differentiation in manual testing, but
+								// breaks or complicates automated pixel verification, which
+								// is the primary purpose of these boxes. This code could
+								// be factored out into special "drawBox" methods, with
+								// behavior configurable by Fake parameters.
+
 //								final double npMax =
 //									meta.getAxesLengthsNonPlanar(imageIndex)[grid];
 //								if (npMax < xMax) {
@@ -629,12 +582,15 @@ public class FakeFormat extends AbstractFormat {
 	}
 
 	/**
-	 * Translator from {@link io.scif.Metadata} to FakeFormat$Metadata.
+	 * Translator from {@link io.scif.Metadata} to TestImgFormat$Metadata .
 	 */
 	@Plugin(type = Translator.class, priority = Priority.LOW)
-	public static class FakeTranslator extends
+	public static class TestImgTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{
+
+		@Parameter
+		private DataHandleService dataHandleService;
 
 		// -- Translator API Methods --
 
@@ -654,7 +610,7 @@ public class FakeFormat extends AbstractFormat {
 		{
 			final ImageMetadata iMeta = source.get(0);
 
-			String fakeId = MetadataService.NAME_KEY + "=" + dest.getDatasetName();
+			String name = dest.getDatasetName();
 
 			final String[] axes = new String[iMeta.getAxes().size()];
 			final long[] lengths = new long[axes.length];
@@ -670,101 +626,46 @@ public class FakeFormat extends AbstractFormat {
 				index++;
 			}
 
-			FakeUtils.appendToken(fakeId, "axes", (Object[]) axes);
-			FakeUtils.appendToken(fakeId, "lengths", lengths);
-			FakeUtils.appendToken(fakeId, "scales", scales);
-			FakeUtils.appendToken(fakeId, "units", (Object[]) units);
-			FakeUtils.appendToken(fakeId, "planarDims", iMeta.getPlanarAxisCount());
-			FakeUtils.appendToken(fakeId, "interleavedDims", iMeta
-				.getInterleavedAxisCount());
-			FakeUtils.appendToken(fakeId, "thumbSizeX", iMeta.getThumbSizeX());
-			FakeUtils.appendToken(fakeId, "thumbSizeY", iMeta.getThumbSizeY());
-			FakeUtils.appendToken(fakeId, "pixelType", FormatTools.getPixelTypeString(
-				iMeta.getPixelType()));
-			FakeUtils.appendToken(fakeId, "falseColor", iMeta.isFalseColor());
-			FakeUtils.appendToken(fakeId, "little", iMeta.isLittleEndian());
-			FakeUtils.appendToken(fakeId, "metadataComplete", iMeta
-				.isMetadataComplete());
-			FakeUtils.appendToken(fakeId, "thumbnail", iMeta.isThumbnail());
-			FakeUtils.appendToken(fakeId, "orderCertain", iMeta.isOrderCertain());
-			FakeUtils.appendToken(fakeId, "images", source.size());
+			TestImgLocation.Builder b = new Builder();
+			b.axes(axes);
+			b.lengths(lengths);
+			b.scales(scales);
+			b.units(units);
+			b.planarDims(iMeta.getPlanarAxisCount());
+			b.interleavedDims(iMeta.getInterleavedAxisCount());
+			b.thumbSizeX((int) iMeta.getThumbSizeX());
+			b.thumbSizeY((int) iMeta.getThumbSizeX());
+			b.pixelType(FormatTools.getPixelTypeString(iMeta.getPixelType()));
+			b.falseColor(iMeta.isFalseColor());
+			b.little(iMeta.isLittleEndian());
+			b.metadataComplete(iMeta.isMetadataComplete());
+			b.thumbnail(iMeta.isThumbnail());
+
+			b.orderCertain(iMeta.isOrderCertain());
+			b.images(source.size());
 
 			if (iMeta.isIndexed()) {
 				final int lutLength = ((HasColorTable) source).getColorTable(0, 0)
 					.getComponentCount();
-				FakeUtils.appendToken(fakeId, "indexed", iMeta.isIndexed());
-				FakeUtils.appendToken(fakeId, "lutLength", lutLength);
+				b.indexed(iMeta.isIndexed());
+				b.lutLength(lutLength);
 			}
-
-			fakeId += ".fake";
 
 			try {
 				dest.close();
-				dest.setSource(new RandomAccessInputStream(getContext(), fakeId));
+				dest.setSource(dataHandleService.create(b.build()));
 			}
 			catch (final IOException e) {
-				log().debug("Failed to create RAIS: " + fakeId, e);
+				log().debug("Failed to create RAIS: " + name, e);
 			}
 		}
 	}
 
 	/**
-	 * Helper methods for the Fake file format. Methods are provided for parsing
-	 * the key:value pairs from the name of a Fake file.
+	 * Helper methods for the test img file format. Methods are provided for
+	 * parsing the key:value pairs from the name of a Fake file.
 	 */
-	public static class FakeUtils {
-
-		/**
-		 * Parses the provided path and returns a mapping of all known key/value
-		 * pairs that were discovered.
-		 *
-		 * @param fakePath - A properly formatted .fake id
-		 * @return A mapping of all discovered properties.
-		 */
-		public static Map<String, Object> extractFakeInfo(
-			final MetadataService metadataService, String fakePath)
-		{
-			final Location loc = new Location(metadataService.getContext(), fakePath);
-
-			if (loc.exists()) {
-				fakePath = loc.getAbsoluteFile().getName();
-			}
-
-			// strip extension from filename
-			final String noExt = fakePath.substring(0, fakePath.lastIndexOf("."));
-
-			// parse tokens from filename
-			final Map<String, Object> fakeMap = metadataService.parse(noExt);
-
-			// provide a default name if none was given
-			if (!fakeMap.containsKey(MetadataService.NAME_KEY)) {
-				fakeMap.put(MetadataService.NAME_KEY, DEFAULT_NAME);
-			}
-
-			return fakeMap;
-		}
-
-		// Fake name generation methods
-
-		/**
-		 * Appends the provided key:value pair to the provided base and returns the
-		 * result.
-		 *
-		 * @return A formatted FakeFormat key:value pair
-		 */
-		public static String appendToken(String base, final String key,
-			final Object... value)
-		{
-			String listValue = "" + value[0];
-
-			// expand the array if necessary
-			for (int i = 1; i < value.length; i++) {
-				listValue += "," + value[i];
-			}
-
-			base += "&" + key + "=" + listValue;
-			return base;
-		}
+	public static class TestImgUtils {
 
 		// -- Index : Value mapping methods
 

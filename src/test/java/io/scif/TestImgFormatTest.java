@@ -32,7 +32,8 @@ package io.scif;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import io.scif.formats.FakeFormat;
+import io.scif.formats.TestImgFormat;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 
@@ -40,15 +41,17 @@ import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 
 import org.junit.Test;
+import org.scijava.io.location.Location;
 
 /**
- * Unit tests for {@link FakeFormat}. The FakeFormat is used in many other
+ * Unit tests for {@link TestImgFormat}. This format is used in many other
  * tests, so it is imperative to ensure the format itself is functioning as
  * intended.
  *
  * @author Mark Hiner
+ * @author Gabriel Einsdorf
  */
-public class FakeFormatTest {
+public class TestImgFormatTest {
 
 	// -- Fields --
 
@@ -62,11 +65,12 @@ public class FakeFormatTest {
 	 */
 	@Test
 	public void testIndexedPlanarChannel() throws FormatException, IOException {
-		final String sampleImage =
-			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,1&axes=X,Y,Channel.fake";
+		final Location sampleImage = new TestImgLocation.Builder().name(
+			"8bit-unsigned").pixelType("uint8").indexed(true).planarDims(3).lengths(
+				50, 50, 1).axes("X", "Y", "Channel").build();
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+		final TestImgFormat.Metadata fMeta = (TestImgFormat.Metadata) reader
 			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
@@ -81,11 +85,12 @@ public class FakeFormatTest {
 	public void testIndexedManyPlanarChannels() throws FormatException,
 		IOException
 	{
-		final String sampleImage =
-			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,4&axes=X,Y,Channel.fake";
+		final Location sampleImage = new TestImgLocation.Builder().name(
+			"8bit-unsigned").pixelType("uint8").indexed(true).planarDims(3).lengths(
+				50, 50, 4).axes("X", "Y", "Channel").build();
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+		final TestImgFormat.Metadata fMeta = (TestImgFormat.Metadata) reader
 			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
@@ -101,11 +106,12 @@ public class FakeFormatTest {
 	public void testIndexedPlanarChannelManyPlanes() throws FormatException,
 		IOException
 	{
-		final String sampleImage =
-			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,4,6&axes=X,Y,Channel,Time.fake";
+		final Location sampleImage = new TestImgLocation.Builder().name(
+			"8bit-unsigned").pixelType("uint8").indexed(true).planarDims(3).lengths(
+				50, 50, 4, 6).axes("X", "Y", "Channel", "Time").build();
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+		final TestImgFormat.Metadata fMeta = (TestImgFormat.Metadata) reader
 			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(6, fMeta.getLuts()[0].length);
@@ -122,11 +128,12 @@ public class FakeFormatTest {
 	public void testIndexedNonPlanarChannel() throws FormatException,
 		IOException
 	{
-		final String sampleImage =
-			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=2&lengths=50,50,4,6&axes=X,Y,Channel,Time.fake";
+		final Location sampleImage = new TestImgLocation.Builder().name(
+			"8bit-unsigned").pixelType("uint8").indexed(true).planarDims(2).lengths(
+				50, 50, 4, 6).axes("X", "Y", "Channel", "Time").build();
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
-		final FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader
+		final TestImgFormat.Metadata fMeta = (TestImgFormat.Metadata) reader
 			.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(24, fMeta.getLuts()[0].length);
@@ -136,23 +143,24 @@ public class FakeFormatTest {
 	}
 
 	/**
-	 * Test that fake images with more axes than lengths can not be constructed.
+	 * Test that test images with more axes than lengths can not be constructed.
 	 */
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testMisMatchedAxes() throws IOException, FormatException {
-		final String moreAxes =
-			"8bit-unsigned&pixelType=uint8lengths=50,50,4&axes=X,Y,Channel,Z,Time.fake";
-
-		scifio.initializer().parseMetadata(moreAxes);
+		final Location sampleImage = new TestImgLocation.Builder().name(
+			"8bit-unsigned").pixelType("uint8").indexed(true).planarDims(3).lengths(
+				50, 50).axes("X", "Y", "Channel", "Time").build();
+		scifio.initializer().parseMetadata(sampleImage);
 	}
 
 	/**
-	 * Test that fake images with more lengths than axes can not be constructed.
+	 * Test that test images with more lengths than axes can not be constructed.
 	 */
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testMisMatchedLengths() throws FormatException, IOException {
-		final String moreLengths =
-			"8bit-unsigned&pixelType=uint8lengths=50,50,4,7,12&axes=X,Y,Channel.fake";
+		final Location moreLengths = new TestImgLocation.Builder().name(
+			"8bit-unsigned").pixelType("uint8").indexed(true).planarDims(3).lengths(
+				50, 50, 4, 7, 12).axes("X", "Y", "Channel").build();
 
 		scifio.initializer().parseMetadata(moreLengths);
 	}
