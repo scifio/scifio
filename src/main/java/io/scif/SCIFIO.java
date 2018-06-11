@@ -36,18 +36,17 @@ import io.scif.formats.tiff.TiffService;
 import io.scif.gui.GUIService;
 import io.scif.img.ImgUtilityService;
 import io.scif.img.converters.PlaneConverterService;
-import io.scif.io.NIOService;
 import io.scif.services.DatasetIOService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
-import io.scif.services.LocationService;
 import io.scif.services.TranslatorService;
 import io.scif.xml.XMLService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
 import org.scijava.Gateway;
+import org.scijava.io.nio.NIOService;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.SciJavaService;
 
@@ -66,7 +65,6 @@ import org.scijava.service.SciJavaService;
  * @see io.scif.services.InitializeService
  * @see io.scif.services.FormatService
  * @see io.scif.services.TranslatorService
- * @see io.scif.services.LocationService
  * @see io.scif.services.FilePatternService
  * @author Mark Hiner
  */
@@ -156,15 +154,6 @@ public class SCIFIO extends AbstractGateway {
 	 */
 	public InitializeService initializer() {
 		return get(InitializeService.class);
-	}
-
-	/**
-	 * Gets this application context's {@link LocationService}.
-	 *
-	 * @return The {@link LocationService} of this application context.
-	 */
-	public LocationService location() {
-		return get(LocationService.class);
 	}
 
 	/**
