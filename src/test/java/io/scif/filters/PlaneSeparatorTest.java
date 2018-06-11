@@ -34,11 +34,13 @@ import static org.junit.Assert.assertEquals;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 
 import org.junit.Test;
 import org.scijava.InstantiableException;
+import org.scijava.io.location.Location;
 
 /**
  * Tests for {@link PlaneSeparator}.
@@ -49,8 +51,8 @@ public class PlaneSeparatorTest {
 
 	private final SCIFIO scifio = new SCIFIO();
 
-	private final String id =
-		"testImg&lengths=3,4,512,512&axes=Channel,Time,X,Y.fake";
+	private final Location id = TestImgLocation.builder().lengths(3, 4, 512, 512)
+		.axes("Channel", "Time", "X", "Y").build();
 
 	/**
 	 * Verify that multiple interleaved axes are automatically extracted.
