@@ -46,15 +46,13 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
 import net.imagej.axis.LinearAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.util.Intervals;
 
 import org.scijava.io.handle.DataHandle;
 import org.scijava.io.handle.DataHandle.ByteOrder;
 import org.scijava.io.location.Location;
-import org.scijava.util.ReflectException;
-import org.scijava.util.ReflectedUniverse;
-import net.imglib2.FinalInterval;
-import net.imglib2.Interval;
-import net.imglib2.util.Intervals;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of

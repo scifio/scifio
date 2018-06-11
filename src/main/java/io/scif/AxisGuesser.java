@@ -29,16 +29,8 @@
 
 package io.scif;
 
-import io.scif.io.Location;
-
-import java.io.IOException;
-import java.util.Arrays;
-
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
-
-import org.scijava.Context;
-import org.scijava.log.LogService;
 
 /**
  * AxisGuesser guesses which blocks in a file pattern correspond to which
@@ -129,6 +121,7 @@ public class AxisGuesser {
 		final String suffix = fp.getSuffix();
 		final String[][] elements = fp.getElements();
 		axisTypes = new int[elements.length];
+
 		boolean foundZ = false, foundT = false, foundC = false;
 
 		// -- 1) fill in "known" axes based on known patterns and conventions --
@@ -306,8 +299,27 @@ public class AxisGuesser {
 	 *         <li>S_AXIS: series</li>
 	 *         </ul>
 	 */
-	public int[] getAxisTypes() {
-		return axisTypes;
+	public AxisType[] getAxisTypes() {
+		AxisType[] out = new AxisType[axisTypes.length];
+		for (int i = 0; i < out.length; i++) {
+			int t = axisTypes[i];
+			if (t == C_AXIS) {
+				out[i] = Axes.CHANNEL;
+			}
+			else if (t == T_AXIS) {
+				out[i] = Axes.TIME;
+			}
+			else if (t == Z_AXIS) {
+				out[i] = Axes.Z;
+			}
+			else if (t == UNKNOWN_AXIS) {
+				out[i] = Axes.unknown();
+			}
+			else if (t == S_AXIS) {
+				out[i] = Axes.get("Series");
+			}
+		}
+		return out;
 	}
 
 	/**
@@ -325,7 +337,7 @@ public class AxisGuesser {
 		axisTypes = axes;
 	}
 
-	/** Gets the number of Z axes in the pattern. */
+	/** Gets the length of the Z axes in the pattern. */
 	public int getAxisCountZ() {
 		return getAxisCount(Z_AXIS);
 	}
@@ -393,94 +405,6 @@ public class AxisGuesser {
 		}
 		return index;
 	}
-
-	// -- Main method --
-
-	public static void main(final String[] args) throws FormatException,
-		IOException
-	{
-		main(args, new Context());
-	}
-
-	/** Method for testing pattern guessing logic. */
-	public static void main(final String[] args, final Context context)
-		throws FormatException, IOException
-	{
-		final SCIFIO scifio = new SCIFIO(context);
-		final LogService log = scifio.log();
-		final Location file = args.length < 1 ? new Location(context, System
-			.getProperty("user.dir")).listFiles()[0] : new Location(context, args[0]);
-		log.info("File = " + file.getAbsoluteFile());
-		final String pat = scifio.filePattern().findPattern(file);
-		if (pat == null) log.info("No pattern found.");
-		else {
-			log.info("Pattern = " + pat);
-			final FilePattern fp = new FilePattern(context, pat);
-			if (fp.isValid()) {
-				log.info("Pattern is valid.");
-				final String id = fp.getFiles()[0];
-				if (!new Location(context, id).exists()) {
-					log.info("File '" + id + "' does not exist.");
-				}
-				else {
-					// read dimensional information from first file
-					log.info("Reading first file ");
-					final Reader reader = scifio.initializer().initializeReader(id);
-					final AxisType[] dimOrder = (AxisType[]) reader.getMetadata().get(0)
-						.getAxes().toArray();
-					final long sizeZ = reader.getMetadata().get(0).getAxisLength(Axes.Z);
-					final long sizeT = reader.getMetadata().get(0).getAxisLength(
-						Axes.TIME);
-					final long sizeC = reader.getMetadata().get(0).getAxisLength(
-						Axes.CHANNEL);
-					final boolean certain = reader.getMetadata().get(0).isOrderCertain();
-					reader.close();
-					log.info("[done]");
-					log.info("\tdimOrder = " + Arrays.toString(dimOrder) + " (" + (certain
-						? "certain" : "uncertain") + ")");
-					log.info("\tsizeZ = " + sizeZ);
-					log.info("\tsizeT = " + sizeT);
-					log.info("\tsizeC = " + sizeC);
-
-					// guess axes
-					final AxisGuesser ag = new AxisGuesser(fp, dimOrder, sizeZ, sizeT,
-						sizeC, certain);
-
-					// output results
-					final String[] blocks = fp.getBlocks();
-					final String[] prefixes = fp.getPrefixes();
-					final int[] axes = ag.getAxisTypes();
-					final AxisType[] newOrder = ag.getAdjustedOrder();
-					final boolean isCertain = ag.isCertain();
-					log.info("Axis types:");
-					for (int i = 0; i < blocks.length; i++) {
-						String axis;
-						switch (axes[i]) {
-							case Z_AXIS:
-								axis = "Z";
-								break;
-							case T_AXIS:
-								axis = "T";
-								break;
-							case C_AXIS:
-								axis = "C";
-								break;
-							default:
-								axis = "?";
-						}
-						log.info("\t" + blocks[i] + "\t" + axis + " (prefix = " +
-							prefixes[i] + ")");
-					}
-					if (!Arrays.equals(dimOrder, newOrder)) {
-						log.info("Adjusted dimension order = " + Arrays.toString(newOrder) +
-							" (" + (isCertain ? "certain" : "uncertain") + ")");
-					}
-				}
-			}
-			else log.info("Pattern is invalid: " + fp.getErrorMessage());
-		}
-	}
-
 }
 
 // -- Notes --

@@ -74,12 +74,11 @@ public class FormatServiceTest {
 	public void testGetSuffixes() {
 		final String[] suffixes = formatService.getSuffixes();
 		final String[] pQCTSuffixes = StratecPQCTFormat.generateSuffixes();
-		final String[] formatSuffixes = { "avi", "bmp", "btf", "csv", "dcm", "dic",
+		final String[] formatSuffixes = { "avi", "bmp", "btf", "dcm", "dic",
 			"dicom", "eps", "epsi", "fits", "fts", "gif", "ics", "ids", "ima", "img",
-			"isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg", "jpf", "jpg",
-			"mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm", "pict",
-			"png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml",
-			"scifiotestimg" };
+			"isq", "j2k", "j2ki", "j2kr", "jp2", "jpe", "jpeg", "jpf", "jpg", "mng",
+			"mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm", "pict", "png",
+			"ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml", "scifiotestimg" };
 
 		final Set<String> expectedSuffixes = new HashSet<>();
 		Arrays.stream(formatSuffixes).forEach(expectedSuffixes::add);

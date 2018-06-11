@@ -60,17 +60,14 @@ public class NumberFilter implements FileFilter {
 	// -- NumberFilter API methods --
 
 	/** Gets numbers filling the asterisk positions. */
-	public BigInteger getNumber(final String name) {
+	public Integer getNumber(final String name) {
 		if (!name.startsWith(pre) || !name.endsWith(post)) return null;
 		final int ndx = pre.length();
 		final int end = name.length() - post.length();
 		try {
-			return new BigInteger(name.substring(ndx, end));
+			return new Integer(name.substring(ndx, end));
 		}
-		catch (final NumberFormatException exc) {
-			return null;
-		}
-		catch (final IndexOutOfBoundsException exc) {
+		catch (NumberFormatException | IndexOutOfBoundsException exc) {
 			return null;
 		}
 	}

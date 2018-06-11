@@ -29,18 +29,19 @@
 
 package io.scif;
 
-import io.scif.io.Location;
+import io.scif.services.FilePatternService;
 
 import java.io.File;
-import java.math.BigInteger;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.scijava.Context;
-import org.scijava.log.LogService;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.Location;
 
 /**
  * FilePattern is a collection of methods for handling file patterns, a way of
@@ -61,6 +62,9 @@ public class FilePattern {
 	/** The file pattern string. */
 	private String pattern;
 
+	/** The Location this pattern is based on */
+	private BrowsableLocation baseLoc;
+
 	/** The validity of the file pattern. */
 	private boolean valid;
 
@@ -77,33 +81,47 @@ public class FilePattern {
 	private FilePatternBlock[] blocks;
 
 	/** File listing for this file pattern. */
-	private String[] files;
+	private Location[] files;
 
 	/** Whether or not this FilePattern represents a regular expression. */
 	private boolean isRegex = false;
 
-	private SCIFIO scifio;
-
 	// -- Constructors --
 
-	/** Creates a pattern object using the given file as a template. */
-	public FilePattern(final Context context, final Location file) {
-		this(context, new SCIFIO(context).filePattern().findPattern(file));
+	/**
+	 * Creates a pattern object using the given file as a template.
+	 *
+	 * @throws IOException
+	 */
+	public FilePattern(final FilePatternService filePatternService,
+		final BrowsableLocation file, final DataHandleService dataHandleService)
+		throws IOException
+	{
+		this(file, filePatternService.findPattern(file), dataHandleService);
 	}
 
 	/**
 	 * Creates a pattern object using the given filename and directory path as a
 	 * template.
+	 *
+	 * @throws IOException
 	 */
-	public FilePattern(final Context context, final String name,
-		final String dir)
+	public FilePattern(final FilePatternService filePatternService,
+		final BrowsableLocation name, final BrowsableLocation dir,
+		final DataHandleService dataHandleService) throws IOException
 	{
-		this(context, new SCIFIO(context).filePattern().findPattern(name, dir));
+		this(name, filePatternService.findPattern(name, dir), dataHandleService);
 	}
 
-	/** Creates a pattern object for files with the given pattern string. */
-	public FilePattern(final Context context, final String pattern) {
-		scifio = new SCIFIO(context);
+	/**
+	 * Creates a pattern object for files with the given pattern string.
+	 *
+	 * @throws IOException
+	 */
+	public FilePattern(final BrowsableLocation baseLoc, final String pattern,
+		final DataHandleService dataHandleService) throws IOException
+	{
+		this.baseLoc = baseLoc;
 		this.pattern = pattern;
 		valid = false;
 		if (pattern == null) {
@@ -119,13 +137,13 @@ public class FilePattern {
 		while (true) {
 			left = pattern.indexOf(FilePatternBlock.BLOCK_START, left + 1);
 			if (left < 0) break;
-			lt.add(new Integer(left));
+			lt.add(left);
 		}
 		int right = -1;
 		while (true) {
 			right = pattern.indexOf(FilePatternBlock.BLOCK_END, right + 1);
 			if (right < 0) break;
-			gt.add(new Integer(right));
+			gt.add(right);
 		}
 
 		// assemble numerical block indices
@@ -159,14 +177,20 @@ public class FilePattern {
 		}
 
 		// build file listing
-		final List<String> fileList = new ArrayList<>();
-		buildFiles("", num, fileList);
-		files = fileList.toArray(new String[0]);
+		final List<Location> fileList = new ArrayList<>();
+		buildFiles("", num, fileList, dataHandleService);
+		files = fileList.toArray(new Location[fileList.size()]);
 
-		if (files.length == 0 && new Location(scifio.getContext(), pattern)
-			.exists())
-		{
-			files = new String[] { pattern };
+		if (files.length == 0) {
+			try {
+				final BrowsableLocation sibling = baseLoc.sibling(pattern);
+				if (dataHandleService.exists(sibling)) {
+					files = new Location[] { sibling };
+				}
+			}
+			catch (final IOException e) {
+				return;
+			}
 		}
 
 		valid = true;
@@ -195,7 +219,7 @@ public class FilePattern {
 	}
 
 	/** Gets a listing of all files matching the given file pattern. */
-	public String[] getFiles() {
+	public Location[] getFiles() {
 		return files;
 	}
 
@@ -266,21 +290,27 @@ public class FilePattern {
 
 	// -- Helper methods --
 
-	/** Recursive method for building filenames for the file listing. */
+	/**
+	 * Recursive method for building filenames for the file listing.
+	 *
+	 * @throws IOException
+	 */
 	private void buildFiles(final String prefix, int ndx,
-		final List<String> fileList)
+		final List<Location> fileList, final DataHandleService dataHandleService)
+		throws IOException
 	{
 		if (blocks.length == 0) {
 			// regex pattern
 
-			if (new Location(scifio.getContext(), pattern).exists()) {
-				fileList.add(pattern);
+			final Location patternLocation = baseLoc.sibling(pattern);
+			if (dataHandleService.exists(patternLocation)) {
+				fileList.add(patternLocation);
 				return;
 			}
 
 			isRegex = true;
 
-			String[] files = null;
+			List<Location> localfiles = null;
 			String dir;
 
 			final int endRegex = pattern.indexOf(File.separator + "\\E") + 1;
@@ -298,18 +328,14 @@ public class FilePattern {
 				dir = pattern.substring(0, endNotRegex);
 				end = endNotRegex;
 			}
-			if (dir.equals("") || !new Location(scifio.getContext(), dir).exists()) {
-				files = scifio.location().getIdMap().keySet().toArray(new String[0]);
-				if (files.length == 0) {
-					dir = ".";
-					files = getAllFiles(dir);
-				}
+			if ("".equals(dir) || !dataHandleService.exists(baseLoc
+				.sibling(dir)))
+			{
+				localfiles = getAllFiles(baseLoc.parent());
 			}
 			else {
-				files = getAllFiles(dir);
+				localfiles = getAllFiles(baseLoc.sibling(dir));
 			}
-
-			Arrays.sort(files);
 
 			final String basePattern = pattern.substring(end);
 			Pattern regex = null;
@@ -320,132 +346,51 @@ public class FilePattern {
 				regex = Pattern.compile(pattern);
 			}
 
-			for (final String f : files) {
-				final Location path = new Location(scifio.getContext(), dir, f);
-				if (regex.matcher(f).matches() || regex.matcher(path.getAbsolutePath())
-					.matches())
-				{
-					if (path.exists()) fileList.add(path.getAbsolutePath());
-					else fileList.add(f);
+			for (final Location f : localfiles) {
+				if (regex.matcher(f.getName()).matches()) {
+					fileList.add(f);
 				}
 			}
 		}
-		else {
+		else
+
+		{
 			// compute bounds for constant (non-block) pattern fragment
 			final int num = startIndex.length;
 			final int n1 = ndx == 0 ? 0 : endIndex[ndx - 1];
 			final int n2 = ndx == num ? pattern.length() : startIndex[ndx];
 			final String pre = pattern.substring(n1, n2);
 
-			if (ndx == 0) fileList.add(pre + prefix);
+			if (ndx == 0) fileList.add(baseLoc.sibling(pre + prefix));
 			else {
 				final FilePatternBlock block = blocks[--ndx];
 				final String[] blockElements = block.getElements();
 				for (final String element : blockElements) {
-					buildFiles(element + pre + prefix, ndx, fileList);
+					buildFiles(element + pre + prefix, ndx, fileList, dataHandleService);
 				}
 			}
 		}
 	}
 
-	private String[] getAllFiles(final String dir) {
-		final ArrayList<String> files = new ArrayList<>();
+	private List<Location> getAllFiles(final BrowsableLocation dir)
+		throws IOException
+	{
+		final List<Location> subfiles = new ArrayList<>();
 
-		final Location root = new Location(scifio.getContext(), dir);
-		final String[] children = root.list();
+		final BrowsableLocation root = dir;
+		final Set<BrowsableLocation> children = root.children();
 
-		for (final String child : children) {
-			final Location file = new Location(scifio.getContext(), root, child);
-			if (file.isDirectory()) {
-				final String[] grandchildren = getAllFiles(file.getAbsolutePath());
-				for (final String g : grandchildren) {
-					files.add(g);
-				}
+		for (final BrowsableLocation child : children) {
+			final List<Location> grandChildren = getAllFiles(child);
+			if (grandChildren.isEmpty()) {
+				subfiles.add(child);
 			}
 			else {
-				files.add(file.getAbsolutePath());
+				subfiles.addAll(grandChildren);
 			}
 		}
-
-		return files.toArray(new String[files.size()]);
+		return subfiles;
 	}
-
-	// -- Main method --
-
-	/** Method for testing file pattern logic. */
-	public static void main(final String[] args) {
-		String pat = null;
-		final SCIFIO scifio = new SCIFIO();
-		final LogService log = scifio.log();
-		if (args.length > 0) {
-			// test file pattern detection based on the given file on disk
-			final Location file = new Location(scifio.getContext(), args[0]);
-			log.info("File = " + file.getAbsoluteFile());
-			pat = scifio.filePattern().findPattern(file);
-		}
-		else {
-			// test file pattern detection from a virtual file list
-			final String[] nameList = new String[2 * 4 * 3 * 12 + 1];
-			nameList[0] = "outlier.ext";
-			int count = 1;
-			for (int i = 1; i <= 2; i++) {
-				for (int j = 1; j <= 4; j++) {
-					for (int k = 0; k <= 2; k++) {
-						for (int l = 1; l <= 12; l++) {
-							final String sl = (l < 10 ? "0" : "") + l;
-							nameList[count++] = "hypothetical" + sl + k + j + "c" + i +
-								".ext";
-						}
-					}
-				}
-			}
-			pat = scifio.filePattern().findPattern(nameList[1], null, nameList);
-		}
-		if (pat == null) log.info("No pattern found.");
-		else {
-			log.info("Pattern = " + pat);
-			final FilePattern fp = new FilePattern(scifio.getContext(), pat);
-			if (fp.isValid()) {
-				log.info("Pattern is valid.");
-				log.info("Files:");
-				final String[] ids = fp.getFiles();
-				for (int i = 0; i < ids.length; i++) {
-					log.info("  #" + i + ": " + ids[i]);
-				}
-			}
-			else log.info("Pattern is invalid: " + fp.getErrorMessage());
-		}
-	}
-
-	// -- Deprecated methods --
-
-	/* @deprecated */
-	public BigInteger[] getFirst() {
-		final BigInteger[] first = new BigInteger[blocks.length];
-		for (int i = 0; i < first.length; i++) {
-			first[i] = blocks[i].getFirst();
-		}
-		return first;
-	}
-
-	/* @deprecated */
-	public BigInteger[] getLast() {
-		final BigInteger[] last = new BigInteger[blocks.length];
-		for (int i = 0; i < last.length; i++) {
-			last[i] = blocks[i].getLast();
-		}
-		return last;
-	}
-
-	/* @deprecated */
-	public BigInteger[] getStep() {
-		final BigInteger[] step = new BigInteger[blocks.length];
-		for (int i = 0; i < step.length; i++) {
-			step[i] = blocks[i].getStep();
-		}
-		return step;
-	}
-
 }
 
 // -- Notes --
