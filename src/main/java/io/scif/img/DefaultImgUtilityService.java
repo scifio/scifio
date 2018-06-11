@@ -36,15 +36,7 @@ import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import net.imagej.ImgPlus;
 import net.imagej.axis.CalibratedAxis;
@@ -70,6 +62,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
@@ -88,8 +81,6 @@ public class DefaultImgUtilityService extends AbstractService implements
 {
 
 	// -- Fields --
-
-	private final int BUFFER_SIZE = 256 * 1024; // 256K
 
 	private SCIFIO scifio = null;
 
@@ -142,83 +133,13 @@ public class DefaultImgUtilityService extends AbstractService implements
 	 * @return The number of images in the specified dataset.
 	 */
 	@Override
-	public int getImageCount(final String source) throws ImgIOException {
+	public int getImageCount(final Location source) throws ImgIOException {
 		try {
 			final Format format = scifio().format().getFormat(source);
 			return format.createParser().parse(source).getImageCount();
 		}
-		catch (final FormatException e) {
+		catch (FormatException | IOException e) {
 			throw new ImgIOException(e);
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-	}
-
-	/**
-	 * Downloads the given URL and caches it to a temporary file, which is deleted
-	 * upon JVM shutdown. This is useful in conjuction with {@link ImgOpener} to
-	 * open a URL as an {@link Img}.
-	 * <p>
-	 * Data compressed with zip or gzip is supported. In the case of zip, the
-	 * first file in the archive is cached.
-	 * </p>
-	 */
-	@Override
-	public String cacheId(final String urlPath) throws ImgIOException {
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			final URL url = new URL(urlPath);
-			final String path = url.getPath();
-			final boolean zip = path.endsWith(".zip");
-			final boolean gz = path.endsWith(".gz");
-			String filename = path.substring(path.lastIndexOf("/") + 1);
-
-			// save URL to temporary file
-			ZipInputStream inZip = null;
-			in = url.openStream();
-			if (zip) {
-				in = inZip = new ZipInputStream(in);
-				final ZipEntry zipEntry = inZip.getNextEntry();
-				filename = zipEntry.getName(); // use filename in the zip
-				// archive
-			}
-			if (gz) {
-				in = new GZIPInputStream(in);
-				filename = filename.substring(0, filename.length() - 3); // strip
-				// .gz
-			}
-			final int dot = filename.lastIndexOf(".");
-			final String prefix = dot < 0 ? filename : filename.substring(0, dot);
-			final String suffix = dot < 0 ? "" : "." + filename.substring(dot + 1);
-			final File tmpFile = File.createTempFile(prefix + "-", suffix);
-			tmpFile.deleteOnExit();
-			out = new FileOutputStream(tmpFile);
-			final byte[] buf = new byte[BUFFER_SIZE];
-			while (true) {
-				final int r = in.read(buf);
-				if (r < 0) break; // eof
-				out.write(buf, 0, r);
-			}
-			return tmpFile.getAbsolutePath();
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-		finally {
-			try {
-				if (in != null) in.close();
-			}
-			catch (final IOException e) {
-				throw new ImgIOException(e);
-			}
-			try {
-				if (out != null) out.close();
-			}
-			catch (final IOException e) {
-				throw new ImgIOException(e);
-			}
 		}
 	}
 

@@ -45,7 +45,6 @@ import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +77,7 @@ import net.imglib2.type.numeric.real.FloatType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.Bytes;
 
@@ -114,7 +114,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Entry point for saving an {@link ImgPlus}. The goal is to get to a
 	 * {@link Writer} and {@link ImgPlus} which are then passed to
 	 * {@link #writePlanes}. These saveImg signatures facilitate multiple pathways
-	 * to that goal. This method is called when a String id and {@link Img} are
+	 * to that goal. This method is called when a Location id and {@link Img} are
 	 * provided.
 	 *
 	 * @param id
@@ -122,14 +122,14 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public Metadata saveImg(final String id, final Img<?> img)
+	public Metadata saveImg(final Location id, final Img<?> img)
 		throws ImgIOException, IncompatibleTypeException
 	{
 		return saveImg(id, img, null);
 	}
 
 	/**
-	 * String id provided. {@link ImgPlus} provided, or wrapped {@link Img} in
+	 * Location id provided. {@link ImgPlus} provided, or wrapped {@link Img} in
 	 * previous saveImg.
 	 *
 	 * @param id
@@ -137,14 +137,14 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public Metadata saveImg(final String id, final SCIFIOImgPlus<?> img,
+	public Metadata saveImg(final Location id, final SCIFIOImgPlus<?> img,
 		final int imageIndex) throws ImgIOException, IncompatibleTypeException
 	{
 		return saveImg(id, img, imageIndex, null);
 	}
 
 	/**
-	 * As {@link #saveImg(String, Img)} with configuration options.
+	 * As {@link #saveImg(Location, Img)} with configuration options.
 	 *
 	 * @param id
 	 * @param img
@@ -152,14 +152,15 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public Metadata saveImg(final String id, final Img<?> img,
+	public Metadata saveImg(final Location id, final Img<?> img,
 		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
 	{
 		return saveImg(id, utils().makeSCIFIOImgPlus(img), 0, config);
 	}
 
 	/**
-	 * As {@link #saveImg(String, SCIFIOImgPlus, int)} with configuration options.
+	 * As {@link #saveImg(Location, SCIFIOImgPlus, int)} with configuration
+	 * options.
 	 *
 	 * @param id
 	 * @param img
@@ -167,81 +168,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public Metadata saveImg(final String id, final SCIFIOImgPlus<?> img,
+	public Metadata saveImg(final Location id, final SCIFIOImgPlus<?> img,
 		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		return writeImg(id, null, img, imageIndex, config);
-	}
-
-	/**
-	 * {@link Writer} and {@link Img} provided
-	 *
-	 * @param w
-	 * @param img
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public void saveImg(final Writer w, final Img<?> img) throws ImgIOException,
-		IncompatibleTypeException
-	{
-		saveImg(w, img, null);
-	}
-
-	// TODO IFormatHandler needs to be promoted to be able to get the current
-	// file, to get its full path, to provide the ImgPluSCIFIOImgPlusending
-	// that,
-	// these two IFormatWriter methods are not guaranteed to be
-	// useful
-	/**
-	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped provided
-	 * {@link Img}.
-	 *
-	 * @param w
-	 * @param img
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public void saveImg(final Writer w, final SCIFIOImgPlus<?> img,
-		final int imageIndex) throws ImgIOException, IncompatibleTypeException
-	{
-		saveImg(w, img, imageIndex, null);
-	}
-
-	/**
-	 * As {@link #saveImg(Writer, Img)}, with configuration options.
-	 *
-	 * @param w
-	 * @param img
-	 * @param config Configuration information to use for this write.
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public void saveImg(final Writer w, final Img<?> img,
-		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
-	{
-		saveImg(w, utils().makeSCIFIOImgPlus(img), 0, config);
-	}
-
-	// TODO IFormatHandler needs to be promoted to be able to get the current
-	// file, to get its full path, to provide the ImgPlus
-	// pending that, these two IFormatWriter methods are not guaranteed to be
-	// useful
-	/**
-	 * As {@link #saveImg(Writer, SCIFIOImgPlus, int)}, with configuration
-	 * options.
-	 *
-	 * @param w
-	 * @param img
-	 * @param config Configuration information to use for this write.
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public void saveImg(final Writer w, final SCIFIOImgPlus<?> img,
-		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
-		IncompatibleTypeException
-	{
-		writeImg(img.getSource(), w, img, imageIndex, config);
 	}
 
 	// -- Utility methods --
@@ -438,7 +369,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * configuration options if needed, and delegates to the appropriate
 	 * intermediate {@link #writeImg} method if able.
 	 */
-	private Metadata writeImg(final String id, final Writer w,
+	private Metadata writeImg(final Location id, final Writer w,
 		final SCIFIOImgPlus<?> img, final int imageIndex, SCIFIOConfig config)
 		throws ImgIOException, IncompatibleTypeException
 	{
@@ -450,7 +381,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final int sliceCount = countSlices(img);
 
 		if (w == null) {
-			if (id == null || id.length() == 0) {
+			if (id == null) {
 				throw new ImgIOException(
 					"No output destination or pre-configured Writer was provided, and" +
 						" no way to determine the desired output path. Default value:" +
@@ -464,9 +395,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	/**
 	 * Intermediate {@link #writeImg} method. Creates a {@link Writer} for the
-	 * given id.
+	 * given id, based on the file extension.
 	 */
-	private Metadata writeImg(final String id, final SCIFIOImgPlus<?> imgPlus,
+	private Metadata writeImg(final Location id, final SCIFIOImgPlus<?> imgPlus,
 		final int imageIndex, final SCIFIOConfig config, final int sliceCount)
 		throws ImgIOException, IncompatibleTypeException
 	{
@@ -474,21 +405,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		Writer w = null;
 
 		try {
-			boolean matches = false;
-			for (final Format format : formatService.getFormatList(id)) {
-				if (!format.getWriterClass().equals(DefaultWriter.class)) {
-					matches = true;
-					break;
-				}
-			}
-
-			if (matches) {
-				final File f = new File(id);
-				if (f.exists()) {
-					f.delete();
-				}
-			}
-			w = formatService.getWriterByExtension(id);
+			w = formatService.getWriterForLocation(id);
 		}
 		catch (final FormatException e) {
 			throw new ImgIOException(e);
@@ -501,16 +418,16 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Intermediate {@link #writeImg} method. Ensures the given writer has proper
 	 * {@link Metadata}, or creates it if possible.
 	 */
-	private Metadata writeImg(final Writer w, final String id,
+	private Metadata writeImg(final Writer w, final Location id,
 		final SCIFIOImgPlus<?> imgPlus, final int imageIndex,
 		final SCIFIOConfig config, final int sliceCount) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		if (w.getMetadata() == null) {
-			if (id == null || id.length() == 0) {
+			if (id == null) {
 				throw new ImgIOException(
 					"A Writer with no Metadata was provided, with no way to determine " +
-						"the desired output path. Default value: ImgPlus's source.");
+						"the desired output path.");
 			}
 			try {
 				populateMeta(w, imgPlus, config, id, imageIndex);
@@ -901,7 +818,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @param id
 	 */
 	private void populateMeta(final Writer w, final SCIFIOImgPlus<?> img,
-		final SCIFIOConfig config, final String id, final int imageIndex)
+		final SCIFIOConfig config, final Location id, final int imageIndex)
 		throws FormatException, IOException, ImgIOException
 	{
 		statusService.showStatus("Initializing " + img.getName());
