@@ -44,19 +44,14 @@ import io.scif.Translator;
 import io.scif.common.DateTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.axes.SCIFIOAxes;
-import io.scif.io.Location;
-import io.scif.io.RandomAccessInputStream;
-import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -68,6 +63,13 @@ import net.imagej.axis.CalibratedAxis;
 import net.imglib2.Interval;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleInputStream;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -116,18 +118,22 @@ public class ICSFormat extends AbstractFormat {
 		private boolean storedRGB;
 
 		/** ICS file name */
-		private String icsId = "";
+		private final String icsId = "";
 
 		/** IDS file name */
-		private String idsId = "";
+		private final String idsId = "";
 
 		/** ICS Metadata */
-		private Hashtable<String, String> keyValPairs;
+		private Map<String, String> keyValPairs;
+
+		private Location icsLocation;
+
+		private Location idsLocation;
 
 		// -- Constructor --
 
 		public Metadata() {
-			keyValPairs = new Hashtable<>();
+			keyValPairs = new HashMap<>();
 		}
 
 		// -- Metadata API Methods --
@@ -314,7 +320,7 @@ public class ICSFormat extends AbstractFormat {
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
 
-			if (!fileOnly) keyValPairs = new Hashtable<>();
+			if (!fileOnly) keyValPairs = new HashMap<>();
 		}
 
 		// -- ICSMetadata Methods --
@@ -336,20 +342,20 @@ public class ICSFormat extends AbstractFormat {
 			return keyValPairs.get(key);
 		}
 
-		public String getIcsId() {
-			return icsId;
+		public void setIcsLocation(final Location icsLocation) {
+			this.icsLocation = icsLocation;
 		}
 
-		public void setIcsId(final String icsId) {
-			this.icsId = icsId;
+		public void setIdsLocation(final Location idsLocation) {
+			this.idsLocation = idsLocation;
 		}
 
-		public String getIdsId() {
-			return idsId;
+		public Location getIcsLocation() {
+			return icsLocation;
 		}
 
-		public void setIdsId(final String idsId) {
-			this.idsId = idsId;
+		public Location getIdsLocation() {
+			return idsLocation;
 		}
 
 		public boolean hasInstrumentData() {
@@ -368,11 +374,11 @@ public class ICSFormat extends AbstractFormat {
 			this.versionTwo = versionTwo;
 		}
 
-		public void setKeyValPairs(final Hashtable<String, String> keyValPairs) {
+		public void setKeyValPairs(final Map<String, String> keyValPairs) {
 			this.keyValPairs = keyValPairs;
 		}
 
-		public Hashtable<String, String> getKeyValPairs() {
+		public Map<String, String> getKeyValPairs() {
 			return keyValPairs;
 		}
 
@@ -431,11 +437,11 @@ public class ICSFormat extends AbstractFormat {
 
 		}
 
-		public void putChannelNames(final Hashtable<Integer, String> cNames) {
+		public void putChannelNames(final Map<Integer, String> cNames) {
 			put("parameter ch", merge(cNames.values()));
 		}
 
-		public void putPinholes(final Hashtable<Integer, Double> pins) {
+		public void putPinholes(final Map<Integer, Double> pins) {
 			put("sensor s_params pinholeradius", merge(pins.values()));
 		}
 
@@ -455,7 +461,7 @@ public class ICSFormat extends AbstractFormat {
 			put("history cube exc nm", merge(ex));
 		}
 
-		public void putWavelengths(final Hashtable<Integer, Integer> waves) {
+		public void putWavelengths(final Map<Integer, Integer> waves) {
 			put("history wavelength*", merge(waves.values()));
 		}
 
@@ -539,7 +545,7 @@ public class ICSFormat extends AbstractFormat {
 			put("layout significant_bits", bpp.toString());
 		}
 
-		public void putGains(final Hashtable<Integer, Double> gains) {
+		public void putGains(final Map<Integer, Double> gains) {
 			put("history gain", merge(gains.values()));
 		}
 
@@ -577,8 +583,8 @@ public class ICSFormat extends AbstractFormat {
 				if (kv[0].equalsIgnoreCase("history date") || kv[0].equalsIgnoreCase(
 					"history created on"))
 				{
-					if (kv[1].indexOf(" ") > 0) {
-						date = kv[1].substring(0, kv[1].lastIndexOf(" "));
+					if (kv[1].indexOf(' ') > 0) {
+						date = kv[1].substring(0, kv[1].lastIndexOf(' '));
 					}
 				}
 				else if (kv[0].equalsIgnoreCase("history creation date")) {
@@ -693,9 +699,9 @@ public class ICSFormat extends AbstractFormat {
 			return kv == null ? null : splitDoubles(kv[1]);
 		}
 
-		public Hashtable<Integer, String> getChannelNames() {
+		public Map<Integer, String> getChannelNames() {
 			final String[] kv = findValueForKey("parameter ch");
-			final Hashtable<Integer, String> channelNames = new Hashtable<>();
+			final Map<Integer, String> channelNames = new HashMap<>();
 			if (kv != null) {
 				final String[] names = kv[1].split(" ");
 				for (int n = 0; n < names.length; n++) {
@@ -705,20 +711,20 @@ public class ICSFormat extends AbstractFormat {
 			return channelNames;
 		}
 
-		public void addStepChannel(final Hashtable<Integer, String> channelNames) {
+		public void addStepChannel(final Map<Integer, String> channelNames) {
 			final String[] kv = findValueIteration("history step", "name");
 			if (kv != null) channelNames.put(new Integer(kv[0].substring(12, kv[0]
-				.indexOf(" ", 12))), kv[1]);
+				.indexOf(' ', 12))), kv[1]);
 		}
 
-		public void addCubeChannel(final Hashtable<Integer, String> channelNames) {
+		public void addCubeChannel(final Map<Integer, String> channelNames) {
 			final String[] kv = findValueForKey("history cube");
-			if (kv != null) channelNames.put(new Integer(channelNames.size()), kv[1]);
+			if (kv != null) channelNames.put(channelNames.size(), kv[1]);
 		}
 
-		public Hashtable<Integer, Double> getPinholes() {
+		public Map<Integer, Double> getPinholes() {
 			final String[] kv = findValueForKey("sensor s_params pinholeradius");
-			final Hashtable<Integer, Double> pinholes = new Hashtable<>();
+			final Map<Integer, Double> pinholes = new HashMap<>();
 			if (kv != null) {
 				final String pins[] = kv[1].split(" ");
 				int channel = 0;
@@ -791,25 +797,23 @@ public class ICSFormat extends AbstractFormat {
 			return exWaves;
 		}
 
-		public Hashtable<Integer, Integer> getWavelengths() {
+		public Map<Integer, Integer> getWavelengths() {
 			final String[] kv = findValueForKey("history wavelength*");
-			final Hashtable<Integer, Integer> wavelengths = new Hashtable<>();
+			final Map<Integer, Integer> wavelengths = new HashMap<>();
 			if (kv != null) {
 				final String[] waves = kv[1].split(" ");
 				for (int n = 0; n < waves.length; n++) {
-					wavelengths.put(new Integer(n), new Integer(waves[n]));
+					wavelengths.put(n, Integer.parseInt(waves[n]));
 				}
 			}
 			return wavelengths;
 		}
 
-		public void addLaserWavelength(
-			final Hashtable<Integer, Integer> wavelengths)
-		{
+		public void addLaserWavelength(final Map<Integer, Integer> wavelengths) {
 			final String[] kv = findValueIteration("history laser", "wavelength");
 			if (kv != null) {
 				final int laser = Integer.parseInt(kv[0].substring(13, kv[0].indexOf(
-					" ", 13))) - 1;
+					' ', 13))) - 1;
 				kv[1] = kv[1].replaceAll("nm", "").trim();
 				try {
 					wavelengths.put(new Integer(laser), new Integer(kv[1]));
@@ -903,9 +907,9 @@ public class ICSFormat extends AbstractFormat {
 			return findIntValueForKey("layout significant_bits");
 		}
 
-		public Hashtable<Integer, Double> getGains() {
+		public Map<Integer, Double> getGains() {
 			final String[] kv = findValueForKey("history gain");
-			final Hashtable<Integer, Double> gains = new Hashtable<>();
+			final Map<Integer, Double> gains = new HashMap<>();
 			if (kv != null) {
 				Integer n = new Integer(0);
 				try {
@@ -958,7 +962,7 @@ public class ICSFormat extends AbstractFormat {
 			if (kv != null) {
 				final String expTime = kv[1];
 				if (expTime.contains(" ")) {
-					exposureTime = new Double(expTime.indexOf(" "));
+					exposureTime = new Double(expTime.indexOf(' '));
 					// TODO: Catch NumberFormatException? Make more DRY with
 					// other logic?
 				}
@@ -1175,12 +1179,13 @@ public class ICSFormat extends AbstractFormat {
 
 		// Converts a generic array to a space-delimited String
 		private <T> String merge(final T... values) {
-			String s = "";
+			final StringBuilder b = new StringBuilder();
 
-			for (final T v : values)
-				s += (v.toString() + " ");
+			for (final T v : values) {
+				b.append(v.toString() + " ");
+			}
 
-			return s;
+			return b.toString();
 		}
 	}
 
@@ -1193,23 +1198,31 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Parser API Methods --
 
+		@Parameter
+		private DataHandleService handles;
+
 		@SuppressWarnings("unchecked")
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
 			findCompanion(stream, meta);
+			final DataHandle<Location> parseHandle;
 
-			final RandomAccessInputStream reader = new RandomAccessInputStream(
-				getContext(), meta.getIcsId());
+			if (stream.get().equals(meta.idsLocation)) { // stream is not on the ics
+				parseHandle = handles.readBuffer(meta.icsLocation);
+			}
+			else {
+				parseHandle = stream;
+			}
 
-			reader.seek(0);
-			String line = reader.findString(ICSUtils.NL);
+			parseHandle.seek(0);
+			String line = parseHandle.findString(ICSUtils.NL);
 			// Extracts the key, value pairs from each line and
 			// inserts them into the ICSMetadata object
-			while (line != null && !line.trim().equals("end") && reader
-				.getFilePointer() < reader.length() - 1)
+			while (line != null && !line.trim().equals("end") && parseHandle
+				.offset() < parseHandle.length() - 1)
 			{
 				line = line.trim().toLowerCase();
 				final String[] tokens = line.split("[ \t]");
@@ -1253,47 +1266,50 @@ public class ICSFormat extends AbstractFormat {
 					}
 				}
 
-				line = reader.findString(ICSUtils.NL);
+				line = parseHandle.findString(ICSUtils.NL);
 			}
 
 			// check which version of ICS
 			final Object icsVersion = meta.getTable().get("ics_version");
 			if (icsVersion == null) {
-				reader.close();
+				parseHandle.close();
 				throw new FormatException("Cannot discern ICS version");
 			}
-			else if (icsVersion.equals("1.0")) {
+			else if ("1.0".equals(icsVersion)) {
 				// split file format: ICS for metadata, IDS for pixel data
 				meta.setVersionTwo(false);
 
 				// verify that data file is present
-				final String idsId = meta.getIdsId();
-				if (!new Location(getContext(), idsId).exists()) {
-					reader.close();
-					throw new FormatException("Data file does not exist: " + idsId);
+				final Location idsLoc = meta.getIdsLocation();
+				if (idsLoc == null) {
+					parseHandle.close();
+					throw new FormatException(
+						"Data file does not exist, should be located next to: " +
+							parseHandle.get().toString());
 				}
 
 				// close the ICS file
-				reader.close();
-				getSource().close(); // NB: Probably not necessary? But just to be
-															// safe...
+				parseHandle.close();
+				getSource().close();
+				// NB: Probably not necessary? But just to be safe...
 
 				// switch to the IDS file
-				updateSource(meta.getIdsId());
+				updateSource(meta.getIdsLocation());
 			}
 			else if (icsVersion.equals("2.0")) {
-				// unified file format: ICS contains metadata and pixel data; no IDS
-				// file
+				// unified file format: ICS contains metadata and pixel data; no
+				// IDS file
 				meta.setVersionTwo(true);
-				meta.setIdsId(meta.getIcsId());
-				meta.setSource(reader);
+				meta.setIdsLocation(meta.getIcsLocation());
+				meta.setSource(stream);
 			}
 			else {
-				reader.close();
+				stream.close();
+				parseHandle.close();
 				throw new FormatException("Unsupported ICS version: " + icsVersion);
 			}
 
-			meta.offset = getSource().getFilePointer();
+			meta.offset = getSource().offset();
 
 			getSource().seek(0);
 
@@ -1321,32 +1337,47 @@ public class ICSFormat extends AbstractFormat {
 		 * Finds the companion file for a given stream (ICS and IDS are
 		 * companions)
 		 */
-		private void findCompanion(final RandomAccessInputStream stream,
-			final Metadata meta) throws FormatException
+		private void findCompanion(final DataHandle<Location> stream,
+			final Metadata meta) throws FormatException, IOException
 		{
-			if (stream.getFileName() == null) return;
 
-			String icsId, idsId;
-			icsId = idsId = stream.getFileName();
-			final int dot = icsId.lastIndexOf(".");
+			String icsId;
+			String idsId;
+			BrowsableLocation icsLocation;
+			BrowsableLocation idsLocation;
+			icsId = idsId = stream.get().getName();
+			if ("".equals(icsId) || !(stream.get() instanceof BrowsableLocation)) {
+				// handle has no filename, we are probably reading from a byte array.
+				// OR we can't browse for companion file as the location does not
+				// support it
+				return;
+			}
+
+			final int dot = icsId.lastIndexOf('.');
 			final String ext = dot < 0 ? "" : icsId.substring(dot + 1).toLowerCase();
-			if (ext.equals("ics")) {
+			if ("ics".equals(ext)) {
 				// convert C to D regardless of case
 				final char[] c = idsId.toCharArray();
 				c[c.length - 2]++;
 				idsId = new String(c);
-				meta.setIdsId(idsId);
+				icsLocation = (BrowsableLocation) stream.get();
+				idsLocation = icsLocation.sibling(idsId);
 			}
-			else if (ext.equals("ids")) {
+			else if ("ids".equals(ext)) {
 				// convert D to C regardless of case
 				final char[] c = icsId.toCharArray();
 				c[c.length - 2]--;
 				icsId = new String(c);
+
+				idsLocation = (BrowsableLocation) stream.get();
+				icsLocation = idsLocation.sibling(icsId);
+			}
+			else {
+				throw new FormatException("Companion file not found");
 			}
 
-			final Location icsFile = new Location(getContext(), icsId);
-			if (!icsFile.exists()) throw new FormatException("ICS file not found.");
-			meta.setIcsId(icsId);
+			meta.setIcsLocation(icsLocation);
+			meta.setIdsLocation(idsLocation);
 		}
 	}
 
@@ -1355,6 +1386,9 @@ public class ICSFormat extends AbstractFormat {
 	 * Version 1 and 2 supported.
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
+
+		@Parameter
+		private DataHandleService dataHandleService;
 
 		// -- Fields --
 
@@ -1394,8 +1428,10 @@ public class ICSFormat extends AbstractFormat {
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
+			final int x = (int) bounds.min(xAxis);
+			final int y = (int) bounds.min(yAxis);
+			final int w = (int) bounds.dimension(xAxis);
+			final int h = (int) bounds.dimension(yAxis);
 
 			final int bpp = FormatTools.getBytesPerPixel(meta.get(imageIndex)
 				.getPixelType());
@@ -1408,28 +1444,28 @@ public class ICSFormat extends AbstractFormat {
 				prevPlane, meta);
 
 			if (!gzip) {
-				getStream().seek(getMetadata().offset + planeIndex * len);
+				getHandle().seek(getMetadata().offset + planeIndex * len);
 			}
 			else {
 				long toSkip = (planeIndex - prevPlane - 1) * len;
 				if (gzipStream == null || planeIndex <= prevPlane) {
-					FileInputStream fis = null;
+					DataHandle<Location> fis = null;
 					toSkip = planeIndex * len;
 					if (getMetadata().versionTwo) {
-						fis = new FileInputStream(getMetadata().icsId);
+						fis = dataHandleService.create(getMetadata().icsLocation);
 						fis.skip(getMetadata().offset);
 					}
 					else {
-						fis = new FileInputStream(getMetadata().idsId);
+						fis = dataHandleService.create(getMetadata().idsLocation);
 						toSkip += getMetadata().offset;
 					}
 					try {
-						gzipStream = new GZIPInputStream(fis);
+						gzipStream = new GZIPInputStream(new DataHandleInputStream<>(fis));
 					}
 					catch (final IOException e) {
 						// the 'gzip' flag is set erroneously
 						gzip = false;
-						getStream().seek(getMetadata().offset + planeIndex * len);
+						getHandle().seek(getMetadata().offset + planeIndex * len);
 						gzipStream = null;
 					}
 				}
@@ -1457,20 +1493,19 @@ public class ICSFormat extends AbstractFormat {
 				.storedRGB())
 			{
 				// channels are stored interleaved, but because there are more
-				// than we
-				// can display as RGB, we need to separate them
-				getStream().seek(getMetadata().offset + len * FormatTools
+				// than we can display as RGB, we need to separate them
+				getHandle().seek(getMetadata().offset + len * FormatTools
 					.positionToRaster(0, this, new long[] { coordinates[0], 0,
 						coordinates[2] }));
 				if (!gzip && data == null) {
 					data = new byte[(int) (len * getMetadata().get(imageIndex)
 						.getAxisLength(Axes.CHANNEL))];
-					getStream().read(data);
+					getHandle().read(data);
 				}
 				else if (!gzip && (coordinates[0] != prevCoordinates[0] ||
 					coordinates[2] != prevCoordinates[2]))
 				{
-					getStream().read(data);
+					getHandle().read(data);
 				}
 
 				for (int row = y; row < h + y; row++) {
@@ -1484,13 +1519,14 @@ public class ICSFormat extends AbstractFormat {
 				}
 			}
 			else if (gzip) {
-				final RandomAccessInputStream s = new RandomAccessInputStream(
-					getContext(), data);
-				readPlane(s, imageIndex, bounds, plane);
-				s.close();
+				try (DataHandle<Location> bytes = dataHandleService.create(
+					new BytesLocation(data)))
+				{
+					readPlane(bytes, imageIndex, bounds, plane);
+				}
 			}
 			else {
-				readPlane(getStream(), imageIndex, bounds, plane);
+				readPlane(getHandle(), imageIndex, bounds, plane);
 			}
 
 			if (invertY) {
@@ -1537,22 +1573,25 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void setSource(final RandomAccessInputStream stream,
+		public void setSource(final DataHandle<Location> stream,
 			final SCIFIOConfig config) throws IOException
 		{
-			if (!getMetadata().versionTwo) {
+			// we need to switch to the ids file if the stream points to the ics
+			// file, as we
+			if (!getMetadata().versionTwo && !getMetadata().getIdsLocation().equals(
+				stream.get()))
+			{
 				stream.close();
-				super.setSource(new RandomAccessInputStream(getContext(),
-					getMetadata().idsId), config);
+				super.setSource(dataHandleService.create(getMetadata()
+					.getIdsLocation()), config);
+				return;
 			}
-			else {
-				super.setSource(stream, config);
-			}
+			super.setSource(stream, config);
 		}
 
 		@Override
 		public String[] getDomains() {
-			FormatTools.assertStream(getStream(), true, 0);
+			FormatTools.assertStream(getHandle(), true, 0);
 			final String[] domain = new String[] { FormatTools.GRAPHICS_DOMAIN };
 			if (getMetadata().get(0).getAxisLength(SCIFIOAxes.LIFETIME) > 1) {
 				domain[0] = FormatTools.FLIM_DOMAIN;
@@ -1570,6 +1609,9 @@ public class ICSFormat extends AbstractFormat {
 	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
+		@Parameter
+		private DataHandleService dataHandleService;
+
 		// -- Fields --
 
 		private long dimensionOffset;
@@ -1580,7 +1622,7 @@ public class ICSFormat extends AbstractFormat {
 
 		private long lastPlane = -1;
 
-		private RandomAccessOutputStream pixels;
+		private DataHandle<Location> pixels;
 
 		// -- AbstractWriter Methods --
 
@@ -1676,7 +1718,7 @@ public class ICSFormat extends AbstractFormat {
 
 		public void close(final int imageIndex) throws IOException {
 			if (lastPlane != getMetadata().get(imageIndex).getPlaneCount() - 1 &&
-				getStream() != null)
+				getHandle() != null)
 			{
 				overwriteDimensions(getMetadata(), imageIndex);
 			}
@@ -1693,55 +1735,8 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void setDest(final String id) throws FormatException, IOException {
-			// FIXME consolidate this code in setDest when the RAOS id is
-			// exposed.
-			// Update the id if necessary
-			if (FormatTools.checkSuffix(id, "ids")) {
-				final String metadataFile = makeIcsId(id);
-				setDest(metadataFile);
-				return;
-			}
-			updateMetadataIds(id);
-			super.setDest(id);
-		}
-
-		@Override
-		public void setDest(final String id, final int imageIndex)
-			throws FormatException, IOException
-		{
-			// FIXME consolidate this code in setDest when the RAOS id is
-			// exposed.
-			// Update the id if necessary
-			if (FormatTools.checkSuffix(id, "ids")) {
-				final String metadataFile = makeIcsId(id);
-				setDest(metadataFile, imageIndex);
-				return;
-			}
-			updateMetadataIds(id);
-			super.setDest(id, imageIndex);
-		}
-
-		@Override
-		public void setDest(final String id, final int imageIndex,
+		public void setDest(final DataHandle<Location> out, final int imageIndex,
 			final SCIFIOConfig config) throws FormatException, IOException
-		{
-			// FIXME consolidate this code in setDest when the RAOS id is
-			// exposed.
-			// Update the id if necessary
-			if (FormatTools.checkSuffix(id, "ids")) {
-				final String metadataFile = makeIcsId(id);
-				setDest(metadataFile, imageIndex, config);
-				return;
-			}
-			updateMetadataIds(id);
-			super.setDest(id, imageIndex, config);
-		}
-
-		@Override
-		public void setDest(final RandomAccessOutputStream out,
-			final int imageIndex, final SCIFIOConfig config) throws FormatException,
-			IOException
 		{
 			final String currentId = getMetadata().idsId != null ? getMetadata().idsId
 				: getMetadata().icsId;
@@ -1764,9 +1759,9 @@ public class ICSFormat extends AbstractFormat {
 
 				final int pixelType = meta.get(imageIndex).getPixelType();
 
-				dimensionOffset = out.getFilePointer();
+				dimensionOffset = out.offset();
 				final int[] sizes = overwriteDimensions(meta, imageIndex);
-				dimensionLength = (int) (out.getFilePointer() - dimensionOffset);
+				dimensionLength = (int) (out.offset() - dimensionOffset);
 
 				if (getValidBits() != 0) {
 					out.writeBytes("layout\tsignificant_bits\t" + getValidBits() + "\n");
@@ -1817,14 +1812,13 @@ public class ICSFormat extends AbstractFormat {
 
 				out.writeBytes("\nparameter\tunits\tbits\t" + units.toString() + "\n");
 				out.writeBytes("\nend\n");
-				pixelOffset = out.getFilePointer();
+				pixelOffset = out.offset();
 			}
 			else if (FormatTools.checkSuffix(currentId, "ics")) {
-				final RandomAccessInputStream in = new RandomAccessInputStream(
-					getContext(), currentId);
-				in.findString("\nend\n");
-				pixelOffset = in.getFilePointer();
-				in.close();
+				try (DataHandle<Location> tmpin = dataHandleService.create(out.get())) {
+					tmpin.findString("\nend\n");
+					pixelOffset = tmpin.offset();
+				}
 			}
 
 			if (FormatTools.checkSuffix(currentId, "ids")) {
@@ -1832,29 +1826,21 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			if (pixels == null) {
-				pixels = new RandomAccessOutputStream(getContext(), currentId);
+				pixels = dataHandleService.create(out.get());
 			}
 		}
 
 		// -- Helper methods --
 
-		/* Sets the ICS Metadta icsId and idsId fields */
-		private void updateMetadataIds(final String id) {
-			getMetadata().idsId = FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(
-				id);
-			getMetadata().icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(
-				id);
-		}
-
 		private int[] overwriteDimensions(final Metadata meta, final int imageIndex)
 			throws IOException
 		{
-			getStream().seek(dimensionOffset);
-//			final int sizeX = (int) meta.getAxisLength(imageIndex, Axes.X);
-//			final int sizeY = (int) meta.getAxisLength(imageIndex, Axes.Y);
-//			final int z = (int) meta.getAxisLength(imageIndex, Axes.Z);
-//			final int c = (int) meta.getAxisLength(imageIndex, Axes.SPECTRA);
-//			final int t = (int) meta.getAxisLength(imageIndex, Axes.TIME);
+			getHandle().seek(dimensionOffset);
+			// final int sizeX = (int) meta.getAxisLength(imageIndex, Axes.X);
+			// final int sizeY = (int) meta.getAxisLength(imageIndex, Axes.Y);
+			// final int z = (int) meta.getAxisLength(imageIndex, Axes.Z);
+			// final int c = (int) meta.getAxisLength(imageIndex, Axes.SPECTRA);
+			// final int t = (int) meta.getAxisLength(imageIndex, Axes.TIME);
 			final int pixelType = meta.get(imageIndex).getPixelType();
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
 
@@ -1888,47 +1874,30 @@ public class ICSFormat extends AbstractFormat {
 				}
 				dimOrder.append("\t");
 			}
-			getStream().writeBytes("layout\torder\tbits\t" + dimOrder.toString() +
+			getHandle().writeBytes("layout\torder\tbits\t" + dimOrder.toString() +
 				"\n");
-			getStream().writeBytes("layout\tsizes\t");
+			getHandle().writeBytes("layout\tsizes\t");
 			for (final int size : sizes) {
-				getStream().writeBytes(size + "\t");
+				getHandle().writeBytes(size + "\t");
 			}
-			while ((getStream().getFilePointer() -
-				dimensionOffset) < dimensionLength - 1)
-			{
-				getStream().writeBytes(" ");
+			while ((getHandle().offset() - dimensionOffset) < dimensionLength - 1) {
+				getHandle().writeBytes(" ");
 			}
-			getStream().writeBytes("\n");
+			getHandle().writeBytes("\n");
 
 			return sizes;
 		}
 
-		/* Turns the provided id into a .ics path */
-		private String makeIcsId(final String idsId) {
-			return setIdExtension(idsId, ".ics");
-		}
-
-		/* Turns the provided id into a .ids path */
-		private String makeIdsId(final String icsId) {
-			return setIdExtension(icsId, ".ids");
-		}
-
-		/*
-		 * Replaces the current extension of the provided id with the provided
-		 * extension
-		 */
-		private String setIdExtension(String id, final String extension) {
-			id = id.substring(0, id.lastIndexOf("."));
-			id += extension;
-			return id;
-		}
 	}
 
 	/**
 	 * Collection of utility methods and constants for working with ICS images.
 	 */
 	public static class ICSUtils {
+
+		private ICSUtils() {
+			// NB. Utility class
+		}
 
 		// -- Constants --
 
@@ -1943,29 +1912,19 @@ public class ICSFormat extends AbstractFormat {
 			"HH:mm:ss dd\\MM\\yy" };
 
 		// These strings appeared in the former metadata field categories but
-		// are
-		// not
-		// found in the LOCI sample files.
+		// are not found in the LOCI sample files.
 		//
 		// The former metadata field categories table did not save the context,
-		// i.e.
-		// the first token such as "document" or "history" and other
-		// intermediate
-		// tokens. The preceding tables such as DOCUMENT_KEYS or HISTORY_KEYS
-		// use
-		// this full context.
+		// i.e. the first token such as "document" or "history" and other
+		// intermediate tokens. The preceding tables such as DOCUMENT_KEYS or
+		// HISTORY_KEYS use this full context.
 		//
 		// In an effort at backward compatibility, these will be used to form
-		// key
-		// value pairs if key/value pair not already assigned and they match
-		// anywhere
-		// in the input line.
+		// key value pairs if key/value pair not already assigned and they match
+		// anywhere in the input line.
 		//
-		public static String[][] OTHER_KEYS = { { "cube", "descriptio" }, // sic;
-			// also
-			// listed
-			// in
-			// HISTORY_KEYS
+		public static String[][] OTHER_KEYS = { { "cube", "descriptio" },
+			// sic; // also listed in HISTORY_KEYS
 			{ "cube", "description" }, // correction; also listed in HISTORY_KEYS
 			{ "image", "form" }, // also listed in HISTORY_KEYS
 			{ "refinxlensmedium" }, // Could be a mispelling of "refrinxlensmedium";
@@ -2053,8 +2012,7 @@ public class ICSFormat extends AbstractFormat {
 				parent.put(LEAF, LEAF);
 			}
 			// the head category may have multiple subcategories, so create a
-			// category
-			// mapping.
+			// category mapping.
 			else {
 				final String node = keys[0];
 				final Object o = parent.get(node);
@@ -2099,11 +2057,10 @@ public class ICSFormat extends AbstractFormat {
 			final Metadata dest)
 		{
 			// note that the destination fields will preserve their default
-			// values
-			// only the keyValPairs will be modified
+			// values only the keyValPairs will be modified
 
-			Hashtable<String, String> keyValPairs = null;
-			if (dest.getKeyValPairs() == null) keyValPairs = new Hashtable<>();
+			Map<String, String> keyValPairs = null;
+			if (dest.getKeyValPairs() == null) keyValPairs = new HashMap<>();
 			else keyValPairs = dest.getKeyValPairs();
 
 			final int numAxes = source.get(0).getAxes().size();
@@ -2190,13 +2147,13 @@ public class ICSFormat extends AbstractFormat {
 			keyValPairs.put("representation format", fPoint ? "real" : "");
 			keyValPairs.put("representation compression", "");
 
-			String byteOrder = "0";
+			String byteOrder;
 
 			if (source.get(0).isLittleEndian()) byteOrder = fPoint ? "1" : "0";
 			else byteOrder = fPoint ? "0" : "1";
 
 			if (source.get(0).getBitsPerPixel() < 32) {
-				if (byteOrder.equals("0")) byteOrder = "1";
+				if ("0".equals(byteOrder)) byteOrder = "1";
 				else byteOrder = "0";
 			}
 
