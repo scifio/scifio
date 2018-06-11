@@ -42,8 +42,6 @@ import io.scif.formats.StratecPQCTFormat.Checker;
 import io.scif.formats.StratecPQCTFormat.Metadata;
 import io.scif.formats.StratecPQCTFormat.Parser;
 import io.scif.formats.StratecPQCTFormat.Reader;
-import io.scif.io.ByteArrayHandle;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.nio.ByteBuffer;
@@ -63,6 +61,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
+import org.scijava.util.ByteArray;
 
 /**
  * Tests for {@link StratecPQCTFormat}
@@ -71,11 +74,12 @@ import org.scijava.Context;
  */
 public class StratecPQCTFormatTest {
 
-	private static final String validName = Paths.get("/home/path/I1234567.m02")
-		.toString();
+	private static final String validName = Paths.get("I1234567.m02").toString();
 	private static final String validDevice = "device.typ";
 	private static final StratecPQCTFormat format = new StratecPQCTFormat();
 	private static final Context context = new Context();
+	private static final DataHandleService handles = context.getService(
+		DataHandleService.class);
 	private static final Checker checker = new Checker();
 	private static final Parser parser = new Parser();
 
@@ -103,69 +107,57 @@ public class StratecPQCTFormatTest {
 	@Test
 	public void testIsFormatFalseNoDevice() throws Exception {
 		// Check that method doesn't crash with NPE even if there's no device data
-		final ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE);
-		final ByteArrayHandle handle = new ByteArrayHandle(buffer);
-		buffer.position(DEVICE_NAME_INDEX);
-		buffer.put((byte) 1);
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			handle, validName);
-
-		assertFalse(checker.isFormat(stream));
+		final DataHandle<Location> handle = createTestHandle(HEADER_SIZE,
+			validName);
+		handle.write(new byte[DEVICE_NAME_INDEX]); // zero-fill the handle
+		handle.write(1);
+		assertFalse(checker.isFormat(handle));
 	}
 
 	@Test
 	public void testIsFormatFalseShortStream() throws Exception {
-		final ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE - 1);
-		buffer.position(DEVICE_NAME_INDEX);
-		buffer.put((byte) validDevice.length());
-		buffer.put(validDevice.getBytes());
-		final ByteArrayHandle handle = new ByteArrayHandle(buffer);
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			handle, validName);
+		final DataHandle<Location> handle = createTestHandle(HEADER_SIZE - 1,
+			validName);
+		handle.write(new byte[DEVICE_NAME_INDEX]); // zero-fill the handle
 
-		assertFalse(checker.isFormat(stream));
+		handle.write((byte) validDevice.length());
+		handle.write(validDevice.getBytes());
+		assertFalse(checker.isFormat(handle));
 	}
 
 	@Test
 	public void testIsFormatFalseBadDevice() throws Exception {
 		final String device = "device.tyq";
-		final ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE);
-		buffer.position(DEVICE_NAME_INDEX);
-		buffer.put((byte) device.length());
-		buffer.put(device.getBytes());
-		final ByteArrayHandle handle = new ByteArrayHandle(buffer);
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			handle, validName);
+		final DataHandle<Location> handle = createTestHandle(HEADER_SIZE,
+			validName);
+		handle.write(new byte[DEVICE_NAME_INDEX]); // zero-fill the handle
 
-		assertFalse(checker.isFormat(stream));
+		handle.write((byte) device.length());
+		handle.write(device.getBytes());
+
+		assertFalse(checker.isFormat(handle));
 	}
 
 	@Test
 	public void testIsFormatFalseBadFilename() throws Exception {
-		final ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE);
-		buffer.position(DEVICE_NAME_INDEX);
-		buffer.put((byte) validDevice.length());
-		buffer.put(validDevice.getBytes());
-		final ByteArrayHandle handle = new ByteArrayHandle(buffer);
-		final String badFileName = Paths.get("/home/path/I123456G.m02").toString();
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			handle, badFileName);
+		DataHandle<Location> handle = createTestHandle(HEADER_SIZE, "I123456G.m02");
 
-		assertFalse(checker.isFormat(stream));
+		handle.write(new byte[DEVICE_NAME_INDEX]); // zero-fill the handle
+		handle.write((byte) validDevice.length());
+		handle.write(validDevice.getBytes());
+
+		assertFalse(checker.isFormat(handle));
 	}
 
 	@Test
 	public void testIsFormat() throws Exception {
 		final String device = "DevIce.TyP"; // Check that case doesn't matter
-		final ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE);
-		buffer.position(DEVICE_NAME_INDEX);
-		buffer.put((byte) device.length());
-		buffer.put(device.getBytes());
-		final ByteArrayHandle handle = new ByteArrayHandle(buffer);
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			handle, validName);
-
-		assertTrue(checker.isFormat(stream));
+		final DataHandle<Location> handle = createTestHandle(HEADER_SIZE,
+			validName);
+		handle.write(new byte[DEVICE_NAME_INDEX]); // zero-fill the handle
+		handle.write((byte) device.length());
+		handle.write(device.getBytes());
+		assertTrue(checker.isFormat(handle));
 	}
 
 	@Test
@@ -180,10 +172,9 @@ public class StratecPQCTFormatTest {
 	@Test
 	public void testMeasurementInfoEmptyIfException() throws Exception {
 		final Metadata metadata = (Metadata) format.createMetadata();
-		final RandomAccessInputStream stream = new RandomAccessInputStream(
-			new Context(), new byte[0]);
+		final DataHandle<Location> handle = createTestHandle(0, validName);
 
-		metadata.setMeasurementInfo(stream);
+		metadata.setMeasurementInfo(handle);
 
 		assertTrue(metadata.getMeasurementInfo().isEmpty());
 	}
@@ -281,13 +272,13 @@ public class StratecPQCTFormatTest {
 		buffer.putShort(1527, topEdge);
 		buffer.putShort(1529, width);
 		buffer.putShort(1531, height);
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			buffer.array());
+		final DataHandle<Location> handle = handles.create(new BytesLocation(buffer
+			.array()));
 		final Metadata metadata = new Metadata();
 		final SCIFIOConfig config = new SCIFIOConfig();
 
 		// EXERCISE
-		parser.typedParse(stream, metadata, config);
+		parser.typedParse(handle, metadata, config);
 
 		// VERIFY
 		assertEquals(resolution, metadata.getResolution(), 1e-12);
@@ -333,10 +324,10 @@ public class StratecPQCTFormatTest {
 		buffer.position(1529);
 		buffer.putShort(width);
 		buffer.putShort(height);
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			buffer.array());
+		final DataHandle<Location> handle = handles.create(new BytesLocation(buffer
+			.array()));
 		final Reader reader = (Reader) format.createReader();
-		reader.setSource(stream);
+		reader.setSource(handle);
 
 		// EXECUTE
 		final Interval bounds = new FinalInterval(width, height);
@@ -345,6 +336,18 @@ public class StratecPQCTFormatTest {
 		// VERIFY
 		assertEquals(
 			"Position of stream incorrect: should point to the end of the stream",
-			StratecPQCTFormat.HEADER_SIZE + planeBytes, stream.getFilePointer());
+			StratecPQCTFormat.HEADER_SIZE + planeBytes, handle.offset());
+	}
+
+	private DataHandle<Location> createTestHandle(final int size,
+		final String name)
+	{
+		return handles.create(new BytesLocation(new ByteArray(size)) {
+
+			@Override
+			public String getName() {
+				return name;
+			}
+		});
 	}
 }
