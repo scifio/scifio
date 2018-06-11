@@ -41,8 +41,6 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Translator;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.Location;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.services.FormatService;
 import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
@@ -51,19 +49,26 @@ import io.scif.xml.XMLService;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.Interval;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.DigestUtils;
-import org.scijava.util.FileUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -99,15 +104,15 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		private Vector<Position> positions;
+		private List<Position> positions;
 
 		// -- MicromanagerMetadata getters and setters --
 
-		public Vector<Position> getPositions() {
+		public List<Position> getPositions() {
 			return positions;
 		}
 
-		public void setPositions(final Vector<Position> positions) {
+		public void setPositions(final List<Position> positions) {
 			this.positions = positions;
 		}
 
@@ -143,61 +148,92 @@ public class MicromanagerFormat extends AbstractFormat {
 		@Parameter
 		private FormatService formatService;
 
+		@Parameter
+		private DataHandleService dataHandleService;
+
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(final String name, final SCIFIOConfig config) {
+		public boolean isFormat(final Location location,
+			final SCIFIOConfig config)
+		{
 			// not allowed to touch the file system
 			if (!config.checkerIsOpen()) return false;
-			if (name.equals(METADATA) || name.endsWith(File.separator + METADATA) ||
-				name.equals(XML) || name.endsWith(File.separator + XML))
-			{
-				final int blockSize = 1048576;
-				try {
-					final RandomAccessInputStream stream = new RandomAccessInputStream(
-						getContext(), name);
-					final long length = stream.length();
-					final String data = stream.readString((int) Math.min(blockSize,
-						length));
-					stream.close();
-					return length > 0 && (data.contains("Micro-Manager") || data.contains(
-						"micromanager"));
-				}
-				catch (final IOException e) {
-					return false;
-				}
-			}
+
 			try {
-				final Location parent = new Location(getContext(), name)
-					.getAbsoluteFile().getParentFile();
-				final Location metaFile = new Location(getContext(), parent, METADATA);
-				final RandomAccessInputStream s = new RandomAccessInputStream(
-					getContext(), name);
-				boolean validTIFF = isFormat(s);
-				final io.scif.Checker checker;
-				try {
-					checker = formatService.getFormatFromClass(MinimalTIFFFormat.class)
-						.createChecker();
-					validTIFF = checker.isFormat(s);
+				// check metadata file
+				if (validMetadataFile(location)) {
+					try (DataHandle<Location> handle = dataHandleService.create(
+						location))
+					{
+						return checkMetadataHandle(handle);
+					}
 				}
-				catch (final FormatException e) {
-					log().error("Failed to create a MinimalTIFFChecker", e);
-					validTIFF = false;
+
+				// Ensure we can look for neighbors
+				if (!(location instanceof BrowsableLocation)) return false;
+
+				// Search for metadata file in the vicinity + check image file
+				try (DataHandle<Location> handle = dataHandleService.create(location)) {
+					return checkImageFile((BrowsableLocation) location, config, handle);
 				}
-				s.close();
-				return validTIFF && metaFile.exists() && isFormat(metaFile
-					.getAbsolutePath(), config);
 			}
-			catch (final NullPointerException e) {}
-			catch (final IOException e) {}
-			return false;
+			catch (final IOException e) {
+				log().error("Error when checking format: " + e);
+				return false;
+			}
+		}
+
+		private boolean checkImageFile(final BrowsableLocation location,
+			final SCIFIOConfig config, final DataHandle<Location> handle)
+		{
+			try {
+				final Location metaFile = location.sibling(METADATA);
+				final boolean validMetaData = isFormat(handle);
+				if (!validMetaData) return false;
+				final io.scif.Checker checker;
+				checker = formatService.getFormatFromClass(MinimalTIFFFormat.class)
+					.createChecker();
+				final boolean validTIFF = checker.isFormat(handle);
+				return validTIFF && isFormat(metaFile, config);
+			}
+			catch (final FormatException | IOException e) {
+				log().error("Error when checking format: ", e);
+				return false;
+			}
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> handle)
 			throws IOException
 		{
-			return false;
+			final Location location = handle.get();
+			if (validMetadataFile(location)) {
+				handle.seek(0l);
+				return checkMetadataHandle(handle);
+			}
+
+			// ensure we can look for neighbors
+			return location instanceof BrowsableLocation;
+		}
+
+		private boolean validMetadataFile(final Location location) {
+			if (location == null) return false;
+			final String name = location.getName();
+			return name.equals(METADATA) || name.endsWith(File.separator +
+				METADATA) || name.equals(XML) || name.endsWith(File.separator + XML);
+		}
+
+		private boolean checkMetadataHandle(final DataHandle<Location> handle)
+			throws IOException
+		{
+			if (!handle.exists()) return false;
+			final int blockSize = 1048576;
+
+			final long length = handle.length();
+			final String data = handle.readString((int) Math.min(blockSize, length));
+			return length > 0 && (data.contains("Micro-Manager") || data.contains(
+				"micromanager"));
 		}
 	}
 
@@ -208,6 +244,9 @@ public class MicromanagerFormat extends AbstractFormat {
 		public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
 
 		// -- Fields --
+
+		@Parameter
+		private DataHandleService dataHandleService;
 
 		@Parameter
 		private TranslatorService translatorService;
@@ -221,10 +260,10 @@ public class MicromanagerFormat extends AbstractFormat {
 			final io.scif.Metadata dest) throws FormatException, IOException
 		{
 			source.createImageMetadata(jsonData.length);
-			final Vector<Position> positions = new Vector<>();
+			final List<Position> positions = new ArrayList<>();
 			for (int pos = 0; pos < jsonData.length; pos++) {
 				final Position p = new Position();
-				p.metadataFile = "Position #" + (pos + 1);
+//				p.metadataFile = "Position #" + (pos + 1); // FIXME what to put here?
 				positions.add(p);
 				parsePosition(jsonData[pos], source, pos);
 			}
@@ -235,39 +274,36 @@ public class MicromanagerFormat extends AbstractFormat {
 		// -- Parser API methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			final Vector<Position> positions = new Vector<>();
+			final List<Position> positions = new ArrayList<>();
 			meta.setPositions(positions);
 
 			log().info("Reading metadata file");
 
 			// find metadata.txt
 
-			final Location file = new Location(getContext(), stream.getFileName())
-				.getAbsoluteFile();
-			Location parentFile = file.getParentFile();
-			String metadataFile = METADATA;
-			if (!file.exists()) throw new IllegalStateException(
-				"MicromanagerFormat: No companion metadata file");
+			final BrowsableLocation file = asBrowsableLocation(stream);
+			BrowsableLocation parentFile = file.parent();
+			final BrowsableLocation metadataFile = file.sibling(METADATA);
 
-			metadataFile = new Location(getContext(), parentFile, METADATA)
-				.getAbsolutePath();
+			if (metadataFile == null || parentFile == null) {
+				throw new IOException(
+					"MicromanagerFormat: No companion metadata file found!");
+			}
 
 			// look for other positions
 
 			if (parentFile.getName().contains("Pos_")) {
-				parentFile = parentFile.getParentFile();
-				final String[] dirs = parentFile.list(true);
-				Arrays.sort(dirs);
-				for (final String dir : dirs) {
-					if (dir.contains("Pos_")) {
+				parentFile = parentFile.parent();
+				final Set<BrowsableLocation> dirs = parentFile.children();
+
+				for (final BrowsableLocation dir : dirs) {
+					if (dir.getName().contains("Pos_")) {
 						final Position pos = new Position();
-						final Location posDir = new Location(getContext(), parentFile, dir);
-						pos.metadataFile = new Location(getContext(), posDir, METADATA)
-							.getAbsolutePath();
+						pos.metadataFile = dir.child(METADATA);
 						positions.add(pos);
 					}
 				}
@@ -287,36 +323,40 @@ public class MicromanagerFormat extends AbstractFormat {
 		}
 
 		@Override
-		public String[] getImageUsedFiles(final int imageIndex,
+		public Location[] getImageUsedFiles(final int imageIndex,
 			final boolean noPixels)
 		{
 			FormatTools.assertId(getSource(), true, 1);
-			final Vector<String> files = new Vector<>();
+			final List<Location> files = new ArrayList<>();
 			for (final Position pos : getMetadata().getPositions()) {
 				files.add(pos.metadataFile);
 				if (pos.xmlFile != null) {
 					files.add(pos.xmlFile);
 				}
 				if (!noPixels) {
-					for (final String tiff : pos.tiffs) {
-						if (new Location(getContext(), tiff).exists()) {
-							files.add(tiff);
+					for (final Location tiff : pos.tiffs) {
+						try {
+							if (dataHandleService.exists(tiff)) files.add(tiff);
+						}
+						catch (final IOException exc) {
+							log().error("Could not check if location: " + tiff.getURI()
+								.toString() + " encountered exception: " + exc);
 						}
 					}
 				}
 			}
-			return files.toArray(new String[files.size()]);
+			return files.toArray(new Location[files.size()]);
 		}
 
 		// -- Groupable API Methods --
 
 		@Override
-		public boolean isSingleFile(final String id) {
+		public boolean isSingleFile(final Location id) {
 			return false;
 		}
 
 		@Override
-		public int fileGroupOption(final String id) {
+		public int fileGroupOption(final Location id) {
 			return FormatTools.MUST_GROUP;
 		}
 
@@ -330,60 +370,73 @@ public class MicromanagerFormat extends AbstractFormat {
 		private void parsePosition(final Metadata meta, final int posIndex)
 			throws IOException, FormatException
 		{
-			final Position p = meta.getPositions().get(posIndex);
-			final byte[] bytes = FileUtils.readFile(new File(p.metadataFile));
-			final String s = DigestUtils.string(bytes);
-			parsePosition(s, meta, posIndex);
+			final Position pos = meta.getPositions().get(posIndex);
 
-			buildTIFFList(meta, posIndex);
+			try (DataHandle<Location> handle = dataHandleService.create(
+				pos.metadataFile))
+			{
+				final long len = handle.length();
+				if (len > Integer.MAX_VALUE) {
+					throw new FormatException("MetadataFile at: " + pos.metadataFile
+						.getURI() + " is too large to be parsed!");
+				}
+				final String metaData = handle.readString((int) handle.length());
+				parsePosition(metaData, meta, posIndex);
+				buildTIFFList(meta, posIndex);
+			}
 		}
 
 		private void buildTIFFList(final Metadata meta, final int posIndex)
 			throws FormatException
 		{
-			final Position p = meta.getPositions().get(posIndex);
-			final ImageMetadata ms = meta.get(posIndex);
-			final String parent = new Location(getContext(), p.metadataFile)
-				.getParent();
+			try {
+				final Position p = meta.getPositions().get(posIndex);
+				final ImageMetadata ms = meta.get(posIndex);
+				final BrowsableLocation parent = p.metadataFile.parent();
 
-			log().info("Finding image file names");
+				log().info("Finding image file names");
 
-			// find the name of a TIFF file
-			p.tiffs = new Vector<>();
+				// find the name of a TIFF file
+				p.tiffs = new ArrayList<>();
 
-			// build list of TIFF files
+				// build list of TIFF files
 
-			buildTIFFList(meta, posIndex, parent + File.separator + p.baseTiff);
+				buildTIFFList(meta, posIndex, p.baseTiff);
 
-			if (p.tiffs.size() == 0) {
-				final Vector<String> uniqueZ = new Vector<>();
-				final Vector<String> uniqueC = new Vector<>();
-				final Vector<String> uniqueT = new Vector<>();
+				if (p.tiffs.isEmpty()) {
+					final List<String> uniqueZ = new ArrayList<>();
+					final List<String> uniqueC = new ArrayList<>();
+					final List<String> uniqueT = new ArrayList<>();
 
-				final Location dir = new Location(getContext(), p.metadataFile)
-					.getAbsoluteFile().getParentFile();
-				final String[] files = dir.list(true);
-				Arrays.sort(files);
-				for (final String f : files) {
-					if (FormatTools.checkSuffix(f, "tif") || FormatTools.checkSuffix(f,
-						"tiff"))
-					{
-						final String[] blocks = f.split("_");
-						if (!uniqueT.contains(blocks[1])) uniqueT.add(blocks[1]);
-						if (!uniqueC.contains(blocks[2])) uniqueC.add(blocks[2]);
-						if (!uniqueZ.contains(blocks[3])) uniqueZ.add(blocks[3]);
+					final Set<BrowsableLocation> fSet = parent.children();
+					final Location[] files = fSet.toArray(new Location[fSet.size()]);
+					Arrays.sort(files);
+					for (final Location file : files) {
+						final String name = file.getName();
+						if (FormatTools.checkSuffix(name, "tif") || FormatTools.checkSuffix(
+							name, "tiff"))
+						{
+							final String[] blocks = name.split("_");
+							if (!uniqueT.contains(blocks[1])) uniqueT.add(blocks[1]);
+							if (!uniqueC.contains(blocks[2])) uniqueC.add(blocks[2]);
+							if (!uniqueZ.contains(blocks[3])) uniqueZ.add(blocks[3]);
 
-						p.tiffs.add(new Location(getContext(), dir, f).getAbsolutePath());
+							p.tiffs.add(file);
+						}
+					}
+
+					ms.setAxisLength(Axes.Z, uniqueZ.size());
+					ms.setAxisLength(Axes.CHANNEL, uniqueC.size());
+					ms.setAxisLength(Axes.TIME, uniqueT.size());
+
+					if (p.tiffs.isEmpty()) {
+						throw new FormatException("Could not find TIFF files.");
 					}
 				}
-
-				ms.setAxisLength(Axes.Z, uniqueZ.size());
-				ms.setAxisLength(Axes.CHANNEL, uniqueC.size());
-				ms.setAxisLength(Axes.TIME, uniqueT.size());
-
-				if (p.tiffs.size() == 0) {
-					throw new FormatException("Could not find TIFF files.");
-				}
+			}
+			catch (final IOException e) {
+				throw new FormatException(
+					"Encountered error when trying to find TIFF files.", e);
 			}
 		}
 
@@ -392,8 +445,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		{
 			final Position p = meta.getPositions().get(posIndex);
 			final ImageMetadata ms = meta.get(posIndex);
-			final String parent = new Location(getContext(), p.metadataFile)
-				.getParent();
+			final BrowsableLocation metadataFile = p.metadataFile;
 
 			// now parse the rest of the metadata
 
@@ -411,8 +463,8 @@ public class MicromanagerFormat extends AbstractFormat {
 
 			log().info("Populating metadata");
 
-			final Vector<Double> stamps = new Vector<>();
-			p.voltage = new Vector<>();
+			final List<Double> stamps = new ArrayList<>();
+			p.voltage = new ArrayList<>();
 
 			final StringTokenizer st = new StringTokenizer(jsonData, "\n");
 			final int[] slice = new int[3];
@@ -483,9 +535,10 @@ public class MicromanagerFormat extends AbstractFormat {
 						p.comment = value;
 					}
 					else if (key.equals("FileName")) {
-						p.fileNameMap.put(new Index(slice), value);
+						final Location file = metadataFile.sibling(value);
+						p.locationMap.put(new Index(slice), file);
 						if (p.baseTiff == null) {
-							p.baseTiff = value;
+							p.baseTiff = file;
 						}
 					}
 					else if (key.equals("Width")) {
@@ -600,9 +653,10 @@ public class MicromanagerFormat extends AbstractFormat {
 							p.voltage.add(new Double(value));
 						}
 						else if (key.equals("FileName")) {
-							p.fileNameMap.put(new Index(slice), value);
+							final Location file = metadataFile.sibling(value);
+							p.locationMap.put(new Index(slice), file);
 							if (p.baseTiff == null) {
-								p.baseTiff = value;
+								p.baseTiff = file;
 							}
 						}
 
@@ -616,42 +670,30 @@ public class MicromanagerFormat extends AbstractFormat {
 
 			// look for the optional companion XML file
 
-			if (new Location(getContext(), parent, XML).exists()) {
-				p.xmlFile = new Location(getContext(), parent, XML).getAbsolutePath();
+			p.xmlFile = p.metadataFile.sibling(XML);
+			if (dataHandleService.exists(p.xmlFile)) {
 				parseXMLFile(meta, posIndex);
 			}
 		}
 
 		/**
 		 * Populate the list of TIFF files using the given file name as a pattern.
+		 *
+		 * @throws IOException
 		 */
 		private void buildTIFFList(final Metadata meta, final int posIndex,
-			String baseTiff)
+			final Location baseTiff) throws IOException
 		{
 			log().info("Building list of TIFFs");
 			final Position p = meta.getPositions().get(posIndex);
-			String prefix = "";
-			if (baseTiff.contains(File.separator)) {
-				prefix = baseTiff.substring(0, baseTiff.lastIndexOf(File.separator) +
-					1);
-				baseTiff = baseTiff.substring(baseTiff.lastIndexOf(File.separator) + 1);
-			}
 
-			final String[] blocks = baseTiff.split("_");
+			final String[] blocks = baseTiff.getName().split("_");
 			final StringBuilder filename = new StringBuilder();
 			for (int t = 0; t < meta.get(posIndex).getAxisLength(Axes.TIME); t++) {
 				for (int c = 0; c < meta.get(posIndex).getAxisLength(
 					Axes.CHANNEL); c++)
 				{
 					for (int z = 0; z < meta.get(posIndex).getAxisLength(Axes.Z); z++) {
-						// file names are of format:
-						// img_<T>_<channel name>_<T>.tif
-						filename.append(prefix);
-						if (!prefix.endsWith(File.separator) && !blocks[0].startsWith(
-							File.separator))
-						{
-							filename.append(File.separator);
-						}
 						filename.append(blocks[0]);
 						filename.append("_");
 
@@ -676,24 +718,33 @@ public class MicromanagerFormat extends AbstractFormat {
 						filename.append(z);
 						filename.append(".tif");
 
-						p.tiffs.add(filename.toString());
+						p.tiffs.add(p.metadataFile.sibling(filename.toString()));
 						filename.delete(0, filename.length());
 					}
 				}
 			}
 		}
 
-		/** Parse metadata values from the Acqusition.xml file. */
+		/**
+		 * Parse metadata values from the Acqusition.xml file.
+		 */
 		private void parseXMLFile(final Metadata meta, final int imageIndex)
-			throws IOException
+			throws IOException, FormatException
 		{
 			final Position p = meta.getPositions().get(imageIndex);
-			final byte[] bytes = FileUtils.readFile(new File(p.xmlFile));
-			String xmlData = DigestUtils.string(bytes);
-			xmlData = xmlService.sanitizeXML(xmlData);
 
-			final DefaultHandler handler = new MicromanagerHandler();
-			xmlService.parseXML(xmlData, handler);
+			try (DataHandle<Location> handle = dataHandleService.create(p.xmlFile)) {
+				final long len = handle.length();
+				if (len > Integer.MAX_VALUE) {
+					throw new FormatException("MetadataFile at: " + p.xmlFile.getURI() +
+						" is too large to be parsed!");
+				}
+				String xmlData = handle.readString((int) handle.length());
+				xmlData = xmlService.sanitizeXML(xmlData);
+
+				final DefaultHandler handler = new MicromanagerHandler();
+				xmlService.parseXML(xmlData, handler);
+			}
 		}
 
 		// -- Helper classes --
@@ -726,6 +777,9 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		@Parameter
 		private FormatService formatService;
+
+		@Parameter
+		private DataHandleService dataHandleService;
 
 		/** Helper reader for TIFF files. */
 		private MinimalTIFFFormat.Reader<?> tiffReader;
@@ -760,15 +814,9 @@ public class MicromanagerFormat extends AbstractFormat {
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
 				bounds);
 
-			final String file = meta.getPositions().get(imageIndex).getFile(meta,
-				imageIndex, planeIndex);
-
-			if (file != null && new Location(getContext(), file).exists()) {
-				tiffReader.setSource(file, config);
+			if (setupReader(imageIndex)) {
 				return tiffReader.openPlane(imageIndex, 0, plane, bounds);
 			}
-			log().warn("File for image #" + planeIndex + " (" + file +
-				") is missing.");
 			return plane;
 		}
 
@@ -780,7 +828,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		@Override
 		public long getOptimalTileWidth(final int imageIndex) {
-			if (tiffReader == null || tiffReader.getCurrentFile() == null) {
+			if (tiffReader == null || tiffReader.getCurrentLocation() == null) {
 				setupReader(imageIndex);
 			}
 			return tiffReader.getOptimalTileWidth(imageIndex);
@@ -788,7 +836,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		@Override
 		public long getOptimalTileHeight(final int imageIndex) {
-			if (tiffReader == null || tiffReader.getCurrentFile() == null) {
+			if (tiffReader == null || tiffReader.getCurrentLocation() == null) {
 				setupReader(imageIndex);
 			}
 			return tiffReader.getOptimalTileHeight(imageIndex);
@@ -803,21 +851,28 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- Helper methods --
 
-		private void setupReader(final int imageIndex) {
+		private boolean setupReader(final int imageIndex) {
 			try {
-				final String file = getMetadata().getPositions().get(imageIndex)
-					.getFile(getMetadata(), imageIndex, 0);
+				final Location file = getMetadata().getPositions().get(imageIndex)
+					.getLocation(getMetadata(), imageIndex, 0);
 
-				if (tiffReader == null) {
-					tiffReader = (MinimalTIFFFormat.Reader<?>) formatService
-						.getFormatFromClass(MinimalTIFFFormat.class).createReader();
+				if (file != null && dataHandleService.supports(file) &&
+					dataHandleService.exists(file))
+				{
+					if (tiffReader == null) {
+						tiffReader = (MinimalTIFFFormat.Reader<?>) formatService
+							.getFormatFromClass(MinimalTIFFFormat.class).createReader();
+					}
+					tiffReader.setSource(file);
+					return true;
 				}
-
-				tiffReader.setSource(file);
+				log().warn("File for image #" + imageIndex + " (" + file +
+					") is missing or cannot be opened.");
 			}
 			catch (final Exception e) {
 				log().debug("", e);
 			}
+			return false;
 		}
 
 	}
@@ -844,15 +899,15 @@ public class MicromanagerFormat extends AbstractFormat {
 
 	public static class Position {
 
-		public String baseTiff;
+		public Location baseTiff;
 
-		public Vector<String> tiffs;
+		public List<Location> tiffs;
 
-		public HashMap<Index, String> fileNameMap = new HashMap<>();
+		public Map<Index, Location> locationMap = new HashMap<>();
 
-		public String metadataFile;
+		public BrowsableLocation metadataFile;
 
-		public String xmlFile;
+		public BrowsableLocation xmlFile;
 
 		public String[] channels;
 
@@ -868,33 +923,33 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		public double temperature;
 
-		public Vector<Double> voltage;
+		public List<Double> voltage;
 
 		public String cameraRef;
 
 		public String cameraMode;
 
-		public String getFile(final Metadata meta, final int imageIndex,
+		public Location getLocation(final Metadata meta, final int imageIndex,
 			final long planeIndex)
 		{
 			final long[] zct = FormatTools.rasterToPosition(imageIndex, planeIndex,
 				meta, Index.expectedAxes);
 
 			// Look for file associated with computed zct position
-			for (final Index key : fileNameMap.keySet()) {
+			for (final Index key : locationMap.keySet()) {
 				if (key.z == zct[0] && key.c == zct[1] && key.t == zct[2]) {
-					final String file = fileNameMap.get(key);
+					final Location file = locationMap.get(key);
 
 					if (tiffs != null) {
-						for (final String tiff : tiffs) {
-							if (tiff.endsWith(File.separator + file)) {
+						for (final Location tiff : tiffs) {
+							if (tiff.getName().equals(file.getName())) {
 								return tiff;
 							}
 						}
 					}
 				}
 			}
-			return fileNameMap.size() == 0 ? tiffs.get((int) planeIndex) : null;
+			return locationMap.size() == 0 ? tiffs.get((int) planeIndex) : null;
 		}
 	}
 
