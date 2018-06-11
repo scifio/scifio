@@ -43,6 +43,7 @@ import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.util.Intervals;
 
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
 
@@ -231,7 +232,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	/* lutLength is 0 until a plane is opened */
 	@Override
-	protected void setSourceHelper(final String source,
+	protected void setSourceHelper(final Location source,
 		final SCIFIOConfig config)
 	{
 		try {

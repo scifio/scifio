@@ -34,12 +34,10 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
 import io.scif.util.MemoryTools;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -50,6 +48,8 @@ import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 import net.imglib2.util.Intervals;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ArrayUtils;
 
@@ -128,23 +128,15 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	// -- AbstractReaderFilter API Methods --
 
 	@Override
-	public void setSource(final String source) throws IOException {
+	public void setSource(final Location source) throws IOException {
 		cleanUp();
 		super.setSource(source);
 	}
 
 	@Override
-	public void setSource(final File file) throws IOException {
+	public void setSource(final DataHandle<Location> source) throws IOException {
 		cleanUp();
-		super.setSource(file);
-	}
-
-	@Override
-	public void setSource(final RandomAccessInputStream stream)
-		throws IOException
-	{
-		cleanUp();
-		super.setSource(stream);
+		super.setSource(source);
 	}
 
 	@Override

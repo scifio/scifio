@@ -104,11 +104,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	 *          {@code setSource} series.
 	 * @throws IOException
 	 */
-	protected void setSourceHelper(final String source, final SCIFIOConfig config)
-		throws IOException
+	protected void setSourceHelper(final Location source,
+		final SCIFIOConfig config) throws IOException
 	{
-		final String filterSource = getMetadata() == null ? null : getMetadata()
-			.getSource().getFileName();
+		final Location filterSource = getMetadata() == null ? null : getMetadata()
+			.getSourceLocation();
 
 		if (filterSource == null || !filterSource.equals(source)) {
 			setMetadata(getParent().getMetadata());
@@ -243,14 +243,14 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public int fileGroupOption(final String id) throws FormatException,
+	public int fileGroupOption(final Location id) throws FormatException,
 		IOException
 	{
 		return getParent().fileGroupOption(id);
 	}
 
 	@Override
-	public String getCurrentFile() {
+	public Location getCurrentFile() {
 		return getParent().getCurrentFile();
 	}
 
@@ -309,47 +309,31 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public void setSource(final String fileName) throws IOException {
-		getParent().setSource(fileName);
-		setSourceHelper(fileName, new SCIFIOConfig());
+	public void setSource(final Location loc) throws IOException {
+		getParent().setSource(loc);
+		setSourceHelper(loc, new SCIFIOConfig());
 	}
 
 	@Override
-	public void setSource(final File file) throws IOException {
-		getParent().setSource(file);
-		setSourceHelper(file.getAbsolutePath(), new SCIFIOConfig());
+	public void setSource(final DataHandle<Location> handle) throws IOException {
+		getParent().setSource(handle);
+		setSourceHelper(handle.get(), new SCIFIOConfig());
 	}
 
 	@Override
-	public void setSource(final RandomAccessInputStream stream)
+	public void setSource(final Location loc, final SCIFIOConfig config)
 		throws IOException
 	{
-		getParent().setSource(stream);
-		setSourceHelper(stream.getFileName(), new SCIFIOConfig());
+		getParent().setSource(loc, config);
+		setSourceHelper(loc, config);
 	}
 
 	@Override
-	public void setSource(final String fileName, final SCIFIOConfig config)
-		throws IOException
-	{
-		getParent().setSource(fileName, config);
-		setSourceHelper(fileName, config);
-	}
-
-	@Override
-	public void setSource(final File file, final SCIFIOConfig config)
-		throws IOException
-	{
-		getParent().setSource(file, config);
-		setSourceHelper(file.getAbsolutePath(), config);
-	}
-
-	@Override
-	public void setSource(final RandomAccessInputStream stream,
+	public void setSource(final DataHandle<Location> handle,
 		final SCIFIOConfig config) throws IOException
 	{
-		getParent().setSource(stream, config);
-		setSourceHelper(stream.getFileName(), config);
+		getParent().setSource(handle, config);
+		setSourceHelper(handle.get(), config);
 	}
 
 	@Override
@@ -368,15 +352,16 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final Interval bounds, final Plane plane) throws IOException
+	public Plane readPlane(final DataHandle<Location> s, final int imageIndex,
+		final long[] planeMin, final long[] planeMax, final Plane plane)
+		throws IOException
 	{
 		readPlaneHelper();
 		return getParent().readPlane(s, imageIndex, bounds, plane);
 	}
 
 	@Override
-	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
+	public Plane readPlane(final DataHandle<Location> s, final int imageIndex,
 		final Interval bounds, final int scanlinePad, final Plane plane)
 		throws IOException
 	{
@@ -412,7 +397,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	// -- Groupable API Methods --
 
 	@Override
-	public boolean isSingleFile(final String id) throws FormatException,
+	public boolean isSingleFile(final Location id) throws FormatException,
 		IOException
 	{
 		return getParent().isSingleFile(id);

@@ -34,10 +34,11 @@ import io.scif.Format;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -84,6 +85,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	@Override
 	public void wrap(final Metadata meta) {
 		this.meta = meta;
+		setSourceLocation(meta.getSourceLocation());
 		setSource(meta.getSource());
 		populateImageMetadata();
 	}
@@ -113,9 +115,18 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	// -- Metadata API Methods --
 
 	@Override
-	public void setSource(final RandomAccessInputStream source) {
+	public void setSource(final DataHandle<Location> source) {
+		if (source != null) {
+			meta.setSourceLocation(source.get());
+		}
 		super.setSource(source);
 		meta.setSource(source);
+	}
+
+	@Override
+	public void setSourceLocation(Location loc) {
+		super.setSourceLocation(loc);
+		meta.setSourceLocation(loc);
 	}
 
 	@Override

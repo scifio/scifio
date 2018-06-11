@@ -43,6 +43,7 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imglib2.Interval;
 
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -160,10 +161,10 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	// -- AbstractReaderFilter API Methods --
 
 	@Override
-	protected void setSourceHelper(final String source,
+	protected void setSourceHelper(final Location source,
 		final SCIFIOConfig config)
 	{
-		final String oldFile = getCurrentFile();
+		final Location oldFile = getCurrentFile();
 		if (!source.equals(oldFile) || metaCheck() &&
 			(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null ||
 				((DimensionSwapperMetadata) getMetadata())
