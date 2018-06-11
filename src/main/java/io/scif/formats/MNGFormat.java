@@ -39,7 +39,6 @@ import io.scif.FormatException;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.awt.image.BufferedImage;
@@ -53,6 +52,9 @@ import javax.imageio.ImageIO;
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -144,7 +146,7 @@ public class MNGFormat extends AbstractFormat {
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int blockLen = 8;
@@ -158,11 +160,11 @@ public class MNGFormat extends AbstractFormat {
 		// -- AbstractParser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			getSource().order(false);
+			getSource().setOrder(ByteOrder.BIG_ENDIAN);
 
 			log().info("Verifying MNG format");
 
@@ -187,11 +189,11 @@ public class MNGFormat extends AbstractFormat {
 
 			// read sequence of [len, code, value] tags
 
-			while (getSource().getFilePointer() < getSource().length()) {
+			while (getSource().offset() < getSource().length()) {
 				final int len = getSource().readInt();
 				final String code = getSource().readString(4);
 
-				final long fp = getSource().getFilePointer();
+				final long fp = getSource().offset();
 
 				if (code.equals("IHDR")) {
 					datasetInfo.imageInfo.get(0).offsets.add(fp - 8);
@@ -297,7 +299,7 @@ public class MNGFormat extends AbstractFormat {
 			final MNGImageInfo info = getMetadata().getDatasetInfo().imageInfo.get(
 				imageIndex);
 			final long offset = info.offsets.get((int) planeIndex);
-			getStream().seek(offset);
+			getHandle().seek(offset);
 			final long end = info.lengths.get((int) planeIndex);
 			BufferedImage img = readImage(getMetadata(), end);
 
@@ -318,7 +320,7 @@ public class MNGFormat extends AbstractFormat {
 		throws IOException
 	{
 		final int headerSize = meta.isJNG() ? 0 : 8;
-		final byte[] b = new byte[(int) (end - meta.getSource().getFilePointer() +
+		final byte[] b = new byte[(int) (end - meta.getSource().offset() +
 			headerSize)];
 		meta.getSource().read(b, headerSize, b.length - headerSize);
 		if (!meta.isJNG()) {
