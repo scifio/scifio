@@ -36,6 +36,8 @@ import javax.swing.JFileChooser;
 import net.imagej.ImgPlus;
 import net.imagej.axis.CalibratedAxis;
 
+import org.scijava.io.location.FileLocation;
+
 /**
  * A simple manual test of the {@link IO#open(String)} convenience method.
  *
@@ -54,14 +56,16 @@ public class ReadImg {
 	}
 
 	private static void readImg(final File file) throws Exception {
-		final ImgPlus<?> img = IO.openImgs(file.getAbsolutePath()).get(0);
+		final ImgPlus<?> img = IO.open(new FileLocation(file.getAbsolutePath()))
+			.get(0);
 
 		System.out.println("file = " + file);
 		System.out.println("Dimensions:");
 		for (int d = 0; d < img.numDimensions(); d++) {
 			final CalibratedAxis axisType = img.axis(d);
 			final long axisLength = img.dimension(d);
-			System.out.println("\t" + axisLength + " : " + axisType);
+			System.out.println("\t" + axisLength + " : " + axisType.type()
+				.getLabel());
 		}
 	}
 

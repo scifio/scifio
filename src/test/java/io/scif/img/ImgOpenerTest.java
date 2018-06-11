@@ -40,9 +40,9 @@ import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
-import io.scif.formats.FakeFormat;
+import io.scif.formats.TestImgFormat;
 import io.scif.img.cell.SCIFIOCellImgFactory;
-import io.scif.io.RandomAccessInputStream;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,6 +62,10 @@ import net.imglib2.type.numeric.real.FloatType;
 
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
 
 /**
  * Tests for the {@link ImgOpener} class.
@@ -74,7 +78,8 @@ public class ImgOpenerTest {
 	// to ensure all necessary services are present
 	private final ImgOpener imgOpener = new ImgOpener();
 
-	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
+	private final Location id = TestImgLocation.builder().lengths(512, 512, 5)
+		.axes("X", "Y", "Time").build();
 
 	/**
 	 * Verify that SCIFIO Metadata calibration values are preserved in an opened
@@ -82,8 +87,8 @@ public class ImgOpenerTest {
 	 */
 	@Test
 	public void testImgCalibration() throws ImgIOException {
-		final String calId =
-			"testImg&lengths=512,512,3,5&axes=X,Y,Z,Time&scales=5.0,6.0,7.0,8.0.fake";
+		final Location calId = TestImgLocation.builder().lengths(512, 512, 3, 5)
+			.axes("X", "Y", "Z", "Time").scales(5.0, 6.0, 7.0, 8.0).build();
 
 		@SuppressWarnings("rawtypes")
 		final ImgPlus imgPlus = imgOpener.openImgs(calId).get(0);
@@ -107,8 +112,9 @@ public class ImgOpenerTest {
 
 	@Test
 	public void testCalibrationUnits() throws ImgIOException {
-		final String calId =
-			"testImg&lengths=512,512,3&axes=X,Y,Z&scales=5.0,6.0,7.0&units=micron,um,inches.fake";
+		final Location calId = TestImgLocation.builder().lengths(512, 512, 3).axes(
+			"X", "Y", "Z").scales(5.0, 6.0, 7.0).units("micron", "um", "inches")
+			.build();
 
 		final ImgPlus<?> imgPlus = imgOpener.openImgs(calId).get(0);
 
@@ -138,7 +144,8 @@ public class ImgOpenerTest {
 	 */
 	@Test
 	public void testOpenAllImages() throws ImgIOException {
-		final String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
+
+		final Location id = TestImgLocation.builder().images(5).build();
 
 		// Open all images
 		final List<SCIFIOImgPlus<?>> imgs = new MultiImgOpener().openImgs(id,
@@ -165,7 +172,7 @@ public class ImgOpenerTest {
 	 */
 	@Test
 	public void testOpenImageRange() throws ImgIOException {
-		final String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
+		final Location id = TestImgLocation.builder().images(5).build();
 
 		// Open images 0 and 3
 		final List<SCIFIOImgPlus<?>> imgs = new MultiImgOpener().openImgs(id,
@@ -201,8 +208,8 @@ public class ImgOpenerTest {
 			(byte) 0xA8, (byte) 0xDE, 0x60, (byte) 0x8C, 0x04, (byte) 0x91, 0x4C,
 			0x01, 0x00, 0x3B };
 
-		final RandomAccessInputStream stream = new RandomAccessInputStream(c,
-			bytes);
+		final DataHandle<Location> stream = c.getService(DataHandleService.class)
+			.create(new BytesLocation(bytes));
 
 		// Get the appropriate format
 		final Format format = scifio.format().getFormat(stream);
@@ -243,7 +250,7 @@ public class ImgOpenerTest {
 		final ImgFactory<T> factory, final SCIFIOConfig options, final long size)
 		throws ImgIOException
 	{
-		final ImgPlus<T> imgPlus = imgOpener.openImgs(id, factory, options).get(0);
+		final ImgPlus<T> imgPlus = (ImgPlus<T>) imgOpener.openImgs(id, factory, options).get(0);
 		assertNotNull(imgPlus);
 		assertEquals(size, imgPlus.size());
 	}
@@ -262,7 +269,7 @@ public class ImgOpenerTest {
 		imgPlus = imgOpener.openImgs(id, type, new SCIFIOConfig()).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImgs(id, factory).get(0);
+		imgPlus = (ImgPlus<T>) imgOpener.openImgs(id, factory).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
 	}
@@ -277,14 +284,14 @@ public class ImgOpenerTest {
 	private class MultiImgOpener extends ImgOpener {
 
 		/**
-		 * When using, for example, {@link FakeFormat} for multi-image datasets, all
-		 * the images are created with the same dimensions. This method allows us to
-		 * add skew to the images, which can then be used to verify that the
+		 * When using, for example, {@link TestImgFormat} for multi-image datasets,
+		 * all the images are created with the same dimensions. This method allows
+		 * us to add skew to the images, which can then be used to verify that the
 		 * requested images are opened via {@link ImgOpener}.
 		 */
 		@Override
 		public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(
-			final Reader reader, final ImgFactory<T> imgFactory,
+			final Reader reader, final T type, final ImgFactory<T> imgFactory,
 			final SCIFIOConfig config) throws ImgIOException
 		{
 			final Metadata m = reader.getMetadata();
@@ -296,7 +303,7 @@ public class ImgOpenerTest {
 				offset += 10;
 			}
 
-			return super.openImgs(reader, imgFactory, config);
+			return super.openImgs(reader, type, imgFactory, config);
 		}
 	}
 }

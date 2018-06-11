@@ -39,6 +39,7 @@ import javax.swing.JFileChooser;
 import net.imagej.ImgPlus;
 
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
 
 /**
  * A simple manual test opening and saving {@link ImgPlus}es.
@@ -61,12 +62,12 @@ public class ConvertImg {
 		final Context c = new Context();
 		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
 			ImgMode.ARRAY);
-		final ImgPlus<?> img = new ImgOpener(c).openImgs(file.getAbsolutePath(),
-			config).get(0);
+		final ImgPlus<?> img = new ImgOpener(c).openImgs(new FileLocation(file
+			.getAbsolutePath()), config).get(0);
 
 		final String outPath = file.getParent() + File.separator + "out_" + img
 			.getName();
-		new ImgSaver(c).saveImg(outPath, img);
+		new ImgSaver(c).saveImg(new FileLocation(outPath), img);
 
 		c.dispose();
 	}
