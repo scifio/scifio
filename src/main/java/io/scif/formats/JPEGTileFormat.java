@@ -39,7 +39,6 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.codec.JPEGTileDecoder;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -48,6 +47,8 @@ import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -122,10 +123,14 @@ public class JPEGTileFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> handle,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
+			if (!handle.exists() || handle.length() == 0) {
+				throw new FormatException("Trying to read from non-existing file!");
+			}
+
 			final JPEGTileDecoder decoder = new JPEGTileDecoder(getContext());
 			meta.setDecoder(decoder);
 			decoder.initialize(getSource(), 0, 1);
@@ -150,10 +155,12 @@ public class JPEGTileFormat extends AbstractFormat {
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
-			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
-			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.max(xAxis), h = (int) bounds.max(yAxis);
+			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
+			final int x = (int) bounds.min(xIndex);
+			final int y = (int) bounds.min(yIndex);
+			final int w = (int) bounds.dimension(xIndex);
+			final int h = (int) bounds.dimension(yIndex);
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
 				bounds);
 
@@ -162,7 +169,7 @@ public class JPEGTileFormat extends AbstractFormat {
 			for (int ty = y; ty < y + h; ty++) {
 				byte[] scanline = meta.getDecoder().getScanline(ty);
 				if (scanline == null) {
-					meta.getDecoder().initialize(getStream().getFileName(), 0);
+					meta.getDecoder().initialize(getHandle(), 0);
 					scanline = meta.getDecoder().getScanline(ty);
 				}
 				System.arraycopy(scanline, c * x, buf, (ty - y) * c * w, c * w);
