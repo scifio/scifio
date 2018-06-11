@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
 import org.scijava.thread.ThreadService;
 
 /**
@@ -75,11 +76,11 @@ public class FormatServiceTest {
 		final String[] suffixes = formatService.getSuffixes();
 		final String[] pQCTSuffixes = StratecPQCTFormat.generateSuffixes();
 		final String[] formatSuffixes = { "avi", "bmp", "btf", "csv", "dcm", "dic",
-			"dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids", "ima",
-			"img", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg", "jpf",
-			"jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm",
-			"pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml",
-			"zip" };
+			"dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids",
+			"ima", "img", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg",
+			"jpf", "jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx",
+			"pgm", "pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt",
+			"xml" };
 
 		final Set<String> expectedSuffixes = new HashSet<>();
 		Arrays.stream(formatSuffixes).forEach(expectedSuffixes::add);
@@ -112,7 +113,7 @@ public class FormatServiceTest {
 			while (System.currentTimeMillis() - time < 10000) {
 				final String s = new BigInteger(64, random).toString() + ".tif";
 				try {
-					formatService.getFormat(s);
+					formatService.getFormat(new FileLocation(s));
 				}
 				catch (final FormatException exc) {
 					return;
