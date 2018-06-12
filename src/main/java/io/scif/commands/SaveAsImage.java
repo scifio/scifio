@@ -41,6 +41,7 @@ import net.imagej.display.ImageDisplayService;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
+import org.scijava.io.location.FileLocation;
 import org.scijava.log.LogService;
 import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Attr;
@@ -87,7 +88,7 @@ public class SaveAsImage extends ContextCommand {
 	public void run() {
 		final Dataset dataset = dataset();
 		try {
-			datasetIOService.save(dataset, outputFile.getAbsolutePath());
+			datasetIOService.save(dataset, new FileLocation(outputFile.getAbsolutePath()));
 		}
 		catch (final IOException exc) {
 			log.error(exc);
