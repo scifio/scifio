@@ -119,11 +119,6 @@ public interface DatasetIOService extends SCIFIOService {
 	List<Dataset> openAll(String source, SCIFIOConfig config) throws IOException;
 
 	/**
-	 * Reverts the given dataset to its original source.
-	 */
-	void revert(Dataset dataset) throws IOException;
-
-	/**
 	 * Saves a dataset to a destination (such as a file on disk).
 	 *
 	 * @param dataset The dataset to save.

@@ -264,24 +264,6 @@ public class DefaultDatasetIOService extends AbstractService implements
 		return metadata;
 	}
 
-	@Override
-	public void revert(final Dataset dataset) throws IOException {
-		final String source = dataset.getSource();
-		if (source == null || source.isEmpty()) {
-			// no way to revert
-			throw new IOException("Cannot revert image of unknown origin");
-		}
-		Location loc;
-		try {
-			loc = dataHandleService.resolve(source);
-		}
-		catch (final URISyntaxException exc) {
-			throw new IOException("Cannot revert image with invalid origin", exc);
-		}
-		final Dataset revertedDataset = open(loc);
-		revertedDataset.copyInto(dataset);
-	}
-
 	// -- Helper methods --
 
 	/**
