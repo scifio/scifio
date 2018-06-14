@@ -140,7 +140,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		SCIFIOConfig config) throws ImgIOException
 	{
 		if (config == null) {
-			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+			config = new SCIFIOConfig();
 		}
 		final Reader r = createReader(source, config);
 		return openImgs(r, config);
