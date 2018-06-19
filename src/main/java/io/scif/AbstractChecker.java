@@ -94,7 +94,7 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 		// suffix matching was inconclusive; we need to analyze the file
 		// contents
 		if (!open) return false; // not allowed to open any files
-		try (DataHandle<Location> handle = handles.create(loc)) {
+		try (DataHandle<Location> handle = handles.readBuffer(loc)) {
 			if (handle == null) return false;
 			return isFormat(handle);
 		}
