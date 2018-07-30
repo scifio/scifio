@@ -752,6 +752,11 @@ public class MicromanagerFormat extends AbstractFormat {
 			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
+			if (tiffReader == null) {
+				tiffReader = (MinimalTIFFFormat.Reader<?>) formatService
+					.getFormatFromClass(MinimalTIFFFormat.class).createReader();
+			}
+
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
