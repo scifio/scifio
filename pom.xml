@@ -87,8 +87,8 @@
 
 	<mailingLists>
 		<mailingList>
-			<name>ImageJ Forum</name>
-			<archive>http://forum.imagej.net/tags/scifio</archive>
+			<name>Image.sc Forum</name>
+			<archive>https://forum.image.sc/tags/scifio</archive>
 		</mailingList>
 	</mailingLists>
 
