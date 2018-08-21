@@ -238,7 +238,13 @@ public class ICSFormat extends AbstractFormat {
 					}
 
 					CalibratedAxis newAxis = FormatTools.createAxis(type);
-					newAxis.setUnit(units == null ? "unknown" : units[n]);
+					if (units == null || n >= units.length) {
+						newAxis.setUnit("unknown");
+					}
+					else {
+						newAxis.setUnit(units[n]);
+					}
+
 					imageMeta.addAxis(newAxis, (long) axesSizes[n]);
 				}
 				if (paramLabels[n] != null && paramLabels[n].equals(MICRO_TIME)) {
