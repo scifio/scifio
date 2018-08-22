@@ -29,6 +29,7 @@
 
 package io.scif.io;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -120,61 +121,61 @@ public class LocationTest {
 	public void testReadWriteMode() {
 		for (int i = 0; i < files.length; i++) {
 			final String msg = files[i].getName();
-			assertEquals(msg, files[i].canRead(), mode[i].contains("r"));
-			assertEquals(msg, files[i].canWrite(), mode[i].contains("w"));
+			assertEquals(msg, mode[i].contains("r"), files[i].canRead());
+			assertEquals(msg, mode[i].contains("w"), files[i].canWrite());
 		}
 	}
 
 	@Test
 	public void testAbsolute() {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.getAbsolutePath(), file
-				.getAbsoluteFile().getAbsolutePath());
+			assertEquals(file.getName(), file.getAbsoluteFile().getAbsolutePath(),
+				file.getAbsolutePath());
 		}
 	}
 
 	@Test
 	public void testExists() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), files[i].exists(), exists[i]);
+			assertEquals(files[i].getName(), exists[i], files[i].exists());
 		}
 	}
 
 	@Test
 	public void testCanonical() throws IOException {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.getCanonicalPath(), file
-				.getCanonicalFile().getAbsolutePath());
+			assertEquals(file.getName(), file.getCanonicalFile().getAbsolutePath(),
+				file.getCanonicalPath());
 		}
 	}
 
 	@Test
 	public void testParent() {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.getParent(), file.getParentFile()
-				.getAbsolutePath());
+			assertEquals(file.getName(), file.getParentFile().getAbsolutePath(), file
+				.getParent());
 		}
 	}
 
 	@Test
 	public void testIsDirectory() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), files[i].isDirectory(), isDirectory[i]);
+			assertEquals(files[i].getName(), isDirectory[i], files[i].isDirectory());
 		}
 	}
 
 	@Test
 	public void testIsFile() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), files[i].isFile(), !isDirectory[i] &&
-				exists[i]);
+			assertEquals(files[i].getName(), !isDirectory[i] && exists[i], files[i]
+				.isFile());
 		}
 	}
 
 	@Test
 	public void testIsHidden() {
 		for (int i = 0; i < files.length; i++) {
-			assertEquals(files[i].getName(), files[i].isHidden(), isHidden[i]);
+			assertEquals(files[i].getName(), isHidden[i], files[i].isHidden());
 		}
 	}
 
@@ -186,9 +187,9 @@ public class LocationTest {
 			final Location[] fileList = file.listFiles();
 
 			if (!file.isDirectory()) {
-				assertEquals(file.getName(), completeList, null);
-				assertEquals(file.getName(), unhiddenList, null);
-				assertEquals(file.getName(), fileList, null);
+				assertArrayEquals(file.getName(), null, completeList);
+				assertArrayEquals(file.getName(), null, unhiddenList);
+				assertArrayEquals(file.getName(), null, fileList);
 				continue;
 			}
 
@@ -196,13 +197,13 @@ public class LocationTest {
 
 			final List<String> complete = Arrays.asList(completeList);
 			for (final String child : unhiddenList) {
-				assertEquals(file.getName(), complete.contains(child), true);
-				assertEquals(file.getName(), new Location(context, file, child)
-					.isHidden(), false);
+				assertEquals(file.getName(), true, complete.contains(child));
+				assertEquals(file.getName(), false, new Location(context, file, child)
+					.isHidden());
 			}
 
 			for (int f = 0; f < fileList.length; f++) {
-				assertEquals(file.getName(), fileList[f].getName(), completeList[f]);
+				assertEquals(file.getName(), completeList[f], fileList[f].getName());
 			}
 		}
 	}
@@ -219,14 +220,14 @@ public class LocationTest {
 			}
 			final URL baseURL = file.toURL();
 			final URL compareURL = new URL(path);
-			assertEquals(file.getName(), baseURL, compareURL);
+			assertEquals(file.getName(), compareURL, baseURL);
 		}
 	}
 
 	@Test
 	public void testToString() {
 		for (final Location file : files) {
-			assertEquals(file.getName(), file.toString(), file.getAbsolutePath());
+			assertEquals(file.getName(), file.getAbsolutePath(), file.toString());
 		}
 	}
 }
