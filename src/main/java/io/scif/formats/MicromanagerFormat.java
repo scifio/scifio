@@ -53,10 +53,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.Interval;
 
 import org.scijava.Priority;
@@ -882,8 +885,10 @@ public class MicromanagerFormat extends AbstractFormat {
 		public String getFile(final Metadata meta, final int imageIndex,
 			final long planeIndex)
 		{
-			final long[] zct =
-				FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
+			final long[] zct = FormatTools.rasterToPosition(imageIndex, planeIndex,
+				meta, Index.expectedAxes);
+
+			// Look for file associated with computed zct position
 			for (final Index key : fileNameMap.keySet()) {
 				if (key.z == zct[0] && key.c == zct[1] && key.t == zct[2]) {
 					final String file = fileNameMap.get(key);
@@ -908,6 +913,11 @@ public class MicromanagerFormat extends AbstractFormat {
 		public int c;
 
 		public int t;
+
+		public static final List<CalibratedAxis> expectedAxes = Arrays.asList(
+			new CalibratedAxis[] { new DefaultLinearAxis(Axes.Z),
+				new DefaultLinearAxis(Axes.CHANNEL), new DefaultLinearAxis(
+					Axes.TIME) });
 
 		public Index(final int[] zct) {
 			z = zct[0];
