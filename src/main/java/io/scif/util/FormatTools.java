@@ -341,6 +341,24 @@ public final class FormatTools {
 	 *
 	 * @param imageIndex image index within dataset
 	 * @param planeIndex rasterized plane index to convert to axis indices
+	 * @param expectedAxis determines the size and order of the positions in the
+	 *          returned array.
+	 * @return position along each dimensional axis
+	 */
+	public static long[] rasterToPosition(final int imageIndex,
+		final long planeIndex, final Metadata m,
+		final List<CalibratedAxis> expectedAxis)
+	{
+		final long[] axisLengths = m.get(imageIndex).getAxesLengths(expectedAxis);
+		return rasterToPosition(axisLengths, planeIndex);
+	}
+
+	/**
+	 * Computes a unique N-D position corresponding to the given rasterized index
+	 * value.
+	 *
+	 * @param imageIndex image index within dataset
+	 * @param planeIndex rasterized plane index to convert to axis indices
 	 * @param reader reader used to open the dataset
 	 * @return position along each dimensional axis
 	 */
