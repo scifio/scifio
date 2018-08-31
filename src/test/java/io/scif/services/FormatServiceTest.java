@@ -60,7 +60,7 @@ public class FormatServiceTest {
 
 	@Before
 	public void setUp() {
-		final Context context = new Context(FormatService.class);
+		final Context context = new Context();
 		formatService = context.getService(FormatService.class);
 	}
 
@@ -70,25 +70,29 @@ public class FormatServiceTest {
 	}
 
 	/** Tests {@link FormatService#getSuffixes()}. */
-	@Ignore
 	@Test
 	public void testGetSuffixes() {
 		final String[] suffixes = formatService.getSuffixes();
 		final String[] pQCTSuffixes = StratecPQCTFormat.generateSuffixes();
 		final String[] formatSuffixes = { "avi", "bmp", "btf", "csv", "dcm", "dic",
-			"dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids",
-			"ima", "img", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg",
-			"jpf", "jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx",
-			"pgm", "pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt",
-			"xml" };
+			"dicom", "eps", "epsi", "fits", "fts", "gif", "ics", "ids", "ima", "img",
+			"isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg", "jpf", "jpg",
+			"mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm", "pict",
+			"png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml",
+			"scifiotestimg" };
 
 		final Set<String> expectedSuffixes = new HashSet<>();
 		Arrays.stream(formatSuffixes).forEach(expectedSuffixes::add);
 		Arrays.stream(pQCTSuffixes).forEach(expectedSuffixes::add);
 
-		assertTrue("Unexpected suffixes", Arrays.stream(suffixes).allMatch(
-			expectedSuffixes::remove));
-		assertTrue("Suffixes missing", expectedSuffixes.isEmpty());
+		for (final String suffix : suffixes) {
+			assertTrue("Unexpected suffix: " + suffix, expectedSuffixes.contains(
+				suffix));
+			expectedSuffixes.remove(suffix);
+		}
+
+		assertTrue("Suffixes missing: " + expectedSuffixes.toString(),
+			expectedSuffixes.isEmpty());
 	}
 
 	/**
@@ -97,7 +101,8 @@ public class FormatServiceTest {
 	 * NB: not annotated as a unit test due to length of execution.
 	 * </p>
 	 */
-//	@Test
+	@Ignore
+	@Test
 	public void testMultiThreaded() throws InterruptedException {
 		final ThreadService ts = formatService.getContext().service(
 			ThreadService.class);
