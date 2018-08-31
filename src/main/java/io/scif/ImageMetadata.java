@@ -314,7 +314,7 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	List<CalibratedAxis> getAxes();
 
 	/**
-	 * Returns an array of the AxisTypes that, together, define the bounds of a
+	 * Returns an array of the CalibratedAxis that, together, define the bounds of a
 	 * single plane in the dataset.
 	 *
 	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
@@ -323,7 +323,7 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	List<CalibratedAxis> getAxesPlanar();
 
 	/**
-	 * Returns an array of the AxisTypes that define the number of planes in the
+	 * Returns an array of the CalibratedAxis that define the number of planes in the
 	 * dataset.
 	 *
 	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
@@ -349,7 +349,7 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	long[] getAxesLengths();
 
 	/**
-	 * Returns an array of the lengths for axes in the provided AxisType list.
+	 * Returns an array of the lengths for axes in the provided CalibratedAxis list.
 	 * <p>
 	 * Ordering of the lengths is consistent with the provided ordering.
 	 * </p>
