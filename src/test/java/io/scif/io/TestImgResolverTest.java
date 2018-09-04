@@ -13,7 +13,7 @@ import org.scijava.Context;
 import org.scijava.io.location.LocationService;
 
 /**
- * test for {@link TestImgLocationResolver}
+ * Test for {@link TestImgLocationResolver}
  * 
  * @author Gabriel Einsdorf
  */

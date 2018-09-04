@@ -27,11 +27,14 @@
  * #L%
  */
 
-package io.scif;
+package io.scif.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import io.scif.FormatException;
+import io.scif.Reader;
+import io.scif.SCIFIO;
 import io.scif.formats.TestImgFormat;
 import io.scif.io.location.TestImgLocation;
 
