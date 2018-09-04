@@ -78,6 +78,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	// Checker
 	private boolean openDataset = true;
+	
+	private boolean bufferedReading = true;
 
 	// Parser
 	private MetadataLevel level;
@@ -176,9 +178,20 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 		planeConverter = config.planeConverter;
 		imgFactoryHeuristic = config.imgFactoryHeuristic;
 		writeRGB = config.writeRGB;
+		bufferedReading = config.bufferedReading;
 	}
 
 	// -- Checker Methods --
+	
+	public SCIFIOConfig enableBufferedReading(final boolean enabled) {
+		bufferedReading = enabled;
+		return this;
+	}
+	
+	public boolean bufferedReadingEnabled() {
+		return bufferedReading;
+	}
+	
 
 	public SCIFIOConfig checkerSetOpen(final boolean open) {
 		openDataset = open;

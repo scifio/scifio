@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -246,6 +246,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		setSource(stream, new SCIFIOConfig());
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public void setSource(final Location loc, final SCIFIOConfig config)
 		throws IOException
@@ -260,10 +261,11 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 		close();
 
+		DataHandle<Location> stream = null;
 		// setting a new source
 		try {
-			// TODO add option to not buffer?
-			final DataHandle<Location> stream = handles.readBuffer(loc);
+			stream = config.bufferedReadingEnabled() ? handles.readBuffer(loc)
+				: handles.create(loc);
 			if (stream == null) {
 				// loc only
 				setMetadata(getFormat().createParser().parse(loc, config));
@@ -274,6 +276,9 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			}
 		}
 		catch (final FormatException e) {
+			if (stream != null) {
+				stream.close();
+			}
 			throw new IOException(e);
 		}
 	}
