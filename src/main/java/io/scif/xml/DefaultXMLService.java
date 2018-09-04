@@ -115,13 +115,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	public Document parseDOM(final File file) throws ParserConfigurationException,
 		SAXException, IOException
 	{
-		final InputStream is = new FileInputStream(file);
-		try {
-			final Document doc = parseDOM(is);
-			return doc;
-		}
-		finally {
-			is.close();
+		try (InputStream is = new FileInputStream(file)) {
+			return parseDOM(is);
 		}
 	}
 
@@ -130,13 +125,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		throws ParserConfigurationException, SAXException, IOException
 	{
 		final byte[] bytes = xml.getBytes(Constants.ENCODING);
-		final InputStream is = new ByteArrayInputStream(bytes);
-		try {
-			final Document doc = parseDOM(is);
-			return doc;
-		}
-		finally {
-			is.close();
+		try (InputStream is = new ByteArrayInputStream(bytes)) {
+			return parseDOM(is);
 		}
 	}
 
@@ -144,8 +134,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	public Document parseDOM(final InputStream is)
 		throws ParserConfigurationException, SAXException, IOException
 	{
-		final InputStream in = is.markSupported() ? is : new BufferedInputStream(
-			is);
+		final InputStream in = is.markSupported() ? is : //
+			new BufferedInputStream(is);
 		checkUTF8(in);
 
 		// Java XML factories are not declared to be thread safe
@@ -156,9 +146,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	}
 
 	@Override
-	public String getXML(final Document doc)
-		throws TransformerConfigurationException, TransformerException
-	{
+	public String getXML(final Document doc) throws TransformerException {
 		final Source source = new DOMSource(doc);
 		final StringWriter stringWriter = new StringWriter();
 		final Result result = new StreamResult(stringWriter);
@@ -484,17 +472,11 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 			// Java XML factories are not declared to be thread safe
 			final SAXParserFactory factory = SAXParserFactory.newInstance();
 			final SAXParser saxParser = factory.newSAXParser();
-			final InputStream is = new ByteArrayInputStream(xml.getBytes(
-				Constants.ENCODING));
+			final InputStream is =
+				new ByteArrayInputStream(xml.getBytes(Constants.ENCODING));
 			saxParser.parse(is, saxHandler);
 		}
-		catch (final ParserConfigurationException exc) {
-			exception = exc;
-		}
-		catch (final SAXException exc) {
-			exception = exc;
-		}
-		catch (final IOException exc) {
+		catch (ParserConfigurationException | SAXException | IOException exc) {
 			exception = exc;
 		}
 		if (exception != null) {
@@ -525,11 +507,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 				schema = FACTORY.newSchema(schemaLocation.toURL());
 				schemas.get().put(schemaLocation, schema);
 			}
-			catch (final MalformedURLException exc) {
-				log.info("Error parsing schema at " + schemaPath, exc);
-				return false;
-			}
-			catch (final SAXException exc) {
+			catch (MalformedURLException | SAXException exc) {
 				log.info("Error parsing schema at " + schemaPath, exc);
 				return false;
 			}
@@ -549,11 +527,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		try {
 			validator.validate(source);
 		}
-		catch (final IOException exc) {
-			exception = exc;
-		}
-		catch (final SAXException exc) {
-			exception = exc;
+		catch (IOException | SAXException exc) {
+			log.info("Error validating document " + exc);
 		}
 		final int errors = errorHandler.getErrorCount();
 		if (errors > 0) {
