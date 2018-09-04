@@ -43,7 +43,7 @@ import org.scijava.io.location.FileLocation;
  *
  * @author Curtis Rueden
  */
-public class ReadImg {
+public class ManualReadImg {
 
 	public static void main(final String[] args) throws Exception {
 		final JFileChooser opener = new JFileChooser(System.getProperty(
