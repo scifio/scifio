@@ -841,6 +841,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Create Img-specific ImageMetadata
 		final int pixelType = utils().makeType(img.firstElement());
+		if (!w.isSupportedType(pixelType, null)) {
+			throw new FormatException("Pixeltype " + FormatTools.getPixelTypeString(
+				pixelType) + " is not supported by this format!");
+		}
 
 		// TODO is there some way to consolidate this with the isCompressible
 		// method?
