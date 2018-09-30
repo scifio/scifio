@@ -243,8 +243,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 
 				// Need a byte array plane to copy data into
 				if (!ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
-					plane = new ByteArrayPlane(getContext(), //
-						meta.get(imageIndex), bounds);
+					plane = new ByteArrayPlane(meta.get(imageIndex), bounds);
 				}
 
 				if (!haveCached(source, imageIndex, bounds)) {

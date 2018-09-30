@@ -536,8 +536,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 				for (int d = 0; d < planarMax.length; d++)
 					planarMax[d] = planarMin[d] + planarLengths[d] - 1;
 				final FinalInterval bounds = new FinalInterval(planarMin, planarMax);
-				final ByteArrayPlane destPlane = new ByteArrayPlane(getContext(), meta
-					.get(imageIndex), bounds);
+				final ByteArrayPlane destPlane = new ByteArrayPlane(meta.get(
+					imageIndex), bounds);
 
 				for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
 					final Object curPlane = getPlaneArray(img, rgbChannelCount, cIndex,

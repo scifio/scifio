@@ -32,7 +32,6 @@ package io.scif;
 import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 
-import org.scijava.AbstractContextual;
 import org.scijava.Context;
 
 /**
@@ -44,8 +43,7 @@ import org.scijava.Context;
  * @param <T> - The underlying data type used by this Plane
  * @param <P> - A recursive reference to this concrete class
  */
-public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
-	AbstractContextual implements DataPlane<T>
+public abstract class AbstractPlane<T, P extends DataPlane<T>> implements DataPlane<T>
 {
 
 	// -- Fields --
@@ -63,15 +61,13 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	private Interval bounds;
 
 	// -- Constructor --
-
-	public AbstractPlane(final Context context) {
-		setContext(context);
+	public AbstractPlane() {
+		// nothing to do here
 	}
 
-	public AbstractPlane(final Context context, final ImageMetadata meta,
+	public AbstractPlane(final ImageMetadata meta,
 		final Interval bounds)
 	{
-		setContext(context);
 		// TODO bounds checking?
 		populate(meta, bounds);
 	}

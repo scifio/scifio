@@ -32,6 +32,7 @@ package io.scif.filters;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.config.SCIFIOConfig;
 
@@ -167,8 +168,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 		}
 
 		// If we have the cached base plane we can use it to expand, otherwise
-		// we'll
-		// have to open the plane still.
+		// we'll have to open the plane still.
 		final int lutLength = ((ChannelFillerMetadata) getMetadata())
 			.getLutLength();
 
@@ -185,9 +185,9 @@ public class ChannelFiller extends AbstractReaderFilter {
 		}
 
 		// Make sure we have a compatible plane type
+		final ImageMetadata imageMetadata = getMetadata().get(imageIndex);
 		if (!ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
-			plane = new ByteArrayPlane(getContext(), //
-				getMetadata().get(imageIndex), bounds);
+			plane = new ByteArrayPlane(imageMetadata, bounds);
 		}
 
 		final byte[] buf = plane.getBytes();
@@ -200,12 +200,12 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final byte[] index = lastPlane.getBytes();
 
 		// Expand the index values to fill the buffer
-		if (getMetadata().get(imageIndex).getInterleavedAxisCount() > 0) {
+		if (imageMetadata.getInterleavedAxisCount() > 0) {
 			for (int i = 0; i < index.length / bytesPerIndex &&
 				pt < buf.length; i++)
 			{
 				final int iVal = Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
-					getMetadata().get(imageIndex).isLittleEndian());
+					imageMetadata.isLittleEndian());
 				for (int j = 0; j < lutLength; j++) {
 					buf[pt++] = (byte) lut.get(j, iVal);
 				}
@@ -217,7 +217,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 					pt < buf.length; i++)
 				{
 					final int iVal = Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
-						getMetadata().get(imageIndex).isLittleEndian());
+						imageMetadata.isLittleEndian());
 					buf[pt++] = (byte) lut.get(j, iVal);
 				}
 			}

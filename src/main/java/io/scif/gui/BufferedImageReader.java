@@ -64,6 +64,6 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 	public BufferedImagePlane createPlane(final ImageMetadata meta,
 		final Interval bounds)
 	{
-		return new BufferedImagePlane(getContext(), meta, bounds);
+		return new BufferedImagePlane(meta, bounds);
 	}
 }

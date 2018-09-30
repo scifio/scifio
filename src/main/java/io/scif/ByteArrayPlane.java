@@ -33,7 +33,6 @@ import io.scif.util.FormatTools;
 
 import net.imglib2.Interval;
 
-import org.scijava.Context;
 import org.scijava.util.ArrayUtils;
 
 /**
@@ -47,15 +46,14 @@ import org.scijava.util.ArrayUtils;
 public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
 	// -- Constructor --
-
-	public ByteArrayPlane(final Context context) {
-		super(context);
+	
+	public ByteArrayPlane() {
+		super();
 	}
+	
 
-	public ByteArrayPlane(final Context context, final ImageMetadata meta,
-		final Interval bounds)
-	{
-		super(context, meta, bounds);
+	public ByteArrayPlane(final ImageMetadata meta, final Interval bounds) {
+		super(meta, bounds);
 	}
 
 	// -- Plane API methods --

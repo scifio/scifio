@@ -49,7 +49,7 @@ import org.scijava.Contextual;
  * @see net.imglib2.display.ColorTable
  * @author Mark Hiner
  */
-public interface Plane extends Contextual {
+public interface Plane {
 
 	/**
 	 * Sets the ColorTable for this plane. ColorTables are used for indexed color

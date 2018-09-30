@@ -398,7 +398,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	}
 
 	public Plane getPlane(final BufferedImage image) {
-		final BufferedImagePlane plane = new BufferedImagePlane(context);
+		final BufferedImagePlane plane = new BufferedImagePlane();
 		plane.setData(image);
 		return plane;
 	}

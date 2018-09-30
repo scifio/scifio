@@ -61,7 +61,7 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 	public ByteArrayPlane createPlane(final ImageMetadata meta,
 		final Interval bounds)
 	{
-		return new ByteArrayPlane(getContext(), meta, bounds);
+		return new ByteArrayPlane(meta, bounds);
 	}
 
 }
