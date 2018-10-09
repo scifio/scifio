@@ -39,12 +39,14 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
+import java.net.URL;
 
 import net.imagej.axis.Axes;
 
 import org.junit.After;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
 import org.scijava.io.location.Location;
 import org.scijava.plugin.PluginInfo;
 
@@ -137,7 +139,10 @@ public class FilterTest {
 
 	@Test
 	public void testFilterOrder() throws FormatException, IOException {
-		readerFilter = scifio.initializer().initializeReader(id);
+		final URL uri = getClass().getResource(
+			"../img/axisguesser/leica_stack/leica_stack_Series014_z000_ch00.tif");
+		final FileLocation source = new FileLocation(uri.getPath());
+		readerFilter = scifio.initializer().initializeReader(source);
 
 		// enable all plugins
 		for (final PluginInfo<Filter> pi : scifio.getContext().getPluginIndex()
