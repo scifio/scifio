@@ -111,7 +111,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 			.getSourceLocation();
 
 		if (filterSource == null || !filterSource.equals(source)) {
-			setMetadata(getParent().getMetadata());
+			final Metadata meta = getParent().getMetadata();
+			if (wrappedMeta instanceof MetadataWrapper) {
+				((MetadataWrapper) wrappedMeta).wrap(meta);
+			}
+			else {
+				wrappedMeta = meta;
+			}
 		}
 	}
 
@@ -164,6 +170,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		else {
 			// No Filter-specific wrapper found
 			wrappedMeta = r.getMetadata();
+		}
+		try {
+			setSourceHelper(r.getCurrentLocation(), new SCIFIOConfig());
+		}
+		catch (final IOException exc) {
+			log().error("Failed to create MetadataWrapper of type: " + metaClass,
+				exc);
 		}
 	}
 
