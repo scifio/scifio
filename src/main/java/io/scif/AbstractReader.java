@@ -171,7 +171,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public Location getCurrentFile() {
+	public Location getCurrentLocation() {
 		return metadata == null ? null : metadata.getSourceLocation();
 	}
 
@@ -252,13 +252,16 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		throws IOException
 	{
 
-		if (getHandle() != null && getCurrentFile() != null && getCurrentFile()
-			.equals(loc))
-		{
-			getHandle().seek(0);
+		// check if the same location is set again
+		if (getCurrentLocation() != null && getCurrentLocation().equals(loc)) {
+			if (getHandle() != null) {
+				// only need to rewind the handle
+				getHandle().seek(0);
+			}
 			return;
 		}
 
+		// new location
 		close();
 
 		DataHandle<Location> stream = null;
@@ -287,7 +290,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	public void setSource(final DataHandle<Location> handle,
 		final SCIFIOConfig config) throws IOException
 	{
-		final Location currentSource = getCurrentFile();
+		final Location currentSource = getCurrentLocation();
 		final Location newSource = handle.get();
 		if (metadata != null && (currentSource == null || newSource == null ||
 			!currentSource.equals(newSource))) close();

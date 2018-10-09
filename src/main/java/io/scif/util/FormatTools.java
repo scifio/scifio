@@ -951,7 +951,7 @@ public final class FormatTools {
 		String filename = pattern.replaceAll(SERIES_NUM, String.valueOf(
 			imageIndex));
 
-		String imageName = r.getCurrentFile().getName();
+		String imageName = r.getCurrentLocation().getName();
 		if (imageName == null || "".equals(imageName)) imageName = "Image#" +
 			imageIndex;
 		imageName = imageName.replaceAll("/", "_");

@@ -356,7 +356,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	 * metadata from the specified format reader.
 	 */
 	public void setImages(final Reader reader, final BufferedImage[] img) {
-		filename = reader == null ? null : reader.getCurrentFile().getName();
+		filename = reader == null ? null : reader.getCurrentLocation().getName();
 		myReader = reader;
 		images = img;
 
@@ -373,7 +373,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 		updateLabel(-1, -1);
 		sb.setLength(0);
 		if (filename != null) {
-			sb.append(reader.getCurrentFile().getName());
+			sb.append(reader.getCurrentLocation().getName());
 			sb.append(" ");
 		}
 		final String format = reader == null ? null : reader.getFormat()

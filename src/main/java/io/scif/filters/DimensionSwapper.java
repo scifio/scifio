@@ -164,7 +164,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	protected void setSourceHelper(final Location source,
 		final SCIFIOConfig config)
 	{
-		final Location oldFile = getCurrentFile();
+		final Location oldFile = getCurrentLocation();
 		if (!source.equals(oldFile) || metaCheck() &&
 			(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null ||
 				((DimensionSwapperMetadata) getMetadata())

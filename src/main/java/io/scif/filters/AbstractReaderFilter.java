@@ -246,8 +246,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Location getCurrentFile() {
-		return getParent().getCurrentFile();
+	public Location getCurrentLocation() {
+		return getParent().getCurrentLocation();
 	}
 
 	@Override

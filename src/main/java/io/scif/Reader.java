@@ -151,7 +151,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 		SCIFIOConfig config) throws FormatException, IOException;
 
 	/** Returns the current file. */
-	Location getCurrentFile();
+	Location getCurrentLocation();
 
 	/** Returns the list of domains represented by the current file. */
 	String[] getDomains();

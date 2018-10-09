@@ -328,7 +328,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final Img<T> img = imgFactory.create(dimLengths);
 			final SCIFIOImgPlus<T> imgPlus = makeImgPlus(img, reader, i(imageIndex));
 
-			final Location id = reader.getCurrentFile();
+			final Location id = reader.getCurrentLocation();
 			final URI uri = id.getURI();
 			imgPlus.setSource(uri == null ? null : uri.toString());
 			imgPlus.initializeColorTables(i(reader.getPlaneCount(i(imageIndex))));
@@ -469,7 +469,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	private <T extends RealType<T>> SCIFIOImgPlus<T> makeImgPlus(final Img<T> img,
 		final Reader r, final int imageIndex)
 	{
-		final Location id = r.getCurrentFile();
+		final Location id = r.getCurrentLocation();
 		String name = null;
 
 		if (id != null) {
