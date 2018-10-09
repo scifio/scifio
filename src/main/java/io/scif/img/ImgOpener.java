@@ -229,7 +229,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	{
 		final RealType t = getType(reader);
 		if (config == null) {
-			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+			config = new SCIFIOConfig();
 		}
 		final ImgFactoryHeuristic heuristic = getHeuristic(config);
 
