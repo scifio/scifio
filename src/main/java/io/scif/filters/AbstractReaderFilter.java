@@ -274,11 +274,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Reader[] getUnderlyingReaders() {
-		return getParent().getUnderlyingReaders();
-	}
-
-	@Override
 	public long getOptimalTileWidth(final int imageIndex) {
 		return getParent().getOptimalTileWidth(imageIndex);
 	}

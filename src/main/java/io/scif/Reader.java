@@ -163,12 +163,6 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 */
 	DataHandle<Location> getHandle();
 
-	/**
-	 * Retrieves all underlying readers. Returns null if there are no underlying
-	 * readers.
-	 */
-	Reader[] getUnderlyingReaders();
-
 	/** Returns the optimal sub-image width for use with {@link #openPlane}. */
 	long getOptimalTileWidth(int imageIndex);
 

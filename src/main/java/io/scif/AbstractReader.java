@@ -189,12 +189,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public Reader[] getUnderlyingReaders() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public long getOptimalTileWidth(final int imageIndex) {
 		return metadata.get(imageIndex).getAxisLength(Axes.X);
 	}

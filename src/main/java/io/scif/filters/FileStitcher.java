@@ -412,11 +412,6 @@ public class FileStitcher extends AbstractReaderFilter {
 		return bp;
 	}
 
-	@Override
-	public Reader[] getUnderlyingReaders() {
-		return readers;
-	}
-
 	// -- Prioritized API --
 
 	@Override
