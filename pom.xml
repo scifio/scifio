@@ -121,6 +121,7 @@
 		<imglib2.version>5.1.0</imglib2.version>
 		<imglib2-cache.version>1.0.0-beta-8</imglib2-cache.version>
 		<imagej-common.version>0.25.0</imagej-common.version>
+		<scijava-common.version>2.76.0</scijava-common.version>
 	</properties>
 
 	<repositories>
