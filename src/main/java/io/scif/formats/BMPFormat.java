@@ -345,7 +345,7 @@ public class BMPFormat extends AbstractFormat {
 			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
-					w = (int) bounds.max(xIndex), h = (int) bounds.max(yIndex);
+					w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(yIndex);
 
 			final byte[] buf = plane.getData();
 			final int compression = meta.getCompression();
