@@ -101,7 +101,7 @@ public class LocationTest {
 			new Location[] { new Location(context, validFile.getAbsolutePath()),
 				new Location(context, invalidPath),
 				new Location(context, tmpDirectory),
-				new Location(context, "http://loci.wisc.edu/software/scifio"),
+				new Location(context, "http://example.com/"),
 				new Location(context, "http://www.openmicroscopy.org/software/scifio"),
 				new Location(context, hiddenFile) };
 
