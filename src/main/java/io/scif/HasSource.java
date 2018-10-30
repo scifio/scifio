@@ -33,10 +33,8 @@ import java.io.IOException;
 
 /**
  * Interface for components that can be attached to open image sources that
- * should be closed to avoid resource leaks (e.g.
- * {@link org.scijava.io.DataHandle})
+ * should be closed to avoid resource leaks
  *
- * @see org.scijava.io.DataHandle
  * @author Mark Hiner
  */
 public interface HasSource {

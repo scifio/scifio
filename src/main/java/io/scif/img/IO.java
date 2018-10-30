@@ -175,7 +175,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImgs(Location, RealType)
+	 * @see ImgOpener#openImgs(Location)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
 		open(final Location source, final T type)
@@ -217,7 +217,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImgs(Location, RealType, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
 		open(final Location source, final T type, final SCIFIOConfig config)
@@ -274,7 +274,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImgs(Location, ImgFactory, RealType)
+	 * @see ImgOpener#openImgs(Location, ImgFactory)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
 		open(final Location source, final ImgFactory<T> imgFactory, final T type)
@@ -292,7 +292,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImgs(Reader, RealType, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(Reader, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
 		open(final Reader reader, final T type, final SCIFIOConfig config)
@@ -310,7 +310,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImgs(Reader, RealType, ImgFactory, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(Reader, ImgFactory, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T>> List<SCIFIOImgPlus<T>> open(
 		final Reader reader, final T type, final ImgFactory<T> imgFactory,

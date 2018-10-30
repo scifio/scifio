@@ -107,7 +107,7 @@ public class TestImgFormat extends AbstractFormat {
 
 	/**
 	 * Metadata class for Fake format. Actually holds no information about the
-	 * "image" as everything is stored in the attached DataHandle<Location>.
+	 * "image" as everything is stored in the attached {@code DataHandle<Location>}.
 	 * <p>
 	 * Fake specification should be accessed by {@link Metadata#getSource()}
 	 * </p>

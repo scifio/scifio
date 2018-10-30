@@ -90,7 +90,6 @@ public abstract class AbstractHasFormat extends AbstractSCIFIOPlugin implements
 	 * operates on a handle.
 	 *
 	 * @param handle
-	 * @return
 	 * @throws FormatException
 	 */
 	protected BrowsableLocation asBrowsableLocation(

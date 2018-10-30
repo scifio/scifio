@@ -121,7 +121,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	/**
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(DataHandle, int, long[], long[], Plane)}
+	 * {@link io.scif.Reader#readPlane(DataHandle, int, Interval, Plane)}
 	 * <p>
 	 * NB Presumes that the source stream {@code s} is set to the correct offset,
 	 * i.e. start of the plane
@@ -129,8 +129,8 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 *
 	 * @see io.scif.Reader#readPlane(DataHandle, int, Interval, Plane)
 	 */
-	P readPlane(DataHandle<Location> s, int imageIndex, Interval bounds,
-		P plane) throws IOException;
+	P readPlane(DataHandle<Location> s, int imageIndex, Interval bounds, P plane)
+		throws IOException;
 
 	/**
 	 * Generic-parameterized {@code readPlane} method, using
@@ -141,8 +141,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * i.e. start of the plane
 	 * </p>
 	 *
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval,
-	 *      int, Plane)
+	 * @see io.scif.Reader#readPlane(DataHandle, int, Interval, int, Plane)
 	 */
 	P readPlane(DataHandle<Location> s, int imageIndex, Interval bounds,
 		int scanlinePad, P plane) throws IOException;

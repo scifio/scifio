@@ -40,8 +40,8 @@ public class JUnitHelper {
 	/**
 	 * Assert that two floating point numbers are equal up to a very small delta.
 	 * <p>
-	 * This method helps with JUnit's removal of the
-	 * {@link Assert#assertEquals(double, double)} functionality.
+	 * This method helps with JUnit's removal of the Assert#assertEquals(double,
+	 * double) functionality.
 	 * </p>
 	 *
 	 * @param expected expected value
@@ -56,8 +56,8 @@ public class JUnitHelper {
 	/**
 	 * Assert that two floating point numbers are equal up to a very small delta.
 	 * <p>
-	 * This method helps with JUnit's removal of the
-	 * {@link Assert#assertEquals(double, double)} functionality.
+	 * This method helps with JUnit's removal of the Assert#assertEquals(double,
+	 * double) functionality.
 	 * </p>
 	 *
 	 * @param expected expected value

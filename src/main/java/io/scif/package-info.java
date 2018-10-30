@@ -228,8 +228,7 @@
  * </p>
  * </li>
  * <li>Create a {@code HasSource} style interface. {@code Metadata} objects
- * should have some sort of mapping back to their
- * {@link io.scif.io.RandomAccessInputStream} object(s).
+ * should have some sort of mapping back to their source.
  * <p>
  * Default implementation could be a 2D array, as a list of companion files for
  * each image in the dataset.
