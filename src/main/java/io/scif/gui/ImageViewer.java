@@ -685,14 +685,4 @@ public class ImageViewer extends JFrame implements ActionListener,
 			}
 		}.start();
 	}
-
-	// -- Main method --
-
-	public static void main(final String[] args) {
-		final ImageViewer viewer = new ImageViewer(new Context(SCIFIOService.class,
-			SciJavaService.class));
-		viewer.setVisible(true);
-		if (args.length > 0) viewer.open(args[0]);
-	}
-
 }
