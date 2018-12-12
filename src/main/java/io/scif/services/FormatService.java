@@ -146,7 +146,8 @@ public interface FormatService extends SCIFIOService {
 	 * This bypasses the {@code Checker} logic, and thus does not guarantee the
 	 * associated {@code Format} can read image sources of the provided type.
 	 *
-	 * @throws FormatException
+	 * @throws FormatException if no compatible format was found, or if something
+	 *           goes wrong creating the {@link Writer}
 	 */
 	Writer getWriterByExtension(String fileId) throws FormatException;
 
@@ -181,12 +182,14 @@ public interface FormatService extends SCIFIOService {
 	<M extends Metadata> Format getFormatFromMetadata(Class<M> metadataClass);
 
 	/**
-	 * Returns the first Format known to be compatible with the source provided.
-	 * Formats are checked in ascending order of their priority. The source is
-	 * read if necessary to determine compatibility.
+	 * Returns the first {@link Format} known to be compatible with the source
+	 * provided. Formats are checked in ascending order of their priority. The
+	 * source is read if necessary to determine compatibility.
 	 *
 	 * @param id the source
-	 * @return A Format reference compatible with the provided source.
+	 * @return A {@link Format} compatible with the provided source
+	 * @throws FormatException if no compatible format was found, or if something
+	 *           goes wrong checking the source
 	 */
 	Format getFormat(String id) throws FormatException;
 
@@ -196,7 +199,9 @@ public interface FormatService extends SCIFIOService {
 	 *
 	 * @param id the source
 	 * @param config Configuration for this method execution.
-	 * @return A Format reference compatible with the provided source.
+	 * @return A {@link Format} compatible with the provided source
+	 * @throws FormatException if no compatible format was found, or if something
+	 *           goes wrong checking the source
 	 */
 	Format getFormat(String id, SCIFIOConfig config) throws FormatException;
 
@@ -206,7 +211,9 @@ public interface FormatService extends SCIFIOService {
 	 * compatibility.
 	 *
 	 * @param id the source
-	 * @return An List of Format references compatible with the provided source.
+	 * @return A list of {@link Format}s compatible with the provided source,
+	 *         which will be an empty list if no compatible formats are found.
+	 * @throws FormatException if something goes wrong checking the source.
 	 */
 	List<Format> getFormatList(String id) throws FormatException;
 
@@ -218,7 +225,9 @@ public interface FormatService extends SCIFIOService {
 	 * @param config Configuration for this method execution.
 	 * @param greedy if true, the search will terminate after finding the first
 	 *          compatible format
-	 * @return A List of Format references compatible with the provided source.
+	 * @return A list of {@link Format}s compatible with the provided source,
+	 *         which will be an empty list if no compatible formats are found.
+	 * @throws FormatException if something goes wrong checking the source.
 	 */
 	List<Format> getFormatList(String id, SCIFIOConfig config, boolean greedy)
 		throws FormatException;
@@ -228,7 +237,9 @@ public interface FormatService extends SCIFIOService {
 	 * {@link RandomAccessInputStream}.
 	 *
 	 * @param source the source
-	 * @return A Format reference compatible with the provided source.
+	 * @return A {@link Format} compatible with the provided source
+	 * @throws FormatException if no compatible format was found, or if something
+	 *           goes wrong checking the source
 	 */
 	Format getFormat(RandomAccessInputStream source) throws FormatException;
 
@@ -238,18 +249,24 @@ public interface FormatService extends SCIFIOService {
 	 *
 	 * @param source the source
 	 * @param config Configuration for this method execution.
-	 * @return A Format reference compatible with the provided source.
+	 * @return A {@link Format} compatible with the provided source
+	 * @throws FormatException if no compatible format was found, or if something
+	 *           goes wrong checking the source
 	 */
-	Format getFormat(RandomAccessInputStream source, SCIFIOConfig config) throws FormatException;
+	Format getFormat(RandomAccessInputStream source, SCIFIOConfig config)
+		throws FormatException;
 
 	/**
 	 * As {@link #getFormatList(String)} but takes an initialized
 	 * {@link RandomAccessInputStream}.
 	 *
 	 * @param source the source
-	 * @return An List of Format references compatible with the provided source.
+	 * @return A list of {@link Format}s compatible with the provided source,
+	 *         which will be an empty list if no compatible formats are found.
+	 * @throws FormatException if something goes wrong checking the source.
 	 */
-	List<Format> getFormatList(RandomAccessInputStream source) throws FormatException;
+	List<Format> getFormatList(RandomAccessInputStream source)
+		throws FormatException;
 
 	/**
 	 * As {@link #getFormatList(String, SCIFIOConfig, boolean)} but takes an initialized
@@ -259,10 +276,12 @@ public interface FormatService extends SCIFIOService {
 	 * @param config Configuration for this method execution.
 	 * @param greedy if true, the search will terminate after finding the first
 	 *          compatible format
-	 * @return A List of Format references compatible with the provided source.
+	 * @return A list of {@link Format}s compatible with the provided source,
+	 *         which will be an empty list if no compatible formats are found.
+	 * @throws FormatException if something goes wrong checking the source.
 	 */
-	List<Format> getFormatList(RandomAccessInputStream source, SCIFIOConfig config, boolean greedy)
-		throws FormatException;
+	List<Format> getFormatList(RandomAccessInputStream source,
+		SCIFIOConfig config, boolean greedy) throws FormatException;
 
 	/**
 	 * Returns a list of all Formats within this context.
