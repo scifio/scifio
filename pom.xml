@@ -166,5 +166,15 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-io-http</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
