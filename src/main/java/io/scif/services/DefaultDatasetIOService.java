@@ -29,6 +29,7 @@
 
 package io.scif.services;
 
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
@@ -79,8 +80,9 @@ public class DefaultDatasetIOService extends AbstractService implements
 	@Override
 	public boolean canOpen(final String source) {
 		try {
-			return formatService.getFormat(source, //
-				new SCIFIOConfig().checkerSetOpen(true)) != null;
+			final List<Format> formats = formatService.getFormatList(source, //
+				new SCIFIOConfig().checkerSetOpen(true), true);
+			return !formats.isEmpty();
 		}
 		catch (final FormatException exc) {
 			log.error(exc);
@@ -94,7 +96,15 @@ public class DefaultDatasetIOService extends AbstractService implements
 			return formatService.getWriterByExtension(destination) != null;
 		}
 		catch (final FormatException exc) {
-			log.error(exc);
+			// HACK: Detect if the exception is serious, or just no formats found.
+			// In future, the API needs to change to make this distinction clearer.
+			final String message = exc.getMessage();
+			if (message != null && message.startsWith(
+				"No compatible output format found for extension"))
+			{
+				log.debug(exc);
+			}
+			else log.error(exc);
 		}
 		return false;
 	}
