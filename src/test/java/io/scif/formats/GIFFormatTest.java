@@ -27,37 +27,37 @@
  * #L%
  */
 
-package io.scif;
+package io.scif.formats;
 
-import io.scif.services.FormatService;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.AbstractRichPlugin;
-import org.scijava.plugin.Parameter;
+import net.imagej.axis.Axes;
 
-/**
- * Abstract superclass of all {@link SCIFIOPlugin} implementations.
- *
- * @author Curtis Rueden
- */
-public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
-	SCIFIOPlugin
-{
+import org.junit.Test;
+import org.scijava.io.http.HTTPLocation;
 
-	@Parameter
-	private LogService log;
+public class GIFFormatTest extends AbstractFormatTest {
 
-	@Parameter
-	private transient FormatService formatService;
-
-	@Override
-	public LogService log() {
-		return log;
+	public GIFFormatTest() throws URISyntaxException, MalformedURLException {
+		super(new HTTPLocation("https://samples.scif.io/test-gif.zip"));
 	}
 
-	@Override
-	public String getVersion() {
-		return formatService.getVersion();
+	@Test
+	public void testBase() {
+		final String meta =
+			"{\"interlace\":false,\"ix\":0,\"iy\":0,\"iw\":500,\"ih\":500,\"blockSize\":0,\"dispose\":0,\"lastDispose\":0,\"transparency\":true,\"transIndex\":255,\"filtered\":false,\"datasetName\":\"scifio-test.gif\",\"table\":{\"Global lookup table size\":256},\"priority\":0.0}";
+		testImg(baseFolder().child("scifio-test.gif"),
+			"8c661ea3f2a593202639f94adf6a3d4f874f8076", meta, new int[] { 500, 500,
+				3 }, Axes.X, Axes.Y, Axes.CHANNEL);
 	}
 
+	@Test
+	public void testAnimated() {
+		final String meta =
+			"{\"interlace\":false,\"ix\":529,\"iy\":479,\"iw\":1,\"ih\":1,\"blockSize\":0,\"dispose\":2,\"lastDispose\":2,\"transparency\":true,\"transIndex\":1,\"filtered\":false,\"datasetName\":\"scifio-test-animated.gif\",\"table\":{\"Global lookup table size\":256},\"priority\":0.0}";
+		testImg(baseFolder().child("scifio-test-animated.gif"),
+			"b73af3c4d7ae198eb8a3156af8ac0736c1cbec07", meta, new int[] { 530, 480, 3,
+				151 }, Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME);
+	}
 }

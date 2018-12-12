@@ -85,10 +85,10 @@ public class GIFFormat extends AbstractFormat {
 		private ColorTable8 cachedTable;
 
 		/** Global color table. */
-		private int[] gct;
+		private transient int[] gct;
 
 		/** Active color table. */
-		private int[] act;
+		private transient int[] act;
 
 		/** Interlace flag. */
 		private boolean interlace;
@@ -97,7 +97,7 @@ public class GIFFormat extends AbstractFormat {
 		private int ix, iy, iw, ih;
 
 		/** Current data block. */
-		private byte[] dBlock = new byte[256];
+		private transient byte[] dBlock = new byte[256];
 
 		/** Block size. */
 		private int blockSize = 0;
@@ -113,17 +113,17 @@ public class GIFFormat extends AbstractFormat {
 		private int transIndex;
 
 		// LZW working arrays
-		private short[] prefix;
+		private transient short[] prefix;
 
-		private byte[] suffix;
+		private transient byte[] suffix;
 
-		private byte[] pixelStack;
+		private transient byte[] pixelStack;
 
-		private byte[] pixels;
+		private transient byte[] pixels;
 
-		private Vector<byte[]> images;
+		private transient Vector<byte[]> images;
 
-		private Vector<int[]> colorTables;
+		private transient Vector<int[]> colorTables;
 
 		// -- GIFMetadata getters and setters --
 

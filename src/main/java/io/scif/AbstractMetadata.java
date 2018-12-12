@@ -53,20 +53,19 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	// -- Fields --
 
 	/* The image source associated with this Metadata. */
-	private DataHandle<Location> source;
+	private transient DataHandle<Location> source;
 
 	/* The image source location associated with this Metadata. */
-	private Location sourceLocation;
+	private transient Location sourceLocation;
 
 	/** The location an image with this metadata will be written to. */
-	private Location destinationLocation;
+	private transient Location destinationLocation;
 
 	/* Whether the Metadata should be filtered or not. */
 	private boolean filtered;
 
 	/* Contains a list of metadata objects for each image in this dataset */
-	@io.scif.Field(label = "imageMeta", isList = true)
-	private List<ImageMetadata> imageMeta;
+	private transient List<ImageMetadata> imageMeta;
 
 	/* A string id for this dataset. */
 	private String datasetName = null;

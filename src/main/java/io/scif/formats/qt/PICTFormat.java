@@ -1,4 +1,4 @@
-/*
+/**
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
  * %%
@@ -151,15 +151,15 @@ public class PICTFormat extends AbstractFormat {
 		 * Vector of {@code byte[]} and/or {@code int[]} representing individual
 		 * rows.
 		 */
-		private List<Object> strips;
+		private transient List<Object> strips;
 
 		/** Whether or not the file is PICT v1. */
 		private boolean versionOne;
 
 		/** Color lookup table for palette color images. */
-		private byte[][] lookup;
+		private transient byte[][] lookup;
 
-		private List<Long> jpegOffsets = new ArrayList<>();
+		private transient List<Long> jpegOffsets = new ArrayList<>();
 
 		// -- PICTFormat Metadata getters and setters --
 

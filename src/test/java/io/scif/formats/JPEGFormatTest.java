@@ -27,37 +27,31 @@
  * #L%
  */
 
-package io.scif;
+package io.scif.formats;
 
-import io.scif.services.FormatService;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.AbstractRichPlugin;
-import org.scijava.plugin.Parameter;
+import net.imagej.axis.Axes;
 
-/**
- * Abstract superclass of all {@link SCIFIOPlugin} implementations.
- *
- * @author Curtis Rueden
- */
-public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
-	SCIFIOPlugin
-{
+import org.junit.Test;
+import org.scijava.io.http.HTTPLocation;
 
-	@Parameter
-	private LogService log;
+public class JPEGFormatTest extends AbstractFormatTest {
 
-	@Parameter
-	private transient FormatService formatService;
-
-	@Override
-	public LogService log() {
-		return log;
+	public JPEGFormatTest() throws URISyntaxException, MalformedURLException {
+		super(new HTTPLocation("https://samples.scif.io/test-jpg.zip"));
 	}
 
-	@Override
-	public String getVersion() {
-		return formatService.getVersion();
+	private static final String hash_one =
+		"6aa56e4fe2eb9dc1006b833995d7587035dcda48";
+
+	@Test
+	public void testOne() {
+		final String meta =
+			"{\"filtered\":false,\"datasetName\":\"scifio-test.jpg\",\"table\":{},\"priority\":0.0}";
+		testImg(baseFolder().child("scifio-test.jpg"), hash_one, meta, new int[] {
+			500, 500, 3 }, Axes.X, Axes.Y, Axes.CHANNEL);
 	}
 
 }

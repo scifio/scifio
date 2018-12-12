@@ -204,10 +204,7 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 		try {
 			return c.newInstance();
 		}
-		catch (final InstantiationException e) {
-			throw new FormatException(e);
-		}
-		catch (final IllegalAccessException e) {
+		catch (InstantiationException | IllegalAccessException e) {
 			throw new FormatException(e);
 		}
 	}

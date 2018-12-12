@@ -116,9 +116,9 @@ public class APNGFormat extends AbstractFormat {
 		// -- Fields --
 
 		// APNG Chunks
-		private List<IDATChunk> idat;
+		private transient List<IDATChunk> idat;
 
-		private List<FCTLChunk> fctl;
+		private transient List<FCTLChunk> fctl;
 
 		private ACTLChunk actl;
 

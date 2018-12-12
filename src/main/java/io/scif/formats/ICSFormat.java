@@ -1273,7 +1273,7 @@ public class ICSFormat extends AbstractFormat {
 			final Object icsVersion = meta.getTable().get("ics_version");
 			if (icsVersion == null) {
 				parseHandle.close();
-				throw new FormatException("Cannot discern ICS version");
+			throw new FormatException("Cannot discern ICS version");
 			}
 			else if ("1.0".equals(icsVersion)) {
 				// split file format: ICS for metadata, IDS for pixel data

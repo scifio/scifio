@@ -27,37 +27,45 @@
  * #L%
  */
 
-package io.scif;
+package io.scif.formats;
 
-import io.scif.services.FormatService;
+import io.scif.img.IO;
+import io.scif.img.SCIFIOImgPlus;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.AbstractRichPlugin;
-import org.scijava.plugin.Parameter;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
-/**
- * Abstract superclass of all {@link SCIFIOPlugin} implementations.
- *
- * @author Curtis Rueden
- */
-public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
-	SCIFIOPlugin
-{
+import net.imagej.axis.Axes;
 
-	@Parameter
-	private LogService log;
+import org.junit.Test;
+import org.scijava.io.http.HTTPLocation;
+import org.scijava.io.location.FileLocation;
 
-	@Parameter
-	private transient FormatService formatService;
+public class EPSFormatTest extends AbstractFormatTest {
 
-	@Override
-	public LogService log() {
-		return log;
+	private static final String hash_one =
+		"c6a27eedfc8880ef46d49cc5f02f0002cde48200";
+
+	public EPSFormatTest() throws URISyntaxException, MalformedURLException {
+		super(new HTTPLocation("https://samples.scif.io/test-eps.zip"));
 	}
 
-	@Override
-	public String getVersion() {
-		return formatService.getVersion();
+	/**
+	 */
+	@Test
+	public void testOne() {
+		final String meta =
+			"{\"start\":12,\"binary\":false,\"isTiff\":false,\"filtered\":false,\"datasetName\":\"scifio-test.eps\",\"table\":{\"%%Title\":\" scifio-test.eps\",\"Y-coordinate of origin\":0,\"%%Creator\":\" SCIFIO\",\"%%Pages\":\" 1\",\"X-coordinate of origin\":0},\"priority\":0.0}";
+		testImg(baseFolder().child("scifio-test.eps"), hash_one, meta, new int[] {
+			500, 500, 3 }, Axes.X, Axes.Y, Axes.CHANNEL);
+	}
+
+//	@Test
+	public void createTestImg() {
+		final String source = "/home/gabriel/Desktop/input/scifio-test.png";
+		final SCIFIOImgPlus<?> img = IO.open(source).get(0);
+		IO.save(new FileLocation("/home/gabriel/Desktop/input/scifio-test.eps"),
+			img);
 	}
 
 }

@@ -27,37 +27,40 @@
  * #L%
  */
 
-package io.scif;
+package io.scif.formats;
 
-import io.scif.services.FormatService;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.AbstractRichPlugin;
-import org.scijava.plugin.Parameter;
+import net.imagej.axis.Axes;
 
-/**
- * Abstract superclass of all {@link SCIFIOPlugin} implementations.
- *
- * @author Curtis Rueden
- */
-public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
-	SCIFIOPlugin
-{
+import org.junit.Test;
+import org.scijava.io.http.HTTPLocation;
+import org.scijava.io.location.FileLocation;
 
-	@Parameter
-	private LogService log;
+public class JPEG2000FormatTest extends AbstractFormatTest {
 
-	@Parameter
-	private transient FormatService formatService;
-
-	@Override
-	public LogService log() {
-		return log;
+	public JPEG2000FormatTest() throws URISyntaxException, MalformedURLException {
+		super(new HTTPLocation("https://samples.scif.io/test-jpeg2000.zip"));
 	}
 
-	@Override
-	public String getVersion() {
-		return formatService.getVersion();
+	/**
+	 */
+	@Test
+	public void testOne() {
+		final String meta =
+			"{\"pixelsOffset\":85,\"lastIndex\":{\"imageIndex\":-1,\"planeIndex\":-1},\"resolutionLevels\":5,\"filtered\":false,\"datasetName\":\"scifio-test.jp2\",\"table\":{\"Comment\":\"Created with GIMP\"},\"priority\":0.0}";
+		final String hash = "c6a27eedfc8880ef46d49cc5f02f0002cde48200";
+		testImg(baseFolder().child("scifio-test.jp2"), hash, meta, new int[] { 500,
+			500, 3 }, Axes.X, Axes.Y, Axes.CHANNEL);
 	}
 
+	@Test
+	public void testTwo() {
+		final String meta =
+			"{\"pixelsOffset\":119,\"lastIndex\":{\"imageIndex\":-1,\"planeIndex\":-1},\"resolutionLevels\":5,\"filtered\":false,\"datasetName\":\"scifio-test-with-alpha.jp2\",\"table\":{\"Comment\":\"Created with GIMP\"},\"priority\":0.0}";
+		final String hash = "d550d2268c47f8038db80dd066ebe0d807e3b5f2";
+		testImg(baseFolder().child("scifio-test-with-alpha.jp2"), hash, meta,
+			new int[] { 500, 500, 4 }, Axes.X, Axes.Y, Axes.CHANNEL);
+	}
 }

@@ -77,7 +77,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		private BufferedImage img;
+		private transient BufferedImage img;
 
 		// -- ImageIOMetadata API methods --
 

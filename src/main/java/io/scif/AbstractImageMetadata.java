@@ -60,13 +60,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Fields --
 
 	/** Cached list of planar axes. */
-	private List<CalibratedAxis> planarAxes;
+	private transient List<CalibratedAxis> planarAxes;
 
 	/** Cached list of non-planar axes. */
-	private List<CalibratedAxis> extendedAxes;
+	private transient List<CalibratedAxis> extendedAxes;
 
 	/** Cached list of significant (non-trailing length 1) axes. */
-	private List<CalibratedAxis> effectiveAxes;
+	private transient List<CalibratedAxis> effectiveAxes;
 
 	/** Width (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeX")
@@ -92,7 +92,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	 * array
 	 */
 	@Field(label = "dimTypes")
-	private List<CalibratedAxis> axes;
+	private transient List<CalibratedAxis> axes;
 
 	/** Lengths of each axis. Order is parallel of dimTypes. */
 	@Field(label = "dimLengths")

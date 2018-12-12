@@ -97,17 +97,17 @@ public class JPEG2000Format extends AbstractFormat {
 
 		private Index lastIndex = new Index();
 
-		private byte[] lastIndexBytes;
+		private transient byte[] lastIndexBytes;
 
 		/** The number of JPEG 2000 resolution levels the file has. */
 		private Integer resolutionLevels;
 
 		/** The color lookup table associated with this file. */
-		private int[][] lut;
+		private transient int[][] lut;
 
-		byte[][] byteLut;
+		transient byte[][] byteLut;
 
-		short[][] shortLut;
+		transient short[][] shortLut;
 
 		// -- JPEG2000Metadata getters and setters --
 

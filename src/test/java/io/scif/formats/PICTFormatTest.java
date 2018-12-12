@@ -27,37 +27,31 @@
  * #L%
  */
 
-package io.scif;
+package io.scif.formats;
 
-import io.scif.services.FormatService;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.AbstractRichPlugin;
-import org.scijava.plugin.Parameter;
+import net.imagej.axis.Axes;
 
-/**
- * Abstract superclass of all {@link SCIFIOPlugin} implementations.
- *
- * @author Curtis Rueden
- */
-public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
-	SCIFIOPlugin
-{
+import org.junit.Test;
+import org.scijava.io.http.HTTPLocation;
 
-	@Parameter
-	private LogService log;
+public class PICTFormatTest extends AbstractFormatTest {
 
-	@Parameter
-	private transient FormatService formatService;
-
-	@Override
-	public LogService log() {
-		return log;
+	public PICTFormatTest() throws URISyntaxException, MalformedURLException {
+		super(new HTTPLocation("https://samples.scif.io/test-pict.zip"));
 	}
 
-	@Override
-	public String getVersion() {
-		return formatService.getVersion();
+	private static final String hash_pict =
+		"c6a27eedfc8880ef46d49cc5f02f0002cde48200";
+
+	@Test
+	public void testPICT() {
+		final String meta =
+			"{\"rowBytes\":1500,\"versionOne\":false,\"filtered\":false,\"datasetName\":\"scifio-test.PCT\",\"table\":{\"Version\":2},\"priority\":0.0}";
+		testImg(baseFolder().child("scifio-test.PCT"), hash_pict, meta, new int[] {
+			500, 500, 3, }, Axes.X, Axes.Y, Axes.CHANNEL);
 	}
 
 }
