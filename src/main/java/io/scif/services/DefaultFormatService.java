@@ -294,14 +294,6 @@ public class DefaultFormatService extends AbstractService implements
 		return metadataMap().get(metadataClass);
 	}
 
-	/**
-	 * Returns the first Format known to be compatible with the source provided.
-	 * Formats are checked in ascending order of their priority. The source is
-	 * read if necessary to determine compatibility.
-	 *
-	 * @param id the source
-	 * @return A Format reference compatible with the provided source.
-	 */
 	@Override
 	public Format getFormat(final String id) throws FormatException {
 		return getFormat(id, new SCIFIOConfig().checkerSetOpen(false));
