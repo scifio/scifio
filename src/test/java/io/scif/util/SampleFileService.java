@@ -12,11 +12,11 @@ public interface SampleFileService extends Service {
 	/**
 	 * Retrieves the compressed sample folder from the source location, extracts
 	 * it to a temporary folder and returns it's {@link Location}.
-	 * 
-	 * @param zipSource the source location for the
+	 *
+	 * @param zipSources the source locations for the
 	 * @return the decompressed folder
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	FileLocation prepareFormatTestFolder(Location zipSource) throws IOException;
-
+	FileLocation prepareFormatTestFolder(Location... zipSources)
+		throws IOException;
 }

@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -76,44 +77,67 @@ public class DefaultSampleFilesService extends AbstractService implements
 	private DiskLocationCache sourceCache;
 
 	@Override
-	public FileLocation prepareFormatTestFolder(final Location zipSource)
+	public FileLocation prepareFormatTestFolder(final Location... zipSources)
 		throws IOException
 	{
-		byte[] bytes = DigestUtils.sha1(zipSource.getURI().toString().getBytes());
-		String localFolder = DatatypeConverter.printHexBinary(bytes);
+		if (zipSources.length == 0) {
+			throw new IllegalArgumentException(
+				"At least one zip source is required!");
+		}
+
+		final byte[] bytes = Arrays.stream(zipSources).map(Object::toString).reduce(
+			"", (a, b) -> a + b).getBytes();
+		final String localFolderName = DatatypeConverter.printHexBinary(DigestUtils
+			.sha1(bytes));
 
 		// test if we already downloaded and unpacked the source
-		FileLocation out = sources.get(localFolder);
+		FileLocation out = sources.get(localFolderName);
 		if (out == null) {
 			// not cached we need to download it
 
-			// check the target folder
-			File targetFolder = new File(sourceCache().getBaseDirectory(),
-				localFolder);
-			if (!targetFolder.exists()) {
-				try {
-					// download
-					downloadAndUnpackResource(zipSource, targetFolder);
+			final File basefolder = new File(sourceCache().getBaseDirectory(),
+				localFolderName);
+			try {
+				if (zipSources.length == 1) { // extract directly into basedir
+					downloadAndUnpackResource(zipSources[0], basefolder);
 				}
-				catch (IOException | InterruptedException | ExecutionException e) {
-					if (targetFolder.exists()) {
-						targetFolder.delete();
+				else {
+
+					for (final Location source : zipSources) {
+						String targetName;
+						if (source.getName().equals(source.defaultName())) {
+							targetName = source.getURI().getPath().substring(1).replaceAll("\\/", "-");
+						}
+						else {
+							targetName = source.getName();
+						}
+
+						final File target = new File(basefolder, targetName);
+						downloadAndUnpackResource(source, target);
 					}
-					throw new IOException(e);
 				}
 			}
-			out = new FileLocation(targetFolder);
-			sources.put(localFolder, out);
+			catch (final IOException | InterruptedException | ExecutionException e) {
+				// cleanup
+				if (basefolder.exists()) {
+					basefolder.delete();
+				}
+				throw new IOException(e);
+			}
+
+			out = new FileLocation(basefolder);
+			sources.put(localFolderName, out);
 		}
 
 		return out;
 	}
 
-	private void downloadAndUnpackResource(Location source, File targetFolder)
-		throws InterruptedException, ExecutionException, IOException
+	private void downloadAndUnpackResource(final Location source,
+		final File targetFolder) throws InterruptedException, ExecutionException,
+		IOException
 	{
 		// allocate array
-		ByteArray byteArray = new ByteArray(1024 * 1024);
+		final ByteArray byteArray = new ByteArray(1024 * 1024);
 
 		log.debug("Started download of " + source.getURI());
 		// Download the zip file

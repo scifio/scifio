@@ -61,13 +61,16 @@ import org.scijava.io.location.Location;
 public class AbstractFormatTest {
 
 	private FileLocation baseFolder;
-	private final Location source;
+	private final Location[] sources;
 	private final Context ctx = new Context();
 	private final InitializeService init = ctx.getService(
 		InitializeService.class);
 
-	public AbstractFormatTest(final Location source) {
-		this.source = source;
+	public AbstractFormatTest(final Location... sources) {
+		if (sources.length == 0) {
+			throw new IllegalArgumentException("At least one source is required!");
+		}
+		this.sources = sources;
 	}
 
 	public FileLocation baseFolder() {
@@ -75,7 +78,7 @@ public class AbstractFormatTest {
 			try {
 				final SampleFileService sampleFileService = ctx.getService(
 					SampleFileService.class);
-				baseFolder = sampleFileService.prepareFormatTestFolder(source);
+				baseFolder = sampleFileService.prepareFormatTestFolder(sources);
 				assertTrue(ctx.getService(DataHandleService.class).exists(baseFolder));
 			}
 			catch (final IOException e) {
@@ -117,7 +120,7 @@ public class AbstractFormatTest {
 			}
 			assertEquals(hash, ImageHash.hashImg(img));
 			if (!"".equals(metadataJson)) {
-				Metadata metadata = init.initializeReader(imgLoc).getMetadata();
+				final Metadata metadata = init.initializeReader(imgLoc).getMetadata();
 				assertEquals(metadataJson, MetaDataSerializer.metaToJson(metadata));
 			}
 		}
