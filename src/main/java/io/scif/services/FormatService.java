@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.scijava.Priority;
-import org.scijava.Versioned;
 
 /**
  * A collection of methods for finding {@link io.scif.Format} instances given a
@@ -55,7 +54,7 @@ import org.scijava.Versioned;
  * @see io.scif.Format
  * @author Mark Hiner
  */
-public interface FormatService extends SCIFIOService, Versioned {
+public interface FormatService extends SCIFIOService {
 
 	// -- Priority constant --
 
