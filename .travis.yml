@@ -9,6 +9,7 @@ script: ".travis/build.sh"
 cache:
   directories:
   - "~/.m2/repository"
+  - "~/.scifio-sample-cache"
 env:
   global:
   - secure: aT8czhDmBR3kzwEJNirbtZLOUcORucOO2+Ky8qrh31aqcKC34G73KsgtQrMIUT79brNAJwOFamPnuRzu/GzOP/9JmpjvGEsbamdQxfWuHswZ1e0ICTX2n6sL+5GlbXwhEhhIfuaV0JzzrdoFglS2Z1MAYtFyPgPYjQ8zyFPP6lo=
