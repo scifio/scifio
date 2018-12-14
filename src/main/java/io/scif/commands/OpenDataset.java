@@ -88,16 +88,16 @@ public class OpenDataset extends ContextCommand {
 
 	// TODO callback to enable/disable these fields based on crop value
 	@Parameter(required = false, min = "0")
-	private final Integer x = 0;
+	private Integer x = 0;
 
 	@Parameter(required = false, min = "0")
-	private final Integer y = 0;
+	private Integer y = 0;
 
 	@Parameter(required = false, min = "0")
-	private final Integer w = 0;
+	private Integer w = 0;
 
 	@Parameter(required = false, min = "0")
-	private final Integer h = 0;
+	private Integer h = 0;
 
 	@Parameter(required = false, label = "Image indices")
 	private String range;
@@ -107,7 +107,7 @@ public class OpenDataset extends ContextCommand {
 
 	@Parameter(required = false, label = "Image mode", choices = { "Auto",
 		"Planar", "Cell" })
-	private final String mode = "Auto";
+	private String mode = "Auto";
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
