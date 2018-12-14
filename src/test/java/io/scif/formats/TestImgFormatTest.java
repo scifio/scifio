@@ -27,7 +27,7 @@
  * #L%
  */
 
-package io.scif.io;
+package io.scif.formats;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,5 +1,5 @@
 
-package io.scif.io;
+package io.scif.io.location;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,7 +17,7 @@ import org.scijava.io.location.LocationService;
  * 
  * @author Gabriel Einsdorf
  */
-public class TestImgResolverTest {
+public class TestImgLocationResolverTest {
 
 	private Context ctx = new Context(LocationService.class,
 		MetadataService.class);
