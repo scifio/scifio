@@ -298,7 +298,11 @@ public class DefaultDatasetIOService extends AbstractService implements
 
 	private Location resolve(final String source) throws IOException {
 		try {
-			return locationService.resolve(source);
+			final Location location = locationService.resolve(source);
+			if (location == null) {
+				throw new IOException("Unresolvable source: " + source);
+			}
+			return location;
 		}
 		catch (final URISyntaxException exc) {
 			throw new IOException("Invalid source string: " + source);
