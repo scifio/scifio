@@ -253,12 +253,12 @@ public class NRRDFormat extends AbstractFormat {
 				getSource().get() };
 			return new Location[] { getSource().get(), getMetadata().getDataFile() };
 		}
-
+		
 		// -- Abstract Parser API Methods --
 
 		@Override
 		public Metadata parse(final DataHandle<Location> stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException, FormatException
 		{
 			final BrowsableLocation loc = asBrowsableLocation(stream);
 			String id = loc.getName();
@@ -282,10 +282,10 @@ public class NRRDFormat extends AbstractFormat {
 
 			if (changedStream) {
 				stream.close();
-				return super.parse(dataHandleService.create(newLocation), meta);
+				return super.parse(dataHandleService.create(newLocation), meta, config);
 			}
 
-			return super.parse(stream, meta);
+			return super.parse(stream, meta, config);
 		}
 
 		@Override
