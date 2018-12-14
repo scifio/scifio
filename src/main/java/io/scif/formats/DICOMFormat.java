@@ -111,8 +111,8 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		byte[][] lut = null;
-		short[][] shortLut = null;
+		transient byte[][] lut = null;
+		transient short[][] shortLut = null;
 		private ColorTable8 lut8;
 		private ColorTable16 lut16;
 		private long[] offsets = null;
@@ -125,7 +125,7 @@ public class DICOMFormat extends AbstractFormat {
 		private int imagesPerFile = 0;
 		private double rescaleSlope = 1.0;
 		private double rescaleIntercept = 0.0;
-		private Map<Integer, List<BrowsableLocation>> fileList;
+		private transient Map<Integer, List<BrowsableLocation>> fileList;
 		private boolean inverted = false;
 
 		private String pixelSizeX, pixelSizeY;
@@ -135,7 +135,7 @@ public class DICOMFormat extends AbstractFormat {
 		private String originalDate, originalTime, originalInstance;
 		private int originalSeries;
 
-		private List<BrowsableLocation> companionFiles = new ArrayList<>();
+		private transient List<BrowsableLocation> companionFiles = new ArrayList<>();
 
 		// Getters and Setters
 
