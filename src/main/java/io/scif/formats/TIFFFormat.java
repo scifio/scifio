@@ -1629,8 +1629,9 @@ public class TIFFFormat extends AbstractFormat {
 			ifd.put(IFD.Y_RESOLUTION, new TiffRational((long) (physicalSizeY * 1000 *
 				10000), 1000));
 
+			DataHandle<Location> handle = getHandle();
 			if (!isBigTiff()) {
-				isBigTIFF = (getHandle().length() + 2 * (width * height * c *
+				isBigTIFF = (handle.length() + 2 * (width * height * c *
 					bytesPerPixel)) >= 4294967296L;
 				if (isBigTiff()) {
 					throw new FormatException(
@@ -1643,11 +1644,13 @@ public class TIFFFormat extends AbstractFormat {
 			// write the image
 			ifd.put(IFD.LITTLE_ENDIAN, littleEndian);
 			if (!ifd.containsKey(IFD.REUSE)) {
-				ifd.put(IFD.REUSE, getHandle().length());
-				getHandle().seek(getHandle().length());
+				ifd.put(IFD.REUSE, handle.length());
+				if (handle.length() != -1) { // handle does not exist yet!
+					handle.seek(handle.length());
+				}
 			}
 			else {
-				getHandle().seek((Long) ifd.get(IFD.REUSE));
+				handle.seek((Long) ifd.get(IFD.REUSE));
 			}
 
 			ifd.putIFDValue(IFD.PLANAR_CONFIGURATION, interleaved || meta.get(
