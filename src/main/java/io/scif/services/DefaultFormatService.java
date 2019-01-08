@@ -338,10 +338,6 @@ public class DefaultFormatService extends AbstractService implements
 			}
 		}
 
-		if (formatList.isEmpty()) {
-			throw new FormatException(id + ": No supported format found.");
-		}
-
 		return formatList;
 	}
 
@@ -389,10 +385,6 @@ public class DefaultFormatService extends AbstractService implements
 			catch (final IOException e) {
 				throw new FormatException(e);
 			}
-		}
-
-		if (formatList.isEmpty()) {
-			throw new FormatException("No supported format found.");
 		}
 
 		return formatList;
