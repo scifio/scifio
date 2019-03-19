@@ -43,7 +43,9 @@ public class DICOMFormatTest extends AbstractFormatTest {
 		super(new HTTPLocation("https://samples.scif.io/test-dicom.zip"));
 	}
 
-	@Test
+	// TEMP: Disable tests until remote test file is in place.
+
+//	@Test
 	public void baseTest() {
 		final String metaJson = "{\"offsets\":[438],\"isJP2K\":false,\"isJPEG\":false,\"isRLE\":false,\"isDeflate\":false,\"oddLocations\":false,\"maxPixelValue\":-1,\"imagesPerFile\":1,\"rescaleSlope\":1.0,\"rescaleIntercept\":0.0,\"inverted\":false,\"imageType\":\"ORIGINAL\\\\SECONDARY\\\\OTHER\\\\ARC\\\\DICOM\\\\VALIDATION\",\"originalInstance\":\"1\",\"originalSeries\":0,\"filtered\":false,\"datasetName\":\"OT-MONO2-8-a7.dcm\",\"table\":{},\"priority\":0.0}";
 		testImg(baseFolder().child("OT-MONO2-8-a7.dcm"),
@@ -51,7 +53,7 @@ public class DICOMFormatTest extends AbstractFormatTest {
 				512, }, Axes.X, Axes.Y);
 	}
 
-	@Test
+//	@Test
 	public void baseTest2() {
 		final String metaJson = "{\"offsets\":[444],\"isJP2K\":false,\"isJPEG\":false,\"isRLE\":false,\"isDeflate\":false,\"oddLocations\":false,\"maxPixelValue\":-1,\"imagesPerFile\":1,\"rescaleSlope\":1.0,\"rescaleIntercept\":0.0,\"inverted\":false,\"imageType\":\"ORIGINAL\\\\SECONDARY\\\\OTHER\\\\ARC\\\\DICOM\\\\VALIDATION\",\"originalInstance\":\"1\",\"originalSeries\":0,\"filtered\":false,\"datasetName\":\"OT-MONO2-8-colon.dcm\",\"table\":{},\"priority\":0.0}";
 		testImg(baseFolder().child("OT-MONO2-8-colon.dcm"),
@@ -59,7 +61,7 @@ public class DICOMFormatTest extends AbstractFormatTest {
 				512, }, Axes.X, Axes.Y);
 	}
 
-	@Test
+//	@Test
 	public void baseTest3() {
 		final String metaJson = "{\"offsets\":[444],\"isJP2K\":false,\"isJPEG\":false,\"isRLE\":false,\"isDeflate\":false,\"oddLocations\":false,\"maxPixelValue\":-1,\"imagesPerFile\":1,\"rescaleSlope\":1.0,\"rescaleIntercept\":0.0,\"inverted\":false,\"imageType\":\"ORIGINAL\\\\SECONDARY\\\\OTHER\\\\ARC\\\\DICOM\\\\VALIDATION\",\"originalInstance\":\"1\",\"originalSeries\":0,\"filtered\":false,\"datasetName\":\"OT-MONO2-8-hip.dcm\",\"table\":{},\"priority\":0.0}";
 		testImg(baseFolder().child("OT-MONO2-8-hip.dcm"),

@@ -31,7 +31,6 @@ package io.scif.formats;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import io.scif.FormatException;
 import io.scif.Metadata;
@@ -74,17 +73,7 @@ public class AbstractFormatTest {
 	}
 
 	public FileLocation baseFolder() {
-		if (baseFolder == null) {
-			try {
-				final SampleFileService sampleFileService = ctx.getService(
-					SampleFileService.class);
-				baseFolder = sampleFileService.prepareFormatTestFolder(sources);
-				assertTrue(ctx.getService(DataHandleService.class).exists(baseFolder));
-			}
-			catch (final IOException e) {
-				fail("Could not initialize base folder: " + e);
-			}
-		}
+		if (baseFolder == null) initBaseFolder();
 		return baseFolder;
 	}
 
@@ -125,7 +114,21 @@ public class AbstractFormatTest {
 			}
 		}
 		catch (FormatException | IOException exc) {
-			fail("error during image test " + exc);
+			throw new AssertionError("Error during image test", exc);
+		}
+	}
+
+	/** Double-checked locking initialization for {@link #baseFolder}. */
+	private synchronized void initBaseFolder() {
+		if (baseFolder != null) return;
+		try {
+			final SampleFileService sampleFileService = ctx.getService(
+				SampleFileService.class);
+			baseFolder = sampleFileService.prepareFormatTestFolder(sources);
+			assertTrue(ctx.getService(DataHandleService.class).exists(baseFolder));
+		}
+		catch (final IOException e) {
+			throw new AssertionError("Could not initialize base folder", e);
 		}
 	}
 }
