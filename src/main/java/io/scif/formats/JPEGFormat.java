@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,9 +33,6 @@ import io.scif.AbstractChecker;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.ByteArrayHandle;
-import io.scif.io.RandomAccessInputStream;
-import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
 import java.awt.color.CMMException;
@@ -44,6 +41,10 @@ import java.io.IOException;
 
 import net.imagej.axis.Axes;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -68,14 +69,10 @@ public class JPEGFormat extends ImageIOFormat {
 
 	public static class Metadata extends ImageIOFormat.Metadata {
 
-		@Parameter
-		private LocationService locationService;
-
 		// -- Metadata API Methods --
 
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
-			locationService.mapId(getDatasetName(), null);
 			super.close(fileOnly);
 		}
 	}
@@ -99,16 +96,16 @@ public class JPEGFormat extends ImageIOFormat {
 		}
 
 		@Override
-		public boolean isFormat(final String name, final SCIFIOConfig config) {
+		public boolean isFormat(final Location name, final SCIFIOConfig config) {
 			if (config.checkerIsOpen()) {
 				return super.isFormat(name, config);
 			}
 
-			return FormatTools.checkSuffix(name, getFormat().getSuffixes());
+			return FormatTools.checkSuffix(name.getName(), getFormat().getSuffixes());
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int blockLen = 4;
@@ -131,8 +128,8 @@ public class JPEGFormat extends ImageIOFormat {
 				stream.seek(0);
 
 				// Need to check dimension lengths
-				if (m.get(0).getAxisLength(Axes.X) > MAX_SIZE &&
-					m.get(0).getAxisLength(Axes.Y) > MAX_SIZE)
+				if (m.get(0).getAxisLength(Axes.X) > MAX_SIZE && m.get(0).getAxisLength(
+					Axes.Y) > MAX_SIZE)
 				{
 					return false;
 				}
@@ -149,16 +146,16 @@ public class JPEGFormat extends ImageIOFormat {
 	public static class Parser extends ImageIOFormat.Parser<Metadata> {
 
 		@Parameter
-		private LocationService locationService;
+		private DataHandleService dataHandleService;
 
 		@Override
-		public void typedParse(final RandomAccessInputStream stream,
+		public void typedParse(final DataHandle<Location> handle,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			final String id = stream.getFileName();
+			final String name = handle.get().getName();
 			try {
-				super.typedParse(stream, meta, config);
+				super.typedParse(handle, meta, config);
 			}
 			catch (final CMMException e) {
 				// strip out all but the first application marker
@@ -171,48 +168,47 @@ public class JPEGFormat extends ImageIOFormat {
 				final ByteArrayOutputStream v = new ByteArrayOutputStream();
 
 				final byte[] tag = new byte[2];
-				stream.read(tag);
+				handle.read(tag);
 				v.write(tag);
 
-				stream.read(tag);
+				handle.read(tag);
 				int tagValue = Bytes.toShort(tag, false) & 0xffff;
 				boolean appNoteFound = false;
 				while (tagValue != 0xffdb) {
 					if (!appNoteFound || (tagValue < 0xffe0 && tagValue >= 0xfff0)) {
 						v.write(tag);
 
-						stream.read(tag);
+						handle.read(tag);
 						final int len = Bytes.toShort(tag, false) & 0xffff;
 						final byte[] tagContents = new byte[len - 2];
-						stream.read(tagContents);
+						handle.read(tagContents);
 						v.write(tag);
 						v.write(tagContents);
 					}
 					else {
-						stream.read(tag);
+						handle.read(tag);
 						final int len = Bytes.toShort(tag, false) & 0xffff;
-						stream.skipBytes(len - 2);
+						handle.skipBytes(len - 2);
 					}
 
 					if (tagValue >= 0xffe0 && tagValue < 0xfff0 && !appNoteFound) {
 						appNoteFound = true;
 					}
-					stream.read(tag);
+					handle.read(tag);
 					tagValue = Bytes.toShort(tag, false) & 0xffff;
 				}
 				v.write(tag);
-				final byte[] remainder =
-					new byte[(int) (stream.length() - stream.getFilePointer())];
-				stream.read(remainder);
+				final byte[] remainder = new byte[(int) (handle.length() - handle
+					.offset())];
+				handle.read(remainder);
 				v.write(remainder);
 
-				final ByteArrayHandle bytes = new ByteArrayHandle(v.toByteArray());
-
-				locationService.mapFile(getSource().getFileName() + ".fixed", bytes);
-				super.parse(getSource().getFileName() + ".fixed", meta);
+				final DataHandle<Location> bytes = dataHandleService.create(
+					new BytesLocation(v.toByteArray()));
+				super.parse(bytes, meta);
 			}
 
-			getMetadata().setDatasetName(id);
+			getMetadata().setDatasetName(name);
 		}
 	}
 

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,17 +31,18 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.gui.AWTImageTools;
-import io.scif.io.RandomAccessInputStream;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleInputStream;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -77,10 +78,9 @@ public class JPEGCodec extends AbstractCodec {
 		}
 
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
-		final BufferedImage img =
-			AWTImageTools.makeImage(data, options.width, options.height,
-				options.channels, options.interleaved, options.bitsPerSample / 8,
-				false, options.littleEndian, options.signed);
+		final BufferedImage img = AWTImageTools.makeImage(data, options.width,
+			options.height, options.channels, options.interleaved,
+			options.bitsPerSample / 8, false, options.littleEndian, options.signed);
 
 		try {
 			ImageIO.write(img, "jpeg", out);
@@ -96,30 +96,31 @@ public class JPEGCodec extends AbstractCodec {
 	 * {@link CodecOptions#interleaved interleaved}
 	 * {@link CodecOptions#littleEndian littleEndian}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		BufferedImage b;
-		final long fp = in.getFilePointer();
+		final long offset = in.offset();
 		try {
 			try {
 				while (in.read() != (byte) 0xff || in.read() != (byte) 0xd8) {
 					/* Read to data. */
 				}
-				in.seek(in.getFilePointer() - 2);
+				in.seek(in.offset() - 2);
 			}
 			catch (final EOFException e) {
-				in.seek(fp);
+				in.seek(offset);
 			}
 
-			b = ImageIO.read(new BufferedInputStream(new DataInputStream(in), 8192));
+			b = ImageIO.read(new BufferedInputStream(new DataHandleInputStream<>(in),
+				8192));
 		}
 		catch (final IOException exc) {
 			// probably a lossless JPEG; delegate to LosslessJPEGCodec
-			in.seek(fp);
+			in.seek(offset);
 			final Codec codec = codecService.getCodec(LosslessJPEGCodec.class);
 			return codec.decompress(in, options);
 		}
@@ -133,8 +134,7 @@ public class JPEGCodec extends AbstractCodec {
 			final int nBytes = buf[0].length / (b.getWidth() * b.getHeight());
 			final int mask = (int) (Math.pow(2, nBytes * 8) - 1);
 			for (int i = 0; i < buf[0].length; i += nBytes) {
-				final int y =
-					Bytes.toInt(buf[0], i, nBytes, options.littleEndian);
+				final int y = Bytes.toInt(buf[0], i, nBytes, options.littleEndian);
 				int cb = Bytes.toInt(buf[1], i, nBytes, options.littleEndian);
 				int cr = Bytes.toInt(buf[2], i, nBytes, options.littleEndian);
 

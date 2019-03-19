@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,6 +41,7 @@ import net.imagej.display.ImageDisplayService;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
+import org.scijava.io.location.FileLocation;
 import org.scijava.log.LogService;
 import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Attr;
@@ -53,13 +54,13 @@ import org.scijava.widget.FileWidget;
 
 /**
  * Saves the current {@link Dataset} to disk using a user-specified file name.
- * 
+ *
  * @author Mark Hiner
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Save As...", weight = 21, accelerator = "shift ^S") }, attrs = { @Attr(name = "no-legacy") })
+@Plugin(type = Command.class, menu = { @Menu(label = MenuConstants.FILE_LABEL,
+	weight = MenuConstants.FILE_WEIGHT, mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Save As...", weight = 21, accelerator = "shift ^S") },
+	attrs = { @Attr(name = "no-legacy") })
 public class SaveAsImage extends ContextCommand {
 
 	@Parameter
@@ -87,7 +88,7 @@ public class SaveAsImage extends ContextCommand {
 	public void run() {
 		final Dataset dataset = dataset();
 		try {
-			datasetIOService.save(dataset, outputFile.getAbsolutePath());
+			datasetIOService.save(dataset, new FileLocation(outputFile.getAbsolutePath()));
 		}
 		catch (final IOException exc) {
 			log.error(exc);

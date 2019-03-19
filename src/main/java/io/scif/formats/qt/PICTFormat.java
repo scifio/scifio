@@ -1,4 +1,4 @@
-/*
+/**
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
  * %%
@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,11 +45,11 @@ import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
-import io.scif.io.ByteArrayHandle;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
@@ -58,15 +58,19 @@ import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
 
 /**
  * PictReader is the file format reader for Apple PICT files. Most of this code
- * was adapted from the PICT readers in <a
- * href="http://java.sun.com/products/jimi/index.html">JIMI</a>, <a
- * href="http://www.imagemagick.org">ImageMagick</a>, and Java QuickDraw.
+ * was adapted from the PICT readers in
+ * <a href="http://java.sun.com/products/jimi/index.html">JIMI</a>,
+ * <a href="http://www.imagemagick.org">ImageMagick</a>, and Java QuickDraw.
  *
  * @author Melissa Linkert
  * @author Mark Hiner
@@ -105,8 +109,8 @@ public class PICTFormat extends AbstractFormat {
 	static {
 		for (int i = 0; i < 256; i++) {
 			for (int j = 0; j < 8; j++) {
-				EXPANSION_TABLE[i * 8 + j] =
-					(byte) ((i & (int) Math.pow(2, 7 - j)) >> 7 - j);
+				EXPANSION_TABLE[i * 8 + j] = (byte) ((i & (int) Math.pow(2, 7 -
+					j)) >> 7 - j);
 			}
 		}
 	}
@@ -147,15 +151,15 @@ public class PICTFormat extends AbstractFormat {
 		 * Vector of {@code byte[]} and/or {@code int[]} representing individual
 		 * rows.
 		 */
-		private Vector<Object> strips;
+		private transient List<Object> strips;
 
 		/** Whether or not the file is PICT v1. */
 		private boolean versionOne;
 
 		/** Color lookup table for palette color images. */
-		private byte[][] lookup;
+		private transient byte[][] lookup;
 
-		private Vector<Long> jpegOffsets = new Vector<>();
+		private transient List<Long> jpegOffsets = new ArrayList<>();
 
 		// -- PICTFormat Metadata getters and setters --
 
@@ -167,11 +171,11 @@ public class PICTFormat extends AbstractFormat {
 			this.rowBytes = rowBytes;
 		}
 
-		public Vector<Object> getStrips() {
+		public List<Object> getStrips() {
 			return strips;
 		}
 
-		public void setStrips(final Vector<Object> strips) {
+		public void setStrips(final List<Object> strips) {
 			this.strips = strips;
 		}
 
@@ -191,11 +195,11 @@ public class PICTFormat extends AbstractFormat {
 			this.lookup = lookup;
 		}
 
-		public Vector<Long> getJpegOffsets() {
+		public List<Long> getJpegOffsets() {
 			return jpegOffsets;
 		}
 
-		public void setJpegOffsets(final Vector<Long> jpegOffsets) {
+		public void setJpegOffsets(final List<Long> jpegOffsets) {
 			this.jpegOffsets = jpegOffsets;
 		}
 
@@ -233,8 +237,8 @@ public class PICTFormat extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable
-			getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable getColorTable(final int imageIndex,
+			final long planeIndex)
 		{
 			return lookup == null ? null : new ColorTable8(lookup);
 		}
@@ -249,7 +253,7 @@ public class PICTFormat extends AbstractFormat {
 		// -- Parser API methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -260,7 +264,7 @@ public class PICTFormat extends AbstractFormat {
 			short sizeY = stream.readShort();
 			short sizeX = stream.readShort();
 
-			final Vector<Object> strips = new Vector<>();
+			final List<Object> strips = new ArrayList<>();
 			final byte[][] lookup = null;
 			boolean versionOne = false;
 			meta.setStrips(strips);
@@ -308,10 +312,10 @@ public class PICTFormat extends AbstractFormat {
 				else {
 					// if at odd boundary skip a byte for opcode in PICT v2
 
-					if ((stream.getFilePointer() & 0x1L) != 0) {
+					if ((stream.offset() & 0x1L) != 0) {
 						stream.skipBytes(1);
 					}
-					if (stream.getFilePointer() + 2 >= stream.length()) {
+					if (stream.offset() + 2 >= stream.length()) {
 						break;
 					}
 					opcode = stream.readShort() & 0xffff;
@@ -326,8 +330,7 @@ public class PICTFormat extends AbstractFormat {
 		private boolean drivePictDecoder(final Metadata meta, final int opcode)
 			throws FormatException, IOException
 		{
-			log().debug(
-				"drivePictDecoder(" + opcode + ") @ " + getSource().getFilePointer());
+			log().debug("drivePictDecoder(" + opcode + ") @ " + getSource().offset());
 
 			switch (opcode) {
 				case PICT_BITSRGN: // rowBytes must be < 8
@@ -335,8 +338,8 @@ public class PICTFormat extends AbstractFormat {
 				case PICT_BITSRECT: // rowBytes must be < 8
 				case PICT_PACKBITSRECT:
 					meta.setRowBytes(getSource().readShort());
-					if (meta.isVersionOne() || (meta.getRowBytes() & 0x8000) == 0) handleBitmap(
-						meta, opcode);
+					if (meta.isVersionOne() || (meta.getRowBytes() & 0x8000) == 0)
+						handleBitmap(meta, opcode);
 					else handlePixmap(meta, opcode);
 					break;
 				case PICT_9A:
@@ -359,17 +362,17 @@ public class PICTFormat extends AbstractFormat {
 					getSource().skipBytes(x);
 					break;
 				case PICT_JPEG:
-					meta.getJpegOffsets().add(getSource().getFilePointer() + 2);
+					meta.getJpegOffsets().add(getSource().offset() + 2);
 					meta.get(0).setAxisLength(Axes.CHANNEL, 3);
-					while ((getSource().readShort() & 0xffff) != 0xffd9 &&
-						getSource().getFilePointer() < getSource().length())
+					while ((getSource().readShort() & 0xffff) != 0xffd9 && getSource()
+						.offset() < getSource().length())
 					{ /* Read to end of 0xffd9 */}
-					while (getSource().getFilePointer() < getSource().length()) {
-						while ((getSource().readShort() & 0xffff) != 0xffd8 &&
-							getSource().getFilePointer() < getSource().length())
+					while (getSource().offset() < getSource().length()) {
+						while ((getSource().readShort() & 0xffff) != 0xffd8 && getSource()
+							.offset() < getSource().length())
 						{ /* Read to jpeg offsets */}
-						if (getSource().getFilePointer() < getSource().length()) {
-							meta.getJpegOffsets().add(getSource().getFilePointer() - 2);
+						if (getSource().offset() < getSource().length()) {
+							meta.getJpegOffsets().add(getSource().offset() - 2);
 						}
 					}
 					meta.get(0).setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
@@ -381,7 +384,7 @@ public class PICTFormat extends AbstractFormat {
 					}
 			}
 
-			return getSource().getFilePointer() < getSource().length();
+			return getSource().offset() < getSource().length();
 		}
 
 		/** Extract the image data in a PICT bitmap structure. */
@@ -452,9 +455,8 @@ public class PICTFormat extends AbstractFormat {
 		private void handlePixmap(final Metadata meta, final int pixelSize,
 			final int compCount) throws FormatException, IOException
 		{
-			log().debug(
-				"handlePixmap(" + meta.getRowBytes() + ", " + pixelSize + ", " +
-					compCount + ")");
+			log().debug("handlePixmap(" + meta.getRowBytes() + ", " + pixelSize +
+				", " + compCount + ")");
 			int rawLen;
 			byte[] buf; // row raw bytes
 			byte[] uBuf = null; // row uncompressed data
@@ -469,8 +471,8 @@ public class PICTFormat extends AbstractFormat {
 
 			switch (pixelSize) {
 				case 32:
-					if (!compressed) uBufI =
-						new int[(int) meta.get(0).getAxisLength(Axes.X)];
+					if (!compressed) uBufI = new int[(int) meta.get(0).getAxisLength(
+						Axes.X)];
 					else uBuf = new byte[bufSize];
 					break;
 				case 16:
@@ -486,8 +488,8 @@ public class PICTFormat extends AbstractFormat {
 			}
 
 			if (!compressed) {
-				log()
-					.debug("Pixel data is uncompressed (pixelSize=" + pixelSize + ").");
+				log().debug("Pixel data is uncompressed (pixelSize=" + pixelSize +
+					").");
 				buf = new byte[bufSize];
 				for (int row = 0; row < meta.get(0).getAxisLength(Axes.X); row++) {
 					getSource().read(buf, 0, meta.getRowBytes());
@@ -512,9 +514,8 @@ public class PICTFormat extends AbstractFormat {
 				}
 			}
 			else {
-				log().debug(
-					"Pixel data is compressed (pixelSize=" + pixelSize + "; compCount=" +
-						compCount + ").");
+				log().debug("Pixel data is compressed (pixelSize=" + pixelSize +
+					"; compCount=" + compCount + ").");
 				buf = new byte[bufSize + 1 + bufSize / 128];
 				for (int row = 0; row < meta.get(0).getAxisLength(Axes.Y); row++) {
 					if (meta.getRowBytes() > 250) rawLen = getSource().readShort();
@@ -522,9 +523,8 @@ public class PICTFormat extends AbstractFormat {
 
 					if (rawLen > buf.length) rawLen = buf.length;
 
-					if ((getSource().length() - getSource().getFilePointer()) <= rawLen) {
-						rawLen =
-							(int) (getSource().length() - getSource().getFilePointer() - 1);
+					if ((getSource().length() - getSource().offset()) <= rawLen) {
+						rawLen = (int) (getSource().length() - getSource().offset() - 1);
 					}
 
 					if (rawLen < 0) {
@@ -559,9 +559,8 @@ public class PICTFormat extends AbstractFormat {
 
 						for (int q = 0; q < compCount; q++) {
 							final int offset = q * (int) meta.get(0).getAxisLength(Axes.X);
-							final int len =
-								Math.min((int) meta.get(0).getAxisLength(Axes.X), uBuf.length -
-									offset);
+							final int len = Math.min((int) meta.get(0).getAxisLength(Axes.X),
+								uBuf.length - offset);
 							newBuf = new byte[(int) meta.get(0).getAxisLength(Axes.X)];
 							if (offset < uBuf.length) {
 								System.arraycopy(uBuf, offset, newBuf, 0, len);
@@ -597,9 +596,8 @@ public class PICTFormat extends AbstractFormat {
 		private void expandPixels(final int bitSize, final byte[] ib,
 			final byte[] ob, final int outLen) throws FormatException
 		{
-			log().debug(
-				"expandPixels(" + bitSize + ", " + ib.length + ", " + ob.length + ", " +
-					outLen + ")");
+			log().debug("expandPixels(" + bitSize + ", " + ib.length + ", " +
+				ob.length + ", " + outLen + ")");
 			if (bitSize == 1) {
 				final int remainder = outLen % 8;
 				final int max = outLen / 8;
@@ -613,8 +611,8 @@ public class PICTFormat extends AbstractFormat {
 
 				if (remainder != 0) {
 					if (max < ib.length) {
-						System.arraycopy(EXPANSION_TABLE, (ib[max] & 0xff) * 8, ob,
-							max * 8, remainder);
+						System.arraycopy(EXPANSION_TABLE, (ib[max] & 0xff) * 8, ob, max * 8,
+							remainder);
 					}
 				}
 
@@ -688,6 +686,9 @@ public class PICTFormat extends AbstractFormat {
 		@Parameter
 		private CodecService codecService;
 
+		@Parameter
+		private DataHandleService dataHandleService;
+
 		// -- AbstractReader API Methods --
 
 		@Override
@@ -698,8 +699,8 @@ public class PICTFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
@@ -707,46 +708,44 @@ public class PICTFormat extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 
 			if (meta.getJpegOffsets().size() > 0) {
-				final ByteArrayHandle v = new ByteArrayHandle();
-				getStream().seek(meta.getJpegOffsets().get(0));
-				final byte[] b =
-					new byte[(int) (getStream().length() - getStream().getFilePointer())];
-				getStream().read(b);
-				RandomAccessInputStream s =
-					new RandomAccessInputStream(getContext(), b);
-				for (final long jpegOffset : meta.getJpegOffsets()) {
-					s.seek(jpegOffset - meta.getJpegOffsets().get(0));
 
-					final CodecOptions options = new CodecOptions();
-					options.interleaved = meta.get(0).getInterleavedAxisCount() > 0;
-					options.littleEndian = meta.get(0).isLittleEndian();
+				// read with JPEG offsets
 
-					final Codec codec = codecService.getCodec(JPEGCodec.class);
-					v.write(codec.decompress(s, options));
-				}
+				getHandle().seek(meta.getJpegOffsets().get(0));
+				final byte[] b = new byte[(int) (getHandle().length() - getHandle()
+					.offset())];
+				getHandle().read(b);
+				try (DataHandle<Location> compressedImages = dataHandleService.create(
+					new BytesLocation(b));
+						DataHandle<Location> decompressedImages = dataHandleService.create(
+							new BytesLocation(b.length)))
+				{
+					for (final long jpegOffset : meta.getJpegOffsets()) {
+						compressedImages.seek(jpegOffset - meta.getJpegOffsets().get(0));
 
-				s.close();
-				s = new RandomAccessInputStream(getContext(), v);
-				s.seek(0);
-				try {
-					readPlane(s, imageIndex, bounds, plane);
-				}
-				finally {
-					s.close();
+						final CodecOptions options = new CodecOptions();
+						options.interleaved = meta.get(0).getInterleavedAxisCount() > 0;
+						options.littleEndian = meta.get(0).isLittleEndian();
+
+						final Codec codec = codecService.getCodec(JPEGCodec.class);
+						decompressedImages.write(codec.decompress(compressedImages,
+							options));
+					}
+
+					decompressedImages.seek(0);
+					readPlane(decompressedImages, imageIndex, bounds, plane);
 				}
 
 				return plane;
 			}
 
-			if (((PICTFormat) getFormat()).isLegacy() || meta.getStrips().size() == 0)
-			{
-				getStream().seek(512);
-				byte[] pix =
-					new byte[(int) (getStream().length() - getStream().getFilePointer())];
-				getStream().read(pix);
-				byte[][] b =
-					AWTImageTools.getBytes(AWTImageTools.makeBuffered(qtJavaService
-						.pictToImage(pix)));
+			if (((PICTFormat) getFormat()).isLegacy() || meta.getStrips().isEmpty()) {
+				getHandle().seek(512);
+				byte[] pix = new byte[(int) (getHandle().length() - getHandle()
+					.offset())];
+				getHandle().read(pix);
+				byte[][] b = AWTImageTools.getBytes(AWTImageTools.makeBuffered(
+					qtJavaService.pictToImage(pix)));
 				pix = null;
 				for (int i = 0; i < b.length; i++) {
 					System.arraycopy(b[i], 0, buf, i * b[i].length, b[i].length);
@@ -758,14 +757,17 @@ public class PICTFormat extends AbstractFormat {
 			// combine everything in the strips Vector
 
 			if ((meta.get(0).getAxisLength(Axes.Y) * 4 < meta.getStrips().size()) &&
-				(((meta.getStrips().size() / 3) % meta.get(0).getAxisLength(Axes.Y)) != 0))
+				(((meta.getStrips().size() / 3) % meta.get(0).getAxisLength(
+					Axes.Y)) != 0))
 			{
 				meta.get(0).setAxisLength(Axes.Y, meta.getStrips().size());
 			}
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
+			final int x = (int) bounds.min(xAxis);
+			final int y = (int) bounds.min(yAxis);
+			final int w = (int) bounds.dimension(xAxis);
+			final int h = (int) bounds.dimension(yAxis);
 			final int planeSize = w * h;
 
 			if (meta.getLookup() != null) {
@@ -779,13 +781,14 @@ public class PICTFormat extends AbstractFormat {
 					System.arraycopy(row, x, buf, (i - y) * w, len);
 				}
 			}
-			else if (meta.get(0).getAxisLength(Axes.Y) * 3 == meta.getStrips().size() ||
-				meta.get(0).getAxisLength(Axes.Y) * 4 == meta.getStrips().size())
+			else if (meta.get(0).getAxisLength(Axes.Y) * 3 == meta.getStrips()
+				.size() || meta.get(0).getAxisLength(Axes.Y) * 4 == meta.getStrips()
+					.size())
 			{
 				// 24 or 32 bit data
 
-				final int nc =
-					meta.getStrips().size() / (int) meta.get(0).getAxisLength(Axes.Y);
+				final int nc = meta.getStrips().size() / (int) meta.get(0)
+					.getAxisLength(Axes.Y);
 
 				byte[] c0 = null;
 				byte[] c1 = null;

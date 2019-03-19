@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,12 +31,12 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -61,32 +61,32 @@ public class PackbitsCodec extends AbstractCodec {
 	 * The CodecOptions parameter should have the following fields set:
 	 * {@link CodecOptions#maxBytes maxBytes}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (options == null) options = CodecOptions.getDefaultOptions();
-		if (in == null) throw new IllegalArgumentException("No data to decompress.");
-		final long fp = in.getFilePointer();
+		if (in == null) throw new IllegalArgumentException(
+			"No data to decompress.");
+		final long fp = in.offset();
 		// Adapted from the TIFF 6.0 specification, page 42.
 		final ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
 		int nread = 0;
-		final BufferedInputStream s = new BufferedInputStream(in, 262144);
 		while (output.size() < options.maxBytes) {
-			final byte n = (byte) (s.read() & 0xff);
+			final byte n = (byte) (in.read() & 0xff);
 			nread++;
 			if (n >= 0) { // 0 <= n <= 127
 				byte[] b = new byte[n + 1];
-				s.read(b);
+				in.read(b);
 				nread += n + 1;
 				output.write(b);
 				b = null;
 			}
 			else if (n != -128) { // -127 <= n <= -1
 				final int len = -n + 1;
-				final byte inp = (byte) (s.read() & 0xff);
+				final byte inp = (byte) (in.read() & 0xff);
 				nread++;
 				for (int i = 0; i < len; i++)
 					output.write(inp);

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -66,30 +66,31 @@ public enum TiffCompression implements CodedEnum {
 		DEFAULT_UNCOMPRESSED(0, PassthroughCodec.class, "Uncompressed"),
 		UNCOMPRESSED(1, PassthroughCodec.class, "Uncompressed"), CCITT_1D(2, null,
 			"CCITT Group 3 1-Dimensional Modified Huffman"), GROUP_3_FAX(3, null,
-			"CCITT T.4 bi-level encoding (Group 3 Fax)"), GROUP_4_FAX(4, null,
-			"CCITT T.6 bi-level encoding (Group 4 Fax)"), LZW(5, LZWCodec.class,
-			"LZW"), OLD_JPEG(6, JPEGCodec.class, "Old JPEG"), JPEG(7,
-			JPEGCodec.class, "JPEG"), PACK_BITS(32773, PackbitsCodec.class,
-			"PackBits"),
-		PROPRIETARY_DEFLATE(32946, ZlibCodec.class, "Deflate (Zlib)"), DEFLATE(8,
-			ZlibCodec.class, "Deflate (Zlib)"), THUNDERSCAN(32809, null,
-			"Thunderscan"), JPEG_2000(33003, JPEG2000Codec.class, "JPEG-2000") {
+				"CCITT T.4 bi-level encoding (Group 3 Fax)"), GROUP_4_FAX(4, null,
+					"CCITT T.6 bi-level encoding (Group 4 Fax)"), LZW(5, LZWCodec.class,
+						"LZW"), OLD_JPEG(6, JPEGCodec.class, "Old JPEG"), JPEG(7,
+							JPEGCodec.class, "JPEG"), PACK_BITS(32773, PackbitsCodec.class,
+								"PackBits"), PROPRIETARY_DEFLATE(32946, ZlibCodec.class,
+									"Deflate (Zlib)"), DEFLATE(8, ZlibCodec.class,
+										"Deflate (Zlib)"), THUNDERSCAN(32809, null, "Thunderscan"),
+		JPEG_2000(33003, JPEG2000Codec.class, "JPEG-2000")
+		{
 
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd)
 				throws FormatException
-			{
+		{
 				return getCompressionCodecOptions(ifd, null);
 			}
 
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd,
 				final CodecOptions opt) throws FormatException
-			{
+		{
 				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
 				options.lossless = true;
-				final JPEG2000CodecOptions j2k =
-					JPEG2000CodecOptions.getDefaultOptions(options);
+				final JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(
+					options);
 				if (opt instanceof JPEG2000CodecOptions) {
 					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
 					j2k.numDecompositionLevels = o.numDecompositionLevels;
@@ -100,23 +101,24 @@ public enum TiffCompression implements CodedEnum {
 				return j2k;
 			}
 		},
-		JPEG_2000_LOSSY(33004, JPEG2000Codec.class, "JPEG-2000 Lossy") {
+		JPEG_2000_LOSSY(33004, JPEG2000Codec.class, "JPEG-2000 Lossy")
+		{
 
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd)
 				throws FormatException
-			{
+		{
 				return getCompressionCodecOptions(ifd, null);
 			}
 
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd,
 				final CodecOptions opt) throws FormatException
-			{
+		{
 				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
 				options.lossless = false;
-				final JPEG2000CodecOptions j2k =
-					JPEG2000CodecOptions.getDefaultOptions(options);
+				final JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(
+					options);
 				if (opt instanceof JPEG2000CodecOptions) {
 					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
 					j2k.numDecompositionLevels = o.numDecompositionLevels;
@@ -127,23 +129,24 @@ public enum TiffCompression implements CodedEnum {
 				return j2k;
 			}
 		},
-		ALT_JPEG2000(33005, JPEG2000Codec.class, "JPEG-2000") {
+		ALT_JPEG2000(33005, JPEG2000Codec.class, "JPEG-2000")
+		{
 
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd)
 				throws FormatException
-			{
+		{
 				return getCompressionCodecOptions(ifd, null);
 			}
 
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd,
 				final CodecOptions opt) throws FormatException
-			{
+		{
 				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
 				options.lossless = true;
-				final JPEG2000CodecOptions j2k =
-					JPEG2000CodecOptions.getDefaultOptions(options);
+				final JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(
+					options);
 				if (opt instanceof JPEG2000CodecOptions) {
 					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
 					j2k.numDecompositionLevels = o.numDecompositionLevels;
@@ -161,18 +164,18 @@ public enum TiffCompression implements CodedEnum {
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd)
 				throws FormatException
-			{
+		{
 				return getCompressionCodecOptions(ifd, null);
 			}
 
 			@Override
 			public CodecOptions getCompressionCodecOptions(final IFD ifd,
 				final CodecOptions opt) throws FormatException
-			{
+		{
 				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
 				options.lossless = true;
-				final JPEG2000CodecOptions j2k =
-					JPEG2000CodecOptions.getDefaultOptions(options);
+				final JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(
+					options);
 				if (opt instanceof JPEG2000CodecOptions) {
 					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
 					j2k.numDecompositionLevels = o.numDecompositionLevels;
@@ -203,8 +206,7 @@ public enum TiffCompression implements CodedEnum {
 		getCompressionMap();
 
 	private static Map<Integer, TiffCompression> getCompressionMap() {
-		final Map<Integer, TiffCompression> lookup =
-			new HashMap<>();
+		final Map<Integer, TiffCompression> lookup = new HashMap<>();
 		for (final TiffCompression v : EnumSet.allOf(TiffCompression.class)) {
 			lookup.put(v.getCode(), v);
 		}
@@ -295,9 +297,8 @@ public enum TiffCompression implements CodedEnum {
 	 *         {@code ifd}.
 	 * @param opt The codec options to copy.
 	 */
-	public CodecOptions
-		getCompressionCodecOptions(final IFD ifd, CodecOptions opt)
-			throws FormatException
+	public CodecOptions getCompressionCodecOptions(final IFD ifd,
+		CodecOptions opt) throws FormatException
 	{
 		if (ifd == null) throw new IllegalArgumentException("No IFD specified.");
 		if (opt == null) opt = CodecOptions.getDefaultOptions();

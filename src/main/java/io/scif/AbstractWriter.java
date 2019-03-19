@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,18 +31,20 @@ package io.scif;
 
 import io.scif.codec.CodecOptions;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.awt.image.ColorModel;
-import java.io.File;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
 import org.scijava.util.ArrayUtils;
 
 /**
@@ -88,10 +90,13 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	private boolean sequential;
 
 	/** Where the image should be written. */
-	private RandomAccessOutputStream out;
+	private DataHandle<Location> out;
 
 	/** ColorModel for this Writer. */
 	private ColorModel model;
+
+	@Parameter
+	private DataHandleService handles;
 
 	// -- AbstractWriter API Methods --
 
@@ -109,8 +114,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		if (buf == null) throw new FormatException("Buffer cannot be null.");
 		long planes = metadata.get(imageIndex).getPlaneCount();
 
-		if (metadata.get(imageIndex).isMultichannel()) planes *=
-			metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
+		if (metadata.get(imageIndex).isMultichannel()) planes *= metadata.get(
+			imageIndex).getAxisLength(Axes.CHANNEL);
 
 		if (planeIndex < 0) throw new FormatException(String.format(
 			"Plane index:%d must be >= 0", planeIndex));
@@ -129,8 +134,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * image.
 	 */
 	protected void initialize(final int imageIndex, final long planeIndex,
-		final Interval bounds) throws FormatException,
-		IOException
+		final Interval bounds) throws FormatException, IOException
 	{
 		initialized[imageIndex][(int) planeIndex] = true;
 	}
@@ -162,8 +166,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 
 	@Override
 	public void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds)
-		throws FormatException, IOException
+		final Plane plane, final Interval bounds) throws FormatException,
+		IOException
 	{
 		initialize(imageIndex, planeIndex, bounds);
 		writePlane(imageIndex, planeIndex, plane, bounds);
@@ -185,108 +189,95 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public void setDest(final String fileName) throws FormatException,
+	public void setDest(final Location fileName) throws FormatException,
 		IOException
 	{
 		setDest(fileName, 0);
 	}
 
 	@Override
-	public void setDest(final File file) throws FormatException, IOException {
-		setDest(file.getName(), 0);
-	}
-
-	@Override
-	public void setDest(final RandomAccessOutputStream out)
-		throws FormatException, IOException
+	public void setDest(final DataHandle<Location> out) throws FormatException,
+		IOException
 	{
 		setDest(out, 0);
 	}
 
 	@Override
-	public void setDest(final String fileName, final int imageIndex)
+	public void setDest(final Location loc, final int imageIndex)
 		throws FormatException, IOException
 	{
-		setDest(fileName, imageIndex, new SCIFIOConfig());
+		setDest(loc, imageIndex, new SCIFIOConfig());
 	}
 
 	@Override
-	public void setDest(final File file, final int imageIndex)
-		throws FormatException, IOException
-	{
-		setDest(file.getName(), imageIndex, new SCIFIOConfig());
-	}
-
-	@Override
-	public void setDest(final RandomAccessOutputStream out, final int imageIndex)
+	public void setDest(final DataHandle<Location> out, final int imageIndex)
 		throws FormatException, IOException
 	{
 		setDest(out, imageIndex, new SCIFIOConfig());
 	}
 
 	@Override
-	public void setDest(final String fileName, final SCIFIOConfig config)
+	public void setDest(final Location loc, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
-		setDest(fileName, 0, config);
+		setDest(loc, 0, config);
 	}
 
 	@Override
-	public void setDest(final File file, final SCIFIOConfig config)
+	public void setDest(final DataHandle<Location> out, final SCIFIOConfig config)
 		throws FormatException, IOException
-	{
-		setDest(file.getName(), 0, config);
-	}
-
-	@Override
-	public void setDest(final RandomAccessOutputStream out,
-		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		setDest(out, 0, config);
 	}
 
 	@Override
-	public void setDest(final String fileName, final int imageIndex,
+	public void setDest(final Location loc, final int imageIndex,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
-		getMetadata().setDatasetName(fileName);
-		setDest(new RandomAccessOutputStream(getContext(), fileName), imageIndex,
-			config);
+		DataHandle<Location> handle = handles.create(loc);
+
+		// set common metadeta
+		setDestinationMeta(imageIndex, config);
+
+		if (handle != null) {
+			this.out = handle;
+			setDest(out, imageIndex, config);
+		}
+		else { // handling Location only formats
+			getMetadata().setDestinationLocation(loc);
+			SCIFIOMetadataTools.verifyMinimumPopulated(metadata, loc);
+		}
 	}
 
 	@Override
-	public void setDest(final File file, final int imageIndex,
+	public void setDest(final DataHandle<Location> out, final int imageIndex,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
-		setDest(file.getName(), imageIndex, config);
+		setDestinationMeta(imageIndex, config);
+		getMetadata().setDatasetName(out.get().getName());
+		this.out = out;
+		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 	}
 
-	@Override
-	public void setDest(final RandomAccessOutputStream out, final int imageIndex,
-		final SCIFIOConfig config) throws FormatException, IOException
+	private void setDestinationMeta(final int imageIndex,
+		final SCIFIOConfig config) throws FormatException
 	{
 		if (metadata == null) throw new FormatException(
 			"Can not set Destination without setting Metadata first.");
-
-		// FIXME
-		// set metadata.datasetName here when RAOS has better id handling
-
-		this.out = out;
 		fps = config.writerGetFramesPerSecond();
 		options = config.writerGetCodecOptions();
 		model = config.writerGetColorModel();
 		compression = config.writerGetCompression();
 		sequential = config.writerIsSequential();
-		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 		initialized = new boolean[metadata.getImageCount()][];
 		for (int i = 0; i < metadata.getImageCount(); i++) {
-			initialized[i] =
-				new boolean[(int) metadata.get(imageIndex).getPlaneCount()];
+			initialized[i] = new boolean[(int) metadata.get(imageIndex)
+				.getPlaneCount()];
 		}
 	}
 
 	@Override
-	public RandomAccessOutputStream getStream() {
+	public DataHandle<Location> getHandle() {
 		return out;
 	}
 
@@ -386,8 +377,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 			final int pixelType = metadata.get(i).getPixelType();
 
 			if (!ArrayUtils.contains(getPixelTypes(compression), pixelType)) {
-				throw new FormatException("Unsupported image type '" +
-					FormatTools.getPixelTypeString(pixelType) + "'.");
+				throw new FormatException("Unsupported image type '" + FormatTools
+					.getPixelTypeString(pixelType) + "'.");
 			}
 		}
 	}

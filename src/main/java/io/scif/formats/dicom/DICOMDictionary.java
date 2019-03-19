@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import java.util.Hashtable;
  */
 public class DICOMDictionary {
 
-	private Hashtable<Integer, String[]> table = new Hashtable<>(4000);
+	private final Hashtable<Integer, String[]> table = new Hashtable<>(4000);
 
 	public DICOMDictionary() {
 		addAttributes();
@@ -267,7 +267,8 @@ public class DICOMDictionary {
 		add(0x00081140, "Referenced Image Sequence", "SQ");
 		add(0x00081145, "Referenced Curve Sequence", "SQ"); // Retired
 		add(0x0008114A, "Referenced Instance Sequence", "SQ");
-		add(0x0008114B, "Referenced Real World ValueMapping Instance Sequence", "SQ");
+		add(0x0008114B, "Referenced Real World ValueMapping Instance Sequence",
+			"SQ");
 		add(0x00081150, "Referenced SOP Class UID", "UI");
 		add(0x00081155, "Referenced SOP Instance UID", "UI");
 		add(0x0008115A, "SOP Classes Supported", "UI");
@@ -283,7 +284,8 @@ public class DICOMDictionary {
 		add(0x00081197, "Failure Reason", "US");
 		add(0x00081198, "Failed SOP Sequence", "SQ");
 		add(0x00081199, "Referenced SOP Sequence", "SQ");
-		add(0x00081200, "Studies Containing OtherReferenced Instances Sequence", "SQ");
+		add(0x00081200, "Studies Containing OtherReferenced Instances Sequence",
+			"SQ");
 		add(0x00081250, "Related Series Sequence", "SQ");
 		add(0x00082110, "Lossy Image Compression(Retired)", "CS"); // Retired
 		add(0x00082111, "Derivation Description", "ST");
@@ -315,15 +317,20 @@ public class DICOMDictionary {
 		add(0x00082242, "Transducer Position ModifierSequence", "SQ"); // Retired
 		add(0x00082244, "Transducer Orientation Sequence", "SQ"); // Retired
 		add(0x00082246, "Transducer Orientation ModifierSequence", "SQ"); // Retired
-		add(0x00082251, "Anatomic Structure Space OrRegion Code Sequence (Trial)", "SQ"); // Retired
+		add(0x00082251, "Anatomic Structure Space OrRegion Code Sequence (Trial)",
+			"SQ"); // Retired
 		add(0x00082253, "Anatomic Portal Of Entrance CodeSequence (Trial)", "SQ"); // Retired
 		add(0x00082255, "Anatomic Approach Direction CodeSequence (Trial)", "SQ"); // Retired
 		add(0x00082256, "Anatomic Perspective Description(Trial)", "ST"); // Retired
 		add(0x00082257, "Anatomic Perspective CodeSequence (Trial)", "SQ"); // Retired
-		add(0x00082258, "Anatomic Location Of ExaminingInstrument Description (Trial)", "ST"); // Retired
-		add(0x00082259, "Anatomic Location Of ExaminingInstrument Code Sequence (Trial)", "SQ"); // Retired
-		add(0x0008225A, "Anatomic Structure Space OrRegion Modifier Code Sequence(Trial)", "SQ"); // Retired
-		add(0x0008225C, "On Axis Background AnatomicStructure Code Sequence (Trial)", "SQ"); // Retired
+		add(0x00082258,
+			"Anatomic Location Of ExaminingInstrument Description (Trial)", "ST"); // Retired
+		add(0x00082259,
+			"Anatomic Location Of ExaminingInstrument Code Sequence (Trial)", "SQ"); // Retired
+		add(0x0008225A,
+			"Anatomic Structure Space OrRegion Modifier Code Sequence(Trial)", "SQ"); // Retired
+		add(0x0008225C,
+			"On Axis Background AnatomicStructure Code Sequence (Trial)", "SQ"); // Retired
 		add(0x00083001, "Alternate RepresentationSequence", "SQ");
 		add(0x00083010, "Irradiation Event UID", "UI");
 		add(0x00083011, "Source Irradiation Event Sequence", "SQ");
@@ -429,7 +436,8 @@ public class DICOMDictionary {
 		add(0x00120071, "Clinical Trial Series ID", "LO");
 		add(0x00120072, "Clinical Trial Series Description", "LO");
 		add(0x00120081, "Clinical Trial Protocol EthicsCommittee Name", "LO");
-		add(0x00120082, "Clinical Trial Protocol EthicsCommittee Approval Number", "LO");
+		add(0x00120082, "Clinical Trial Protocol EthicsCommittee Approval Number",
+			"LO");
 		add(0x00120083, "Consent for Clinical Trial UseSequence", "SQ");
 		add(0x00120084, "Distribution Type", "CS");
 		add(0x00120085, "Consent for Distribution Flag", "CS");
@@ -483,7 +491,8 @@ public class DICOMDictionary {
 		add(0x00142224, "Transform Number of Axes", "IS"); // DICONDE
 		add(0x00142226, "Transform Order of Axes", "IS"); // DICONDE
 		add(0x00142228, "Transformed Axis Units", "CS"); // DICONDE
-		add(0x0014222A, "Coordinate System TransformRotation and Scale Matrix", "DS"); // DICONDE
+		add(0x0014222A, "Coordinate System TransformRotation and Scale Matrix",
+			"DS"); // DICONDE
 		add(0x0014222C, "Coordinate System TransformTranslation Matrix", "DS"); // DICONDE
 		add(0x00143011, "Internal Detector Frame Time", "DS"); // DICONDE
 		add(0x00143012, "Number of Frames Integrated", "DS"); // DICONDE
@@ -970,7 +979,9 @@ public class DICOMDictionary {
 		add(0x00187024, "Detector Active Shape", "CS");
 		add(0x00187026, "Detector Active Dimension(s)", "DS");
 		add(0x00187028, "Detector Active Origin", "DS");
-		add(0x0018702A, "Detector Manufacturer Name  DetectorManufacturerName  LO  1 (0018,702B) Detector Manufacturer's ModelName", "LO");
+		add(0x0018702A,
+			"Detector Manufacturer Name  DetectorManufacturerName  LO  1 (0018,702B) Detector Manufacturer's ModelName",
+			"LO");
 		add(0x00187030, "Field of View Origin", "DS");
 		add(0x00187032, "Field of View Rotation", "DS");
 		add(0x00187034, "Field of View Horizontal Flip", "CS");
@@ -1112,7 +1123,8 @@ public class DICOMDictionary {
 		add(0x00189182, "Gradient Output", "FD");
 		add(0x00189183, "Flow Compensation Direction", "CS");
 		add(0x00189184, "Tagging Delay", "FD");
-		add(0x00189185, "Respiratory Motion CompensationTechnique Description", "ST");
+		add(0x00189185, "Respiratory Motion CompensationTechnique Description",
+			"ST");
 		add(0x00189186, "Respiratory Signal Source ID", "SH");
 		add(0x00189195, "Chemical Shift Minimum IntegrationLimit in Hz", "FD"); // Retired
 		add(0x00189196, "Chemical Shift MaximumIntegration Limit in Hz", "FD"); // Retired
@@ -1227,11 +1239,14 @@ public class DICOMDictionary {
 		add(0x00189435, "Exposure Control Sensing RegionShape", "CS");
 		add(0x00189436, "Exposure Control Sensing RegionLeft Vertical Edge", "SS");
 		add(0x00189437, "Exposure Control Sensing RegionRight Vertical Edge", "SS");
-		add(0x00189438, "Exposure Control Sensing RegionUpper Horizontal Edge", "SS");
-		add(0x00189439, "Exposure Control Sensing RegionLower Horizontal Edge", "SS");
+		add(0x00189438, "Exposure Control Sensing RegionUpper Horizontal Edge",
+			"SS");
+		add(0x00189439, "Exposure Control Sensing RegionLower Horizontal Edge",
+			"SS");
 		add(0x00189440, "Center of Circular ExposureControl Sensing Region", "SS");
 		add(0x00189441, "Radius of Circular ExposureControl Sensing Region", "US");
-		add(0x00189442, "Vertices of the Polygonal ExposureControl Sensing Region", "SS");
+		add(0x00189442, "Vertices of the Polygonal ExposureControl Sensing Region",
+			"SS");
 		add(0x00189445, "Column Angulation (Patient)", "FL");
 		add(0x00189449, "Beam Angle", "FL");
 		add(0x00189451, "Frame Detector ParametersSequence", "SQ");
@@ -1574,8 +1589,10 @@ public class DICOMDictionary {
 		add(0x00221096, "Keratometry Measurement TypeCode Sequence", "SQ");
 		add(0x00221097, "Implant Part Number", "LO");
 		add(0x00221100, "Referenced Ophthalmic AxialMeasurements Sequence", "SQ");
-		add(0x00221101, "Ophthalmic Axial LengthMeasurements Segment NameCode Sequence", "SQ");
-		add(0x00221103, "Refractive Error Before RefractiveSurgery Code Sequence", "SQ");
+		add(0x00221101,
+			"Ophthalmic Axial LengthMeasurements Segment NameCode Sequence", "SQ");
+		add(0x00221103, "Refractive Error Before RefractiveSurgery Code Sequence",
+			"SQ");
 		add(0x00221121, "IOL Power For Exact Emmetropia", "FL");
 		add(0x00221122, "IOL Power For Exact TargetRefraction", "FL");
 		add(0x00221125, "Anterior Chamber Depth DefinitionCode Sequence", "SQ");
@@ -1589,25 +1606,36 @@ public class DICOMDictionary {
 		add(0x00221135, "Source of RefractiveMeasurements Code Sequence", "SQ");
 		add(0x00221140, "Ophthalmic Axial LengthMeasurement Modified", "CS");
 		add(0x00221150, "Ophthalmic Axial Length DataSource Code Sequence", "SQ");
-		add(0x00221153, "Ophthalmic Axial LengthAcquisition Method CodeSequence", "SQ"); // Retired
+		add(0x00221153, "Ophthalmic Axial LengthAcquisition Method CodeSequence",
+			"SQ"); // Retired
 		add(0x00221155, "Signal to Noise Ratio", "FL");
 		add(0x00221159, "Ophthalmic Axial Length DataSource Description", "LO");
-		add(0x00221210, "Ophthalmic Axial LengthMeasurements Total LengthSequence", "SQ");
-		add(0x00221211, "Ophthalmic Axial LengthMeasurements Segmental LengthSequence", "SQ");
-		add(0x00221212, "Ophthalmic Axial LengthMeasurements Length SummationSequence", "SQ");
-		add(0x00221220, "Ultrasound Ophthalmic AxialLength Measurements Sequence", "SQ");
-		add(0x00221225, "Optical Ophthalmic Axial LengthMeasurements Sequence", "SQ");
-		add(0x00221230, "Ultrasound Selected OphthalmicAxial Length Sequence", "SQ");
-		add(0x00221250, "Ophthalmic Axial Length SelectionMethod Code Sequence", "SQ");
+		add(0x00221210, "Ophthalmic Axial LengthMeasurements Total LengthSequence",
+			"SQ");
+		add(0x00221211,
+			"Ophthalmic Axial LengthMeasurements Segmental LengthSequence", "SQ");
+		add(0x00221212,
+			"Ophthalmic Axial LengthMeasurements Length SummationSequence", "SQ");
+		add(0x00221220, "Ultrasound Ophthalmic AxialLength Measurements Sequence",
+			"SQ");
+		add(0x00221225, "Optical Ophthalmic Axial LengthMeasurements Sequence",
+			"SQ");
+		add(0x00221230, "Ultrasound Selected OphthalmicAxial Length Sequence",
+			"SQ");
+		add(0x00221250, "Ophthalmic Axial Length SelectionMethod Code Sequence",
+			"SQ");
 		add(0x00221255, "Optical Selected Ophthalmic AxialLength Sequence", "SQ");
 		add(0x00221257, "Selected Segmental OphthalmicAxial Length Sequence", "SQ");
 		add(0x00221260, "Selected Total Ophthalmic AxialLength Sequence", "SQ");
 		add(0x00221262, "Ophthalmic Axial Length QualityMetric Sequence", "SQ");
-		add(0x00221265, "Ophthalmic Axial Length QualityMetric Type Code Sequence", "SQ"); // Retired
-		add(0x00221273, "Ophthalmic Axial Length QualityMetric Type Description", "LO"); // Retired
+		add(0x00221265, "Ophthalmic Axial Length QualityMetric Type Code Sequence",
+			"SQ"); // Retired
+		add(0x00221273, "Ophthalmic Axial Length QualityMetric Type Description",
+			"LO"); // Retired
 		add(0x00221300, "Intraocular Lens Calculations RightEye Sequence", "SQ");
 		add(0x00221310, "Intraocular Lens Calculations LeftEye Sequence", "SQ");
-		add(0x00221330, "Referenced Ophthalmic AxialLength Measurement QC ImageSequence", "SQ");
+		add(0x00221330,
+			"Referenced Ophthalmic AxialLength Measurement QC ImageSequence", "SQ");
 		add(0x00221415, "Ophthalmic Mapping Device Type", "CS");
 		add(0x00221420, "Acquisition Method CodeSequence", "SQ");
 		add(0x00221423, "Acquisition Method AlgorithmSequence", "SQ");
@@ -1631,9 +1659,12 @@ public class DICOMDictionary {
 		add(0x00221515, "Ophthalmic Axial Length Method", "CS");
 		add(0x00221517, "Ophthalmic FOV", "FL");
 		add(0x00221518, "Two Dimensional to ThreeDimensional Map Sequence", "SQ");
-		add(0x00221525, "Wide Field OphthalmicPhotography Quality RatingSequence", "SQ");
-		add(0x00221526, "Wide Field OphthalmicPhotography Quality ThresholdSequence", "SQ");
-		add(0x00221527, "Wide Field OphthalmicPhotography Threshold QualityRating", "FL");
+		add(0x00221525, "Wide Field OphthalmicPhotography Quality RatingSequence",
+			"SQ");
+		add(0x00221526,
+			"Wide Field OphthalmicPhotography Quality ThresholdSequence", "SQ");
+		add(0x00221527, "Wide Field OphthalmicPhotography Threshold QualityRating",
+			"FL");
 		add(0x00221528, "X Coordinates Center Pixel ViewAngle", "FL");
 		add(0x00221529, "Y Coordinates Center Pixel ViewAngle", "FL");
 		add(0x00221530, "Number of Map Points", "UL");
@@ -1683,9 +1714,11 @@ public class DICOMDictionary {
 		add(0x00240062, "Excessive False Positives", "CS");
 		add(0x00240063, "Visual Field Test Normals Flag", "CS");
 		add(0x00240064, "Results Normals Sequence", "SQ");
-		add(0x00240065, "Age Corrected Sensitivity DeviationAlgorithm Sequence", "SQ");
+		add(0x00240065, "Age Corrected Sensitivity DeviationAlgorithm Sequence",
+			"SQ");
 		add(0x00240066, "Global Deviation From Normal", "FL");
-		add(0x00240067, "Generalized Defect SensitivityDeviation Algorithm Sequence", "SQ");
+		add(0x00240067,
+			"Generalized Defect SensitivityDeviation Algorithm Sequence", "SQ");
 		add(0x00240068, "Localized Deviation From Normal", "FL");
 		add(0x00240069, "Patient Reliability Indicator", "LO");
 		add(0x00240070, "Visual Field Mean Sensitivity", "FL");
@@ -1696,10 +1729,13 @@ public class DICOMDictionary {
 		add(0x00240075, "Short Term Fluctuation", "FL");
 		add(0x00240076, "Short Term Fluctuation ProbabilityCalculated", "CS");
 		add(0x00240077, "Short Term Fluctuation Probability", "FL");
-		add(0x00240078, "Corrected Localized DeviationFrom Normal Calculated", "CS");
+		add(0x00240078, "Corrected Localized DeviationFrom Normal Calculated",
+			"CS");
 		add(0x00240079, "Corrected Localized DeviationFrom Normal", "FL");
-		add(0x00240080, "Corrected Localized DeviationFrom Normal Probability Calculated", "CS");
-		add(0x00240081, "Corrected Localized DeviationFrom Normal Probability", "FL");
+		add(0x00240080,
+			"Corrected Localized DeviationFrom Normal Probability Calculated", "CS");
+		add(0x00240081, "Corrected Localized DeviationFrom Normal Probability",
+			"FL");
 		add(0x00240083, "Global Deviation ProbabilitySequence", "SQ");
 		add(0x00240085, "Localized Deviation ProbabilitySequence", "SQ");
 		add(0x00240086, "Foveal Sensitivity Measured", "CS");
@@ -1715,10 +1751,15 @@ public class DICOMDictionary {
 		add(0x00240096, "Retest Sensitivity Value", "FL");
 		add(0x00240097, "Visual Field Test Point NormalsSequence", "SQ");
 		add(0x00240098, "Quantified Defect", "FL");
-		add(0x00240100, "Age Corrected Sensitivity DeviationProbability Value", "FL");
-		add(0x00240102, "Generalized Defect CorrectedSensitivity Deviation Flag", "CS");
-		add(0x00240103, "Generalized Defect CorrectedSensitivity Deviation Value", "FL");
-		add(0x00240104, "Generalized Defect CorrectedSensitivity Deviation ProbabilityValue", "FL");
+		add(0x00240100, "Age Corrected Sensitivity DeviationProbability Value",
+			"FL");
+		add(0x00240102, "Generalized Defect CorrectedSensitivity Deviation Flag",
+			"CS");
+		add(0x00240103, "Generalized Defect CorrectedSensitivity Deviation Value",
+			"FL");
+		add(0x00240104,
+			"Generalized Defect CorrectedSensitivity Deviation ProbabilityValue",
+			"FL");
 		add(0x00240105, "Minimum Sensitivity Value", "FL");
 		add(0x00240106, "Blind Spot Localized", "CS");
 		add(0x00240107, "Blind Spot X-Coordinate", "FL");
@@ -1726,8 +1767,10 @@ public class DICOMDictionary {
 		add(0x00240110, "Visual Acuity MeasurementSequence", "SQ");
 		add(0x00240112, "Refractive Parameters Used onPatient Sequence", "SQ");
 		add(0x00240113, "Measurement Laterality", "CS");
-		add(0x00240114, "Ophthalmic Patient ClinicalInformation Left Eye Sequence", "SQ");
-		add(0x00240115, "Ophthalmic Patient ClinicalInformation Right Eye Sequence", "SQ");
+		add(0x00240114, "Ophthalmic Patient ClinicalInformation Left Eye Sequence",
+			"SQ");
+		add(0x00240115, "Ophthalmic Patient ClinicalInformation Right Eye Sequence",
+			"SQ");
 		add(0x00240117, "Foveal Point Normative Data Flag", "CS");
 		add(0x00240118, "Foveal Point Probability Value", "FL");
 		add(0x00240120, "Screening Baseline Measured", "CS");
@@ -1844,12 +1887,16 @@ public class DICOMDictionary {
 		add(0x00281090, "Recommended Viewing Mode", "CS");
 		// add(0x00281100, "Gray Lookup Table Descriptor", "US or SS"); //Retired
 		// add(0x00281101, "Red Palette Color Lookup TableDescriptor", "US or SS");
-		// add(0x00281102, "Green Palette Color Lookup TableDescriptor", "US or SS");
+		// add(0x00281102, "Green Palette Color Lookup TableDescriptor", "US or
+		// SS");
 		// add(0x00281103, "Blue Palette Color Lookup TableDescriptor", "US or SS");
 		add(0x00281104, "Alpha Palette Color Lookup TableDescriptor", "US");
-		// add(0x00281111, "Large Red Palette Color LookupTable Descriptor", "US or SS"); //Retired
-		// add(0x00281112, "Large Green Palette Color LookupTable Descriptor", "US or SS"); //Retired
-		// add(0x00281113, "Large Blue Palette Color LookupTable Descriptor", "US or SS"); //Retired
+		// add(0x00281111, "Large Red Palette Color LookupTable Descriptor", "US or
+		// SS"); //Retired
+		// add(0x00281112, "Large Green Palette Color LookupTable Descriptor", "US
+		// or SS"); //Retired
+		// add(0x00281113, "Large Blue Palette Color LookupTable Descriptor", "US or
+		// SS"); //Retired
 		add(0x00281199, "Palette Color Lookup Table UID", "UI");
 		// add(0x00281200, "Gray Lookup Table Data", "US or SS or OW"); //Retired
 		add(0x00281201, "Red Palette Color Lookup TableData", "OW");
@@ -1878,7 +1925,9 @@ public class DICOMDictionary {
 		add(0x00281408, "Blending Lookup Table Data", "OW");
 		add(0x0028140B, "Enhanced Palette Color LookupTable Sequence", "SQ");
 		add(0x0028140C, "Blending LUT 2 Sequence", "SQ");
-		add(0x0028140D, "Blending LUT 2 Transfer Function  BlendingLUT2TransferFunction  CS  1 (0028,140E) Data Path ID", "CS");
+		add(0x0028140D,
+			"Blending LUT 2 Transfer Function  BlendingLUT2TransferFunction  CS  1 (0028,140E) Data Path ID",
+			"CS");
 		add(0x0028140F, "RGB LUT Transfer Function", "CS");
 		add(0x00281410, "Alpha LUT Transfer Function", "CS");
 		add(0x00282000, "ICC Profile", "OB");
@@ -2069,7 +2118,8 @@ public class DICOMDictionary {
 		add(0x00400008, "Scheduled Protocol CodeSequence", "SQ");
 		add(0x00400009, "Scheduled Procedure Step ID", "SH");
 		add(0x0040000A, "Stage Code Sequence", "SQ");
-		add(0x0040000B, "Scheduled Performing PhysicianIdentification Sequence", "SQ");
+		add(0x0040000B, "Scheduled Performing PhysicianIdentification Sequence",
+			"SQ");
 		add(0x00400010, "Scheduled Station Name", "SH");
 		add(0x00400011, "Scheduled Procedure StepLocation", "SH");
 		add(0x00400012, "Pre-Medication", "LO");
@@ -2084,7 +2134,8 @@ public class DICOMDictionary {
 		add(0x00400039, "Assigning Jurisdiction CodeSequence", "SQ");
 		// add(0x0040003A, "Assigning Agency or DepartmentCode Sequence", "SQ");
 		add(0x00400100, "Scheduled Procedure StepSequence", "SQ");
-		add(0x00400220, "Referenced Non-Image CompositeSOP Instance Sequence", "SQ");
+		add(0x00400220, "Referenced Non-Image CompositeSOP Instance Sequence",
+			"SQ");
 		add(0x00400241, "Performed Station AE Title", "AE");
 		add(0x00400242, "Performed Station Name", "SH");
 		add(0x00400243, "Performed Location", "SH");
@@ -2101,7 +2152,8 @@ public class DICOMDictionary {
 		add(0x00400270, "Scheduled Step AttributesSequence", "SQ");
 		add(0x00400275, "Request Attributes Sequence", "SQ");
 		add(0x00400280, "Comments on the PerformedProcedure Step", "ST");
-		add(0x00400281, "Performed Procedure StepDiscontinuation Reason CodeSequence", "SQ");
+		add(0x00400281,
+			"Performed Procedure StepDiscontinuation Reason CodeSequence", "SQ");
 		add(0x00400293, "Quantity Sequence", "SQ");
 		add(0x00400294, "Quantity", "DS");
 		add(0x00400295, "Measuring Units Sequence", "SQ");
@@ -2169,7 +2221,8 @@ public class DICOMDictionary {
 		add(0x00401009, "Reporting Priority", "SH");
 		add(0x0040100A, "Reason for Requested ProcedureCode Sequence", "SQ");
 		add(0x00401010, "Names of Intended Recipients ofResults", "PN");
-		add(0x00401011, "Intended Recipients of ResultsIdentification Sequence", "SQ");
+		add(0x00401011, "Intended Recipients of ResultsIdentification Sequence",
+			"SQ");
 		add(0x00401012, "Reason For Performed ProcedureCode Sequence", "SQ");
 		add(0x00401060, "Requested Procedure Description(Trial)", "LO"); // Retired
 		add(0x00401101, "Person Identification CodeSequence", "SQ");
@@ -2180,8 +2233,10 @@ public class DICOMDictionary {
 		add(0x00402001, "Reason for the Imaging ServiceRequest", "LO"); // Retired
 		add(0x00402004, "Issue Date of Imaging ServiceRequest", "DA");
 		add(0x00402005, "Issue Time of Imaging ServiceRequest", "TM");
-		add(0x00402006, "Placer Order Number / ImagingService Request (Retired)", "SH"); // Retired
-		add(0x00402007, "Filler Order Number / ImagingService Request (Retired)", "SH"); // Retired
+		add(0x00402006, "Placer Order Number / ImagingService Request (Retired)",
+			"SH"); // Retired
+		add(0x00402007, "Filler Order Number / ImagingService Request (Retired)",
+			"SH"); // Retired
 		add(0x00402008, "Order Entered By", "PN");
 		add(0x00402009, "Order Enterer's Location", "SH");
 		add(0x00402010, "Order Callback Phone Number", "SH");
@@ -2189,7 +2244,8 @@ public class DICOMDictionary {
 		add(0x00402016, "Placer Order Number / ImagingService Request", "LO");
 		add(0x00402017, "Filler Order Number / ImagingService Request", "LO");
 		add(0x00402400, "Imaging Service RequestComments", "LT");
-		add(0x00403001, "Confidentiality Constraint onPatient Data Description", "LO");
+		add(0x00403001, "Confidentiality Constraint onPatient Data Description",
+			"LO");
 		add(0x00404001, "General Purpose ScheduledProcedure Step Status", "CS"); // Retired
 		add(0x00404002, "General Purpose PerformedProcedure Step Status", "CS"); // Retired
 		add(0x00404003, "General Purpose ScheduledProcedure Step Priority", "CS"); // Retired
@@ -2200,14 +2256,18 @@ public class DICOMDictionary {
 		add(0x00404009, "Human Performer Code Sequence", "SQ");
 		add(0x00404010, "Scheduled Procedure StepModification DateTime", "DT");
 		add(0x00404011, "Expected Completion DateTime", "DT");
-		add(0x00404015, "Resulting General PurposePerformed Procedure StepsSequence", "SQ"); // Retired
-		add(0x00404016, "Referenced General PurposeScheduled Procedure StepSequence", "SQ"); // Retired
+		add(0x00404015,
+			"Resulting General PurposePerformed Procedure StepsSequence", "SQ"); // Retired
+		add(0x00404016,
+			"Referenced General PurposeScheduled Procedure StepSequence", "SQ"); // Retired
 		add(0x00404018, "Scheduled Workitem CodeSequence", "SQ");
 		add(0x00404019, "Performed Workitem CodeSequence", "SQ");
 		add(0x00404020, "Input Availability Flag", "CS");
 		add(0x00404021, "Input Information Sequence", "SQ");
 		add(0x00404022, "Relevant Information Sequence", "SQ"); // Retired
-		add(0x00404023, "Referenced General PurposeScheduled Procedure StepTransaction UID", "UI"); // Retired
+		add(0x00404023,
+			"Referenced General PurposeScheduled Procedure StepTransaction UID",
+			"UI"); // Retired
 		add(0x00404025, "Scheduled Station Name CodeSequence", "SQ");
 		add(0x00404026, "Scheduled Station Class CodeSequence", "SQ");
 		add(0x00404027, "Scheduled Station GeographicLocation Code Sequence", "SQ");
@@ -2247,7 +2307,8 @@ public class DICOMDictionary {
 		add(0x0040A024, "Findings Group Recording Time(Trial)", "TM"); // Retired
 		add(0x0040A026, "Findings Source Category CodeSequence (Trial)", "SQ"); // Retired
 		add(0x0040A027, "Verifying Organization", "LO");
-		add(0x0040A028, "Documenting OrganizationIdentifier Code Sequence (Trial)", "SQ"); // Retired
+		add(0x0040A028, "Documenting OrganizationIdentifier Code Sequence (Trial)",
+			"SQ"); // Retired
 		add(0x0040A030, "Verification DateTime", "DT");
 		add(0x0040A032, "Observation DateTime", "DT");
 		add(0x0040A040, "Value Type", "CS");
@@ -2263,7 +2324,8 @@ public class DICOMDictionary {
 		add(0x0040A073, "Verifying Observer Sequence", "SQ");
 		add(0x0040A074, "Object Binary Identifier (Trial)", "OB"); // Retired
 		add(0x0040A075, "Verifying Observer Name", "PN");
-		add(0x0040A076, "Documenting Observer IdentifierCode Sequence (Trial)", "SQ"); // Retired
+		add(0x0040A076, "Documenting Observer IdentifierCode Sequence (Trial)",
+			"SQ"); // Retired
 		add(0x0040A078, "Author Observer Sequence", "SQ");
 		add(0x0040A07A, "Participant Sequence", "SQ");
 		add(0x0040A07C, "Custodial Organization Sequence", "SQ");
@@ -2277,7 +2339,8 @@ public class DICOMDictionary {
 		add(0x0040A0B0, "Referenced Waveform Channels", "US");
 		// add(0x0040A110, "Date of Document or VerbalTransaction (Trial)", "DA");
 		// //Retired
-		add(0x0040A112, "Time of Document Creation orVerbal Transaction (Trial)", "TM"); // Retired
+		add(0x0040A112, "Time of Document Creation orVerbal Transaction (Trial)",
+			"TM"); // Retired
 		add(0x0040A120, "DateTime", "DT");
 		add(0x0040A121, "Date", "DA");
 		add(0x0040A122, "Time", "TM");
@@ -2786,14 +2849,16 @@ public class DICOMDictionary {
 		add(0x0066002A, "Surface Count", "UL");
 		add(0x0066002B, "Referenced Surface Sequence", "SQ");
 		add(0x0066002C, "Referenced Surface Number", "UL");
-		add(0x0066002D, "Segment Surface GenerationAlgorithm Identification Sequence", "SQ");
+		add(0x0066002D,
+			"Segment Surface GenerationAlgorithm Identification Sequence", "SQ");
 		add(0x0066002E, "Segment Surface Source InstanceSequence", "SQ");
 		add(0x0066002F, "Algorithm Family Code Sequence", "SQ");
 		add(0x00660030, "Algorithm Name Code Sequence", "SQ");
 		add(0x00660031, "Algorithm Version", "LO");
 		add(0x00660032, "Algorithm Parameters", "LT");
 		add(0x00660034, "Facet Sequence", "SQ");
-		add(0x00660035, "Surface Processing AlgorithmIdentification Sequence", "SQ");
+		add(0x00660035, "Surface Processing AlgorithmIdentification Sequence",
+			"SQ");
 		add(0x00660036, "Algorithm Name", "LO");
 		add(0x00660037, "Recommended Point Radius", "FL");
 		add(0x00660038, "Recommended Line Thickness", "FL");
@@ -3213,12 +3278,14 @@ public class DICOMDictionary {
 		add(0x0078002E, "Implant Template Group MemberID", "US");
 		add(0x00780050, "3D Implant Template GroupMember Matching Point", "FD");
 		add(0x00780060, "3D Implant Template GroupMember Matching Axes", "FD");
-		add(0x00780070, "Implant Template Group MemberMatching 2D CoordinatesSequence", "SQ");
+		add(0x00780070,
+			"Implant Template Group MemberMatching 2D CoordinatesSequence", "SQ");
 		add(0x00780090, "2D Implant Template GroupMember Matching Point", "FD");
 		add(0x007800A0, "2D Implant Template GroupMember Matching Axes", "FD");
 		add(0x007800B0, "Implant Template Group VariationDimension Sequence", "SQ");
 		add(0x007800B2, "Implant Template Group VariationDimension Name", "LO");
-		add(0x007800B4, "Implant Template Group VariationDimension Rank Sequence", "SQ");
+		add(0x007800B4, "Implant Template Group VariationDimension Rank Sequence",
+			"SQ");
 		add(0x007800B6, "Referenced Implant TemplateGroup Member ID", "US");
 		add(0x007800B8, "Implant Template Group VariationDimension Rank", "US");
 	}
@@ -3473,7 +3540,9 @@ public class DICOMDictionary {
 		add(0x2200000B, "Total Number of Pieces of MediaCreated", "US");
 		add(0x2200000C, "Requested Media ApplicationProfile", "LO");
 		add(0x2200000D, "Referenced Storage MediaSequence", "SQ");
-		add(0x2200000E, "Failure Attributes  FailureAttributes AT  1-n(2200,000F)  Allow Lossy Compression", "CS");
+		add(0x2200000E,
+			"Failure Attributes  FailureAttributes AT  1-n(2200,000F)  Allow Lossy Compression",
+			"CS");
 		add(0x22000020, "Request Priority", "CS");
 	}
 
@@ -3626,7 +3695,8 @@ public class DICOMDictionary {
 		add(0x30080046, "Meterset Rate Delivered", "FL");
 		add(0x30080047, "Scan Spot Metersets Delivered", "FL");
 		add(0x30080048, "Dose Rate Delivered", "DS");
-		add(0x30080050, "Treatment Summary CalculatedDose Reference Sequence", "SQ");
+		add(0x30080050, "Treatment Summary CalculatedDose Reference Sequence",
+			"SQ");
 		add(0x30080052, "Cumulative Dose to DoseReference", "DS");
 		add(0x30080054, "First Treatment Date", "DA");
 		add(0x30080056, "Most Recent Treatment Date", "DA");
@@ -3681,7 +3751,8 @@ public class DICOMDictionary {
 		add(0x30080164, "Safe Position Exit Time", "TM");
 		add(0x30080166, "Safe Position Return Date", "DA");
 		add(0x30080168, "Safe Position Return Time", "TM");
-		add(0x30080171, "Pulse Specific Brachy Control PointDelivered Sequence", "SQ");
+		add(0x30080171, "Pulse Specific Brachy Control PointDelivered Sequence",
+			"SQ");
 		add(0x30080172, "Pulse Number", "US");
 		add(0x30080173, "Brachy Pulse Control PointDelivered Sequence", "SQ");
 		add(0x30080200, "Current Treatment Status", "CS");
@@ -3866,7 +3937,9 @@ public class DICOMDictionary {
 		add(0x300A012C, "Isocenter Position", "DS");
 		add(0x300A012E, "Surface Entry Point", "DS");
 		add(0x300A0130, "Source to Surface Distance", "DS");
-		add(0x300A0131, "Average Beam Dose Point Sourceto External Contour SurfaceDistance", "FL");
+		add(0x300A0131,
+			"Average Beam Dose Point Sourceto External Contour SurfaceDistance",
+			"FL");
 		add(0x300A0132, "Source to External ContourDistance", "FL");
 		add(0x300A0133, "External Contour Entry Point", "FL");
 		add(0x300A0134, "Cumulative Meterset Weight", "DS");
@@ -4025,8 +4098,10 @@ public class DICOMDictionary {
 		add(0x300A0380, "Range Modulator SettingsSequence", "SQ");
 		add(0x300A0382, "Range Modulator Gating StartValue", "FL");
 		add(0x300A0384, "Range Modulator Gating StopValue", "FL");
-		add(0x300A0386, "Range Modulator Gating StartWater Equivalent Thickness", "FL");
-		add(0x300A0388, "Range Modulator Gating StopWater Equivalent Thickness", "FL");
+		add(0x300A0386, "Range Modulator Gating StartWater Equivalent Thickness",
+			"FL");
+		add(0x300A0388, "Range Modulator Gating StopWater Equivalent Thickness",
+			"FL");
 		add(0x300A038A, "Isocenter to Range ModulatorDistance", "FL");
 		add(0x300A0390, "Scan Spot Tune ID", "SH");
 		add(0x300A0392, "Number of Scan Spot Positions", "IS");
@@ -4307,6 +4382,6 @@ public class DICOMDictionary {
 	}
 
 	private void add(final int code, final String name, final String vr) {
-		table.put(code, new String[] {name, vr});
+		table.put(code, new String[] { name, vr });
 	}
 }

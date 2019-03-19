@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,7 +40,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -53,6 +52,9 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -69,7 +71,7 @@ import org.scijava.plugin.Plugin;
  * memory position)</li>
  * </ul>
  * <p>
- * 
+ *
  * <pre>
  * BYTE
  * 00   char    check[16]; // CTDATA-HEADER_V1
@@ -131,10 +133,10 @@ public class ScancoISQFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
-			byte[] firstBytes = new byte[ISQ_ID.length()];
+			final byte[] firstBytes = new byte[ISQ_ID.length()];
 			stream.read(firstBytes);
 			final String fileStart = new String(firstBytes);
 			return ISQ_ID.equals(fileStart);
@@ -333,7 +335,9 @@ public class ScancoISQFormat extends AbstractFormat {
 			return width;
 		}
 
-		public int getSliceBytes() { return sliceBytes; }
+		public int getSliceBytes() {
+			return sliceBytes;
+		}
 
 		/**
 		 * Converts the given timestamp to a creation date
@@ -350,7 +354,7 @@ public class ScancoISQFormat extends AbstractFormat {
 			 * of the VMS timestamp to the Unix epoch. Then you divide the result
 			 * with 10 000 000 (100 ns to seconds)
 			 */
-			long unixTimestamp = (vmsTimestamp - UNIX_EPOCH) / 10_000_000;
+			final long unixTimestamp = (vmsTimestamp - UNIX_EPOCH) / 10_000_000;
 			this.creationDate = Instant.ofEpochSecond(unixTimestamp).atZone(ZoneId
 				.ofOffset("", ZoneOffset.UTC)).toLocalDate();
 		}
@@ -509,13 +513,13 @@ public class ScancoISQFormat extends AbstractFormat {
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
 			config.imgOpenerSetComputeMinMax(true);
 
-			stream.order(true);
+			stream.setOrder(ByteOrder.LITTLE_ENDIAN);
 			stream.seek(28);
 			meta.setPatientIndex(stream.readInt());
 			meta.setScannerId(stream.readInt());
@@ -562,9 +566,10 @@ public class ScancoISQFormat extends AbstractFormat {
 			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
-			final RandomAccessInputStream stream = getStream();
+			final DataHandle<Location> stream = getHandle();
 			final Metadata metadata = getMetadata();
-			final int offset = (int) (metadata.dataOffset + metadata.sliceBytes * planeIndex);
+			final int offset = (int) (metadata.dataOffset + metadata.sliceBytes *
+				planeIndex);
 			stream.seek(offset);
 			return readPlane(stream, imageIndex, bounds, plane);
 		}

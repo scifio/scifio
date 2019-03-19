@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,7 +36,6 @@ import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.Writer;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,6 +49,10 @@ import net.imagej.axis.LinearAxis;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 import net.imglib2.util.Intervals;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of
@@ -174,10 +177,10 @@ public final class FormatTools {
 	public static final String UNKNOWN_DOMAIN = "Unknown";
 
 	/** List of non-graphics domains. */
-	public static final String[] NON_GRAPHICS_DOMAINS =
-		new String[] { LM_DOMAIN, EM_DOMAIN, SPM_DOMAIN, SEM_DOMAIN, FLIM_DOMAIN,
-			MEDICAL_DOMAIN, HISTOLOGY_DOMAIN, GEL_DOMAIN, ASTRONOMY_DOMAIN,
-			HCS_DOMAIN, UNKNOWN_DOMAIN };
+	public static final String[] NON_GRAPHICS_DOMAINS = new String[] { LM_DOMAIN,
+		EM_DOMAIN, SPM_DOMAIN, SEM_DOMAIN, FLIM_DOMAIN, MEDICAL_DOMAIN,
+		HISTOLOGY_DOMAIN, GEL_DOMAIN, ASTRONOMY_DOMAIN, HCS_DOMAIN,
+		UNKNOWN_DOMAIN };
 
 	/** List of non-HCS domains. */
 	public static final String[] NON_HCS_DOMAINS = new String[] { LM_DOMAIN,
@@ -326,8 +329,8 @@ public final class FormatTools {
 		if (axisIndex < iMeta.getPlanarAxisCount()) return 0;
 
 		// look up position of the given plane
-		final long[] position =
-			rasterToPosition(iMeta.getAxesLengthsNonPlanar(), planeIndex);
+		final long[] position = rasterToPosition(iMeta.getAxesLengthsNonPlanar(),
+			planeIndex);
 
 		// Compute relative index of the desired axis
 		axisIndex -= iMeta.getPlanarAxisCount();
@@ -392,8 +395,8 @@ public final class FormatTools {
 	 * @param raster rasterized index value
 	 * @return position along each dimensional axis
 	 */
-	public static long[]
-		rasterToPosition(final long[] lengths, final long raster)
+	public static long[] rasterToPosition(final long[] lengths,
+		final long raster)
 	{
 		return rasterToPosition(lengths, raster, new long[lengths.length]);
 	}
@@ -511,8 +514,8 @@ public final class FormatTools {
 	 * @param planeIndices position along each dimensional axis
 	 * @return rasterized index value
 	 */
-	public static long positionToRaster(final int imageIndex,
-		final Reader reader, final long[] planeIndices)
+	public static long positionToRaster(final int imageIndex, final Reader reader,
+		final long[] planeIndices)
 	{
 		return positionToRaster(imageIndex, reader.getMetadata(), planeIndices);
 	}
@@ -579,11 +582,11 @@ public final class FormatTools {
 	{
 		String msg = null;
 		if (id == null && notNull) {
-			msg = "Current file should not be null; call setId(String) first";
+			msg = "Current Location should not be null; call setId(Location) first";
 		}
 		else if (id != null && !notNull) {
-			msg =
-				"Current file should be null, but is '" + id + "'; call close() first";
+			msg = "Current file should be null, but is '" + id +
+				"'; call close() first";
 		}
 		if (msg == null) return;
 
@@ -610,7 +613,7 @@ public final class FormatTools {
 	 *          reported as part of the exception message, if available. Use zero
 	 *          to suppress output of the calling method name.
 	 */
-	public static void assertStream(final RandomAccessInputStream stream,
+	public static void assertStream(final DataHandle<Location> stream,
 		final boolean notNull, final int depth)
 	{
 		String msg = null;
@@ -618,9 +621,8 @@ public final class FormatTools {
 			msg = "Current file should not be null; call setId(String) first";
 		}
 		else if (stream != null && !notNull) {
-			msg =
-				"Current file should be null, but is '" + stream +
-					"'; call close() first";
+			msg = "Current file should be null, but is '" + stream +
+				"'; call close() first";
 		}
 		if (msg == null) return;
 
@@ -646,7 +648,7 @@ public final class FormatTools {
 		final int imageIndex, final long planeIndex, final int bufLength,
 		final Interval bounds) throws FormatException
 	{
-		assertId(m.getSource(), true, 2);
+		assertId(m.getSourceLocation(), true, 2);
 		checkPlaneForWriting(m, imageIndex, planeIndex, bufLength, bounds);
 	}
 
@@ -672,9 +674,9 @@ public final class FormatTools {
 		final long imageCount = m.get(imageIndex).getPlaneCount();
 		if (planeIndex < 0 || planeIndex >= imageCount) {
 			throw new FormatException("Invalid plane number: " + planeIndex + " (" +
-			/*
-			 * TODO series=" + r.getMetadata().getSeries() + ",
-			 */"planeCount=" + planeIndex + ")");
+				/*
+				 * TODO series=" + r.getMetadata().getSeries() + ",
+				 */"planeCount=" + planeIndex + ")");
 		}
 	}
 
@@ -724,15 +726,25 @@ public final class FormatTools {
 	}
 
 	/**
-	 * Returns true if the given RandomAccessInputStream conatins at least 'len'
-	 * bytes.
+	 * Returns true if the given DataHandle contains at least 'len' bytes.
 	 */
-	public static boolean validStream(final RandomAccessInputStream stream,
+	public static boolean validStream(final DataHandle<Location> handle,
 		final int len, final boolean littleEndian) throws IOException
 	{
-		stream.seek(0);
-		stream.order(littleEndian);
-		return stream.length() >= len;
+		handle.seek(0);
+		handle.setLittleEndian(littleEndian);
+		return handle.length() >= len;
+	}
+
+	/**
+	 * Returns true if the given DataHandle contains at least 'len' bytes.
+	 */
+	public static boolean validStream(final DataHandle<Location> handle,
+		final int len, final ByteOrder order) throws IOException
+	{
+		handle.seek(0);
+		handle.setOrder(order);
+		return handle.length() >= len;
 	}
 
 	/** Returns the size in bytes of a single plane read by the given Reader. */
@@ -936,18 +948,19 @@ public final class FormatTools {
 		final Reader r, final String pattern) throws FormatException, IOException
 	{
 
-		String filename =
-			pattern.replaceAll(SERIES_NUM, String.valueOf(imageIndex));
+		String filename = pattern.replaceAll(SERIES_NUM, String.valueOf(
+			imageIndex));
 
-		String imageName = r.getCurrentFile();
-		if (imageName == null) imageName = "Image#" + imageIndex;
+		String imageName = r.getCurrentLocation().getName();
+		if (imageName == null || "".equals(imageName)) imageName = "Image#" +
+			imageIndex;
 		imageName = imageName.replaceAll("/", "_");
 		imageName = imageName.replaceAll("\\\\", "_");
 
 		filename = filename.replaceAll(SERIES_NAME, imageName);
 
-		final long[] coordinates =
-			FormatTools.rasterToPosition(imageIndex, image, r);
+		final long[] coordinates = FormatTools.rasterToPosition(imageIndex, image,
+			r);
 		filename = filename.replaceAll(Z_NUM, String.valueOf(coordinates[0]));
 		filename = filename.replaceAll(T_NUM, String.valueOf(coordinates[2]));
 		filename = filename.replaceAll(CHANNEL_NUM, String.valueOf(coordinates[1]));
@@ -1122,7 +1135,9 @@ public final class FormatTools {
 	 *         respectively.
 	 * @throws IllegalArgumentException if the bits per pixel are non-positive.
 	 */
-	public static long[] defaultMinMax(final int bitsPerPixel, final boolean signed) {
+	public static long[] defaultMinMax(final int bitsPerPixel,
+		final boolean signed)
+	{
 		if (bitsPerPixel <= 0) throw new IllegalArgumentException(
 			"Bits per pixel must be positive. Value was: " + bitsPerPixel);
 
@@ -1131,7 +1146,7 @@ public final class FormatTools {
 
 		if (signed) {
 			bits--;
-			min = (long) - Math.pow(2, bits);
+			min = (long) -Math.pow(2, bits);
 		}
 
 		max = (long) Math.pow(2, bits) - 1;
@@ -1147,8 +1162,8 @@ public final class FormatTools {
 	 * @return an array containing the min and max as elements 0 and 1,
 	 *         respectively.
 	 */
-	public static long[]
-		defaultMinMax(final int pixelType, final int bitsPerPixel)
+	public static long[] defaultMinMax(final int pixelType,
+		final int bitsPerPixel)
 	{
 		if (bitsPerPixel > 0) {
 			return defaultMinMax(bitsPerPixel, isSigned(pixelType));
@@ -1164,8 +1179,7 @@ public final class FormatTools {
 	 * @return an array containing the min and max as elements 0 and 1,
 	 *         respectively.
 	 */
-	public static long[] defaultMinMax(final ImageMetadata iMeta)
-	{
+	public static long[] defaultMinMax(final ImageMetadata iMeta) {
 		return defaultMinMax(iMeta.getPixelType(), iMeta.getBitsPerPixel());
 	}
 
@@ -1175,8 +1189,8 @@ public final class FormatTools {
 	}
 
 	/** Performs suffix matching for the given filename. */
-	public static boolean
-		checkSuffix(final String name, final String[] suffixList)
+	public static boolean checkSuffix(final String name,
+		final String[] suffixList)
 	{
 		final String lname = name.toLowerCase();
 		for (final String suffix : suffixList) {

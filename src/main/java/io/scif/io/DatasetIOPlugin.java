@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,12 +32,15 @@ package io.scif.io;
 import io.scif.services.DatasetIOService;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import net.imagej.Dataset;
 
 import org.scijava.Priority;
 import org.scijava.io.AbstractIOPlugin;
 import org.scijava.io.IOPlugin;
+import org.scijava.io.location.Location;
+import org.scijava.io.location.LocationService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -52,6 +55,9 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 	@Parameter
 	private DatasetIOService datasetIOService;
 
+	@Parameter
+	private LocationService locationService;
+
 	// -- IOPlugin methods --
 
 	@Override
@@ -61,23 +67,38 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		return datasetIOService.canOpen(source);
+		return datasetIOService.canOpen(resolve(source, "source"));
 	}
 
 	@Override
 	public boolean supportsSave(final String destination) {
-		return datasetIOService.canSave(destination);
+		return datasetIOService.canSave(resolve(destination, "destination"));
 	}
 
 	@Override
 	public Dataset open(final String source) throws IOException {
-		return datasetIOService.open(source);
+		return datasetIOService.open(resolve(source, "source"));
 	}
 
 	@Override
 	public void save(final Dataset dataset, final String destination)
 		throws IOException
 	{
-		datasetIOService.save(dataset, destination);
+		datasetIOService.save(dataset, resolve(destination, "destination"));
+	}
+
+	// -- Helper methods --
+
+	private Location resolve(final String uriString, final String label) {
+		try {
+			final Location location = locationService.resolve(uriString);
+			if (location != null) return location;
+			throw new IllegalArgumentException( //
+				"Unresolvable " + label + ": " + uriString);
+		}
+		catch (final URISyntaxException exc) {
+			throw new IllegalArgumentException( //
+				"Invalid " + label + ": " + uriString, exc);
+		}
 	}
 }

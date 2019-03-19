@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,7 +42,6 @@ import io.scif.Translator;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
@@ -57,6 +56,10 @@ import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleInputStream;
+import org.scijava.io.handle.DataHandleOutputStream;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -74,7 +77,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		private BufferedImage img;
+		private transient BufferedImage img;
 
 		// -- ImageIOMetadata API methods --
 
@@ -122,12 +125,12 @@ public abstract class ImageIOFormat extends AbstractFormat {
 	public static class Parser<M extends Metadata> extends AbstractParser<M> {
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
-			final M meta, final SCIFIOConfig config) throws IOException,
-			FormatException
+		protected void typedParse(final DataHandle<Location> handle, final M meta,
+			final SCIFIOConfig config) throws IOException, FormatException
 		{
 			log().info("Populating metadata");
-			final DataInputStream dis = new DataInputStream(stream);
+			final DataInputStream dis = new DataInputStream(
+				new DataHandleInputStream<>(handle));
 			final BufferedImage img = ImageIO.read(dis);
 			if (img == null) throw new FormatException("Invalid image stream");
 			meta.setImg(img);
@@ -135,7 +138,8 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 	}
 
-	public static class Reader<M extends Metadata> extends BufferedImageReader<M>
+	public static class Reader<M extends Metadata> extends
+		BufferedImageReader<M>
 	{
 
 		// -- AbstractReader API Methods --
@@ -150,8 +154,8 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final Interval bounds, final SCIFIOConfig config)
-			throws FormatException, IOException
+			final Interval bounds, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			plane.setData(AWTImageTools.getSubimage(meta.getImg(), //
@@ -186,12 +190,11 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final Interval bounds)
-			throws FormatException, IOException
+			final Plane plane, final Interval bounds) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds))
-			{
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds)) {
 				throw new FormatException(
 					"ImageIOWriter does not support writing tiles");
 			}
@@ -199,20 +202,23 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			BufferedImage img = null;
 
 			if (!(plane instanceof BufferedImagePlane)) {
-				final int type = meta.get(imageIndex).getPixelType();
-				img =
-					AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(imageIndex)
-						.getAxisLength(Axes.X), (int) meta.get(imageIndex).getAxisLength(
-						Axes.Y), (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL),
-						plane.getImageMetadata().getInterleavedAxisCount() > 0, FormatTools
-							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
-							.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
+				final ImageMetadata imageMetadata = meta.get(imageIndex);
+				final int type = imageMetadata.getPixelType();
+				img = AWTImageTools.makeImage(plane.getBytes(), //
+					(int) imageMetadata.getAxisLength(Axes.X), //
+					(int) imageMetadata.getAxisLength(Axes.Y), //
+					(int) imageMetadata.getAxisLength(Axes.CHANNEL), //
+					plane.getImageMetadata().getInterleavedAxisCount() > 0, //
+					FormatTools.getBytesPerPixel(type), //
+					FormatTools.isFloatingPoint(type), //
+					imageMetadata.isLittleEndian(), //
+					FormatTools.isSigned(type));
 			}
 			else {
 				img = ((BufferedImagePlane) plane).getData();
 			}
 
-			ImageIO.write(img, kind, getStream());
+			ImageIO.write(img, kind, new DataHandleOutputStream<>(getHandle()));
 		}
 
 		@Override

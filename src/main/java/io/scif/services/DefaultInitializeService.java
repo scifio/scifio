@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,6 +29,7 @@
 
 package io.scif.services;
 
+import io.scif.DefaultReader;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
@@ -41,6 +42,7 @@ import io.scif.filters.ReaderFilter;
 import java.io.IOException;
 
 import org.scijava.Priority;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -69,38 +71,39 @@ public class DefaultInitializeService extends AbstractService implements
 	@Parameter
 	private TranslatorService translatorService;
 
-	@Parameter
-	private LocationService locationService;
-
 	// -- InitializeService API Methods --
 
 	@Override
-	public ReaderFilter initializeReader(final String id) throws FormatException,
-		IOException
+	public ReaderFilter initializeReader(final Location id)
+		throws FormatException, IOException
 	{
 		return initializeReader(id, new SCIFIOConfig().checkerSetOpen(false));
 	}
 
 	@Override
-	public ReaderFilter initializeReader(final String id,
+	public ReaderFilter initializeReader(final Location id,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		final Reader r = formatService.getFormat(id, config).createReader();
+		if(r.getClass() == DefaultReader.class) {
+			throw new IOException("Format is write-only!");
+		}
 		r.setSource(id, config);
 		return new ReaderFilter(r);
 	}
 
 	@Override
-	public Writer initializeWriter(final String source, final String destination)
-		throws FormatException, IOException
+	public Writer initializeWriter(final Location source,
+		final Location destination) throws FormatException, IOException
 	{
 		return initializeWriter(source, destination, new SCIFIOConfig()
 			.checkerSetOpen(false));
 	}
 
 	@Override
-	public Writer initializeWriter(final String source, final String destination,
-		final SCIFIOConfig config) throws FormatException, IOException
+	public Writer initializeWriter(final Location source,
+		final Location destination, final SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 
 		final Format sFormat = formatService.getFormat(source, config);
@@ -112,7 +115,7 @@ public class DefaultInitializeService extends AbstractService implements
 
 	@Override
 	public Writer initializeWriter(final Metadata sourceMeta,
-		final String destination) throws FormatException, IOException
+		final Location destination) throws FormatException, IOException
 	{
 		return initializeWriter(sourceMeta, destination, new SCIFIOConfig()
 			.checkerSetOpen(false));
@@ -120,12 +123,12 @@ public class DefaultInitializeService extends AbstractService implements
 
 	@Override
 	public Writer initializeWriter(final Metadata sourceMeta,
-		final String destination, final SCIFIOConfig config)
+		final Location destination, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
 		final Format sFormat = sourceMeta.getFormat();
-		final Format dFormat =
-			formatService.getWriterByExtension(destination).getFormat();
+		final Format dFormat = formatService.getWriterForLocation(destination)
+			.getFormat();
 		Metadata destMeta = dFormat.createMetadata();
 
 		// if dest is a different format than source, translate..
@@ -141,7 +144,7 @@ public class DefaultInitializeService extends AbstractService implements
 			translatorService.translate(sourceMeta, destMeta, false);
 		}
 
-		destMeta.setDatasetName(destination);
+		destMeta.setDatasetName(destination.getName());
 
 		final Writer writer = dFormat.createWriter();
 		writer.setMetadata(destMeta);
@@ -151,14 +154,14 @@ public class DefaultInitializeService extends AbstractService implements
 	}
 
 	@Override
-	public Metadata parseMetadata(final String id) throws IOException,
+	public Metadata parseMetadata(final Location id) throws IOException,
 		FormatException
 	{
 		return parseMetadata(id, new SCIFIOConfig().checkerSetOpen(false));
 	}
 
 	@Override
-	public Metadata parseMetadata(final String id, final SCIFIOConfig config)
+	public Metadata parseMetadata(final Location id, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
 		final Format format = formatService.getFormat(id, config);

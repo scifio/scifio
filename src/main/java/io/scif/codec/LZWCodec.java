@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,19 +30,19 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
  * This is an optimized LZW codec for use with TIFF files. Most of the code is
  * inlined, and specifics of TIFF usage of LZW (known size of decompressor
- * output; possible lengths of LZW codes; specified values for
- * {@code CLEAR} and {@code END_OF_INFORMATION} codes) are taken in
- * account.
+ * output; possible lengths of LZW codes; specified values for {@code CLEAR} and
+ * {@code END_OF_INFORMATION} codes) are taken in account.
  * <p>
  * Estimating the worst-case size of compressor output:
  * </p>
@@ -57,7 +57,8 @@ import org.scijava.plugin.Plugin;
  * <ul>
  * <li>9 bits for CLEAR code;</li>
  * <li>9*253 + 10*512 + 11*1024 + 12*2048 = 43237 bits for character codes.</li>
- * </ul></li>
+ * </ul>
+ * </li>
  * <li>Let n=3837, m=(number of bytes in the last incomplete portion), N=(number
  * of bytes in compressed complete portion with CLEAR code), M=(number of bytes
  * in compressed last incomplete portion). We have inequalities:
@@ -66,7 +67,8 @@ import org.scijava.plugin.Plugin;
  * <li>{@code M <= 1.41 * m}</li>
  * <li>The last incomplete portion should also include {@code CLEAR} and
  * {@code END_OF_INFORMATION} codes; they occupy less than 3 bytes.
- * </ul></li>
+ * </ul>
+ * </li>
  * </ul>
  * <p>
  * Thus, we can claim than the number of bytes in compressed output never
@@ -95,8 +97,8 @@ public class LZWCodec extends AbstractCodec {
 	private static final int FIRST_CODE = 258;
 
 	/** Masks for writing bits in compressor. */
-	private static final int[] COMPR_MASKS = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f,
-		0x07, 0x03, 0x01 };
+	private static final int[] COMPR_MASKS = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07,
+		0x03, 0x01 };
 
 	/** Masks for reading bits in decompressor. */
 	private static final int[] DECOMPR_MASKS = { 0x00, 0x01, 0x03, 0x07, 0x0f,
@@ -163,8 +165,8 @@ public class LZWCodec extends AbstractCodec {
 					htValues[hashCode] = nextCode++;
 					// 2) output last code
 					int shift = currCodeLength - freeBits;
-					output[outSize++] =
-						(byte) ((currOutByte << freeBits) | (tiffOmega >> shift));
+					output[outSize++] = (byte) ((currOutByte << freeBits) |
+						(tiffOmega >> shift));
 					if (shift > 8) {
 						output[outSize++] = (byte) (tiffOmega >> (shift - 8));
 						shift -= 8;
@@ -194,8 +196,8 @@ public class LZWCodec extends AbstractCodec {
 					break;
 				case 4096: // write CLEAR code and reinitialize hash table
 					int shift = currCodeLength - freeBits;
-					output[outSize++] =
-						(byte) ((currOutByte << freeBits) | (CLEAR_CODE >> shift));
+					output[outSize++] = (byte) ((currOutByte << freeBits) |
+						(CLEAR_CODE >> shift));
 					if (shift > 8) {
 						output[outSize++] = (byte) (CLEAR_CODE >> (shift - 8));
 						shift -= 8;
@@ -213,8 +215,8 @@ public class LZWCodec extends AbstractCodec {
 		// 1) write code from tiff_Omega
 		{
 			int shift = currCodeLength - freeBits;
-			output[outSize++] =
-				(byte) ((currOutByte << freeBits) | (tiffOmega >> shift));
+			output[outSize++] = (byte) ((currOutByte << freeBits) |
+				(tiffOmega >> shift));
 			if (shift > 8) {
 				output[outSize++] = (byte) (tiffOmega >> (shift - 8));
 				shift -= 8;
@@ -239,8 +241,8 @@ public class LZWCodec extends AbstractCodec {
 
 		{
 			int shift = currCodeLength - freeBits;
-			output[outSize++] =
-				(byte) ((currOutByte << freeBits) | (EOI_CODE >> shift));
+			output[outSize++] = (byte) ((currOutByte << freeBits) |
+				(EOI_CODE >> shift));
 			if (shift > 8) {
 				output[outSize++] = (byte) (EOI_CODE >> (shift - 8));
 				shift -= 8;
@@ -259,11 +261,11 @@ public class LZWCodec extends AbstractCodec {
 	 * The CodecOptions parameter should have the following fields set:
 	 * {@link CodecOptions#maxBytes maxBytes}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (in == null || in.length() == 0) return null;
 		if (options == null) options = CodecOptions.getDefaultOptions();
@@ -406,7 +408,7 @@ public class LZWCodec extends AbstractCodec {
 						break;
 				}
 			}
-			while (currOutPos < output.length && in.getFilePointer() < in.length());
+			while (currOutPos < output.length && in.offset() < in.length());
 		}
 		catch (final ArrayIndexOutOfBoundsException e) {
 			throw new FormatException("Invalid LZW data", e);

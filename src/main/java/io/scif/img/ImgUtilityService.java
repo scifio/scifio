@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,6 +42,8 @@ import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.io.location.Location;
+
 /**
  * Helper methods for converting between SCIFIO and ImgLib2 data structures.
  *
@@ -50,17 +52,6 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 public interface ImgUtilityService extends SCIFIOService {
-
-	/**
-	 * Downloads the given URL and caches it to a temporary file, which is deleted
-	 * upon JVM shutdown. This is useful in conjuction with {@link ImgOpener} to
-	 * open a URL as an {@link Img}.
-	 * <p>
-	 * Data compressed with zip or gzip is supported. In the case of zip, the
-	 * first file in the archive is cached.
-	 * </p>
-	 */
-	String cacheId(final String urlPath) throws ImgIOException;
 
 	/** Obtains planar access instance backing the given img, if any. */
 	PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(final ImgPlus<?> img);
@@ -94,7 +85,7 @@ public interface ImgUtilityService extends SCIFIOService {
 	 * @param source - the location of the dataset to assess
 	 * @return The number of images in the specified dataset.
 	 */
-	int getImageCount(final String source) throws ImgIOException;
+	int getImageCount(final Location source) throws ImgIOException;
 
 	/**
 	 * see {@link #isCompressible(ImgPlus)}

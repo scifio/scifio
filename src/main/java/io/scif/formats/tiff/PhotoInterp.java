@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,11 +46,11 @@ import java.util.Map;
  */
 public enum PhotoInterp implements CodedEnum {
 
-	WHITE_IS_ZERO(0, "WhiteIsZero", "Monochrome"), BLACK_IS_ZERO(1,
-		"BlackIsZero", "Monochrome"), RGB(2, "RGB", "RGB"), RGB_PALETTE(3,
-		"Palette", "Monochrome"), TRANSPARENCY_MASK(4, "Transparency Mask", "RGB"),
-		CMYK(5, "CMYK", "CMYK"), Y_CB_CR(6, "YCbCr", "RGB"), CIE_LAB(8, "CIELAB",
-			"RGB"), CFA_ARRAY(32803, "Color Filter Array", "RGB");
+		WHITE_IS_ZERO(0, "WhiteIsZero", "Monochrome"), BLACK_IS_ZERO(1,
+			"BlackIsZero", "Monochrome"), RGB(2, "RGB", "RGB"), RGB_PALETTE(3,
+				"Palette", "Monochrome"), TRANSPARENCY_MASK(4, "Transparency Mask",
+					"RGB"), CMYK(5, "CMYK", "CMYK"), Y_CB_CR(6, "YCbCr", "RGB"), CIE_LAB(
+						8, "CIELAB", "RGB"), CFA_ARRAY(32803, "Color Filter Array", "RGB");
 
 	/** Default luminance values for YCbCr data. */
 	public static final float LUMA_RED = 0.299f;
@@ -68,8 +68,7 @@ public enum PhotoInterp implements CodedEnum {
 	/** Metadata type of the photometric interpretation. */
 	private String metadataType;
 
-	private static final Map<Integer, PhotoInterp> lookup =
-		new HashMap<>();
+	private static final Map<Integer, PhotoInterp> lookup = new HashMap<>();
 
 	/** Reverse lookup of code to IFD type enumerate value. */
 	static {

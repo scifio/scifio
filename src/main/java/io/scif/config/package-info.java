@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,12 +28,12 @@
  */
 
 /**
- * This package provides configuration options for all SCIFIO components. 
+ * This package provides configuration options for all SCIFIO components.
  * <p>
- * Configuration is achieved through use of the 
+ * Configuration is achieved through use of the
  * {@link io.scif.config.SCIFIOConfig} class. Methods in this class are prefixed
  * based on what component they are modifying. The {@code SCIFIOConfig} then
- * operates as a single container of state, passed between each consumer, which 
+ * operates as a single container of state, passed between each consumer, which
  * queries the values that apply to them.
  * </p>
  * <p>
@@ -44,7 +44,7 @@
  * Adding new configuration options requires three steps:
  * </p>
  * <ul>
- * <li>Add the appropriate field(s) and setter/accessor methods to 
+ * <li>Add the appropriate field(s) and setter/accessor methods to
  * {@code SCIFIOConfig}.</li>
  * <li>Modify the class being configured to accept {@code SCIFIOConfig} objects
  * and query the desired information.</li>
@@ -54,4 +54,5 @@
  *
  * @author Mark Hiner
  */
+
 package io.scif.config;

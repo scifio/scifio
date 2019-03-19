@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,10 +35,12 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Reader;
 import io.scif.SCIFIO;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 
 import org.junit.Test;
+import org.scijava.io.location.Location;
 
 /**
  * Unit tests for {@link FormatTools}.
@@ -59,8 +61,10 @@ public class FormatToolsTest {
 	 */
 	@Test
 	public void testDefaultMinMax() throws FormatException, IOException {
-		final String sampleImage =
-			"8bit-unsigned&pixelType=int8&indexed=true&planarDims=3&lengths=50,50,1&axes=X,Y,Channel.fake";
+
+		final Location sampleImage = TestImgLocation.builder().name("8bit-unsigned")
+			.pixelType("int8").indexed(true).planarDims(3).lengths(50, 50, 1).axes(
+				"X", "Y", "Channel").build();
 
 		final Reader reader = scifio.initializer().initializeReader(sampleImage);
 		final ImageMetadata iMeta = reader.getMetadata().get(0);
@@ -68,7 +72,8 @@ public class FormatToolsTest {
 
 		// Test min/max computation using ImageMetadat directly
 		assertEquals((long) -Math.pow(2, 6), FormatTools.defaultMinMax(iMeta)[0]);
-		assertEquals((long) Math.pow(2, 6) - 1, FormatTools.defaultMinMax(iMeta)[1]);
+		assertEquals((long) Math.pow(2, 6) - 1, FormatTools.defaultMinMax(
+			iMeta)[1]);
 
 		// Test min/max computation using bits per pixel
 		assertEquals((long) -Math.pow(2, 6), FormatTools.defaultMinMax(iMeta

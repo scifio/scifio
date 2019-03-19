@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,14 +36,18 @@ import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
+import java.net.URL;
 
 import net.imagej.axis.Axes;
 
 import org.junit.After;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.PluginInfo;
 
 /**
@@ -55,7 +59,8 @@ public class FilterTest {
 
 	private final SCIFIO scifio = makeSCIFIO();
 
-	private final String id = "testImg&lengths=512,512.fake";
+	private final Location id = new TestImgLocation.Builder().name("testImg")
+		.lengths(512, 512).build();
 
 	private Reader readerFilter;
 
@@ -69,10 +74,10 @@ public class FilterTest {
 
 		final Context ctx = scifio.getContext();
 
-		final PluginInfo<Filter> enabledInfo =
-			new PluginInfo<>(EnabledFilter.class, Filter.class);
-		final PluginInfo<Filter> disabledInfo =
-			new PluginInfo<>(DisabledFilter.class, Filter.class);
+		final PluginInfo<Filter> enabledInfo = new PluginInfo<>(EnabledFilter.class,
+			Filter.class);
+		final PluginInfo<Filter> disabledInfo = new PluginInfo<>(
+			DisabledFilter.class, Filter.class);
 
 		ctx.getPluginIndex().add(enabledInfo);
 		ctx.getPluginIndex().add(disabledInfo);
@@ -87,11 +92,11 @@ public class FilterTest {
 	 */
 	@Test
 	public void testSetSource() throws FormatException, IOException {
-		final String id2 = "testImg&lengths=256,128,5&axes=X,Y,Time.fake";
+		final Location id2 = new TestImgLocation.Builder().name("testImg").lengths(
+			256, 128,5).axes("X", "Y", "Time").build();
 
-		readerFilter =
-			scifio.initializer().initializeReader(id,
-				new SCIFIOConfig().checkerSetOpen(true));
+		readerFilter = scifio.initializer().initializeReader(id, new SCIFIOConfig()
+			.checkerSetOpen(true));
 
 		((ReaderFilter) readerFilter).enable(PlaneSeparator.class);
 
@@ -118,11 +123,11 @@ public class FilterTest {
 		// Make sure that our enabled plugin is found, and the disabled one
 		// isn't
 		while (Filter.class.isAssignableFrom(readerFilter.getClass())) {
-			if (EnabledFilter.class.isAssignableFrom(readerFilter.getClass())) enabledProperly =
-				true;
+			if (EnabledFilter.class.isAssignableFrom(readerFilter.getClass()))
+				enabledProperly = true;
 
-			if (DisabledFilter.class.isAssignableFrom(readerFilter.getClass())) disabledProperly =
-				false;
+			if (DisabledFilter.class.isAssignableFrom(readerFilter.getClass()))
+				disabledProperly = false;
 
 			readerFilter = (Reader) ((Filter) readerFilter).getParent();
 		}
@@ -134,7 +139,10 @@ public class FilterTest {
 
 	@Test
 	public void testFilterOrder() throws FormatException, IOException {
-		readerFilter = scifio.initializer().initializeReader(id);
+		final URL uri = getClass().getResource(
+			"../img/axisguesser/leica_stack/leica_stack_Series014_z000_ch00.tif");
+		final FileLocation source = new FileLocation(uri.getPath());
+		readerFilter = scifio.initializer().initializeReader(source);
 
 		// enable all plugins
 		for (final PluginInfo<Filter> pi : scifio.getContext().getPluginIndex()

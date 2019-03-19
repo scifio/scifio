@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,7 +33,6 @@ import io.scif.DependencyException;
 import io.scif.FormatException;
 import io.scif.MissingLibraryException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.services.LuraWaveService;
 import io.scif.services.ServiceException;
 
@@ -41,6 +40,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -72,7 +73,7 @@ public class LuraWaveCodec extends AbstractCodec {
 	}
 
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
+	public byte[] decompress(final DataHandle<Location> in,
 		final CodecOptions options) throws FormatException, IOException
 	{
 		final byte[] buf = new byte[(int) in.length()];
@@ -92,8 +93,8 @@ public class LuraWaveCodec extends AbstractCodec {
 	{
 		checkLuraWaveService();
 
-		final BufferedInputStream stream =
-			new BufferedInputStream(new ByteArrayInputStream(buf), 4096);
+		final BufferedInputStream stream = new BufferedInputStream(
+			new ByteArrayInputStream(buf), 4096);
 		try {
 			luraWaveService.initialize(stream);
 		}

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,9 +30,11 @@
 package io.scif;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * Default {@link io.scif.Parser} implementation.
@@ -40,12 +42,9 @@ import java.io.IOException;
  * Populates the following fields:
  * </p>
  * <ul>
- * <li>
- * {@link io.scif.Metadata#isFiltered()}</li>
- * <li>
- * {@link io.scif.Metadata#getSource()}</li>
- * <li>
- * {@link io.scif.Metadata#getDatasetName()}</li>
+ * <li>{@link io.scif.Metadata#isFiltered()}</li>
+ * <li>{@link io.scif.Metadata#getSource()}</li>
+ * <li>{@link io.scif.Metadata#getDatasetName()}</li>
  * </ul>
  *
  * @see io.scif.Parser
@@ -72,7 +71,7 @@ public class DefaultParser extends AbstractParser<DefaultMetadata> implements
 	 * Non-functional typedParse implementation.
 	 */
 	@Override
-	protected void typedParse(final RandomAccessInputStream stream,
+	protected void typedParse(final DataHandle<Location> stream,
 		final DefaultMetadata meta, final SCIFIOConfig config) throws IOException,
 		FormatException
 	{

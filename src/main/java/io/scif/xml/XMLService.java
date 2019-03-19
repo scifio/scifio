@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,12 +30,11 @@
 package io.scif.xml;
 
 import io.scif.SCIFIOService;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
@@ -43,6 +42,8 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -95,7 +96,7 @@ public interface XMLService extends SCIFIOService {
 	String indentXML(String xml, int spacing, boolean preserveCData);
 
 	/** Parses the given XML string into a list of key/value pairs. */
-	Hashtable<String, String> parseXML(String xml) throws IOException;
+	Map<String, String> parseXML(String xml) throws IOException;
 
 	/**
 	 * Parses the given XML string using the specified XML handler.
@@ -103,11 +104,11 @@ public interface XMLService extends SCIFIOService {
 	void parseXML(String xml, DefaultHandler handler) throws IOException;
 
 	/**
-	 * Parses the XML contained in the given input stream into using the specified
+	 * Parses the XML contained in the given data handle into using the specified
 	 * XML handler. Be very careful, as 'stream' <b>will</b> be closed by the SAX
 	 * parser.
 	 */
-	void parseXML(RandomAccessInputStream stream, DefaultHandler handler)
+	void parseXML(DataHandle<Location> handle, DefaultHandler handler)
 		throws IOException;
 
 	/**

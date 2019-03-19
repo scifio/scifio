@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,27 +29,36 @@
 
 package io.scif.filters;
 
+import io.scif.AxisGuesser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
 import io.scif.FilePattern;
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.Location;
+import io.scif.io.location.TestImgLocation;
 import io.scif.services.FilePatternService;
 import io.scif.services.InitializeService;
-import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.DummyLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -69,7 +78,7 @@ public class FileStitcher extends AbstractReaderFilter {
 	private FilePatternService filePatternService;
 
 	@Parameter
-	private LocationService locationService;
+	private DataHandleService dataHandleService;
 
 	/**
 	 * Whether string ids given should be treated as file patterns rather than
@@ -82,15 +91,15 @@ public class FileStitcher extends AbstractReaderFilter {
 	/**
 	 * Number of images for each file
 	 */
-	private int[] imagesPerFile = null;
-
-	private Reader[] readers = null;
-
-	private String[] files = null;
+	private long[] planesPerFile;
 
 	private FilePattern pattern;
 
 	private boolean noStitch;
+
+	private long totalPlanes = -1;
+
+	private Location[] localFiles;
 
 	// -- Constructors --
 
@@ -106,6 +115,7 @@ public class FileStitcher extends AbstractReaderFilter {
 	 *          patterns rather than single file paths.
 	 */
 	public FileStitcher(final boolean patternIds) {
+		super(FileStitcherMetadata.class);
 		setUsingPatternIds(patternIds);
 	}
 
@@ -129,35 +139,6 @@ public class FileStitcher extends AbstractReaderFilter {
 		return !doNotChangePattern;
 	}
 
-	/**
-	 * Gets the reader appropriate for use with the given image.
-	 */
-	public Reader getReader(final int imageIndex) throws FormatException,
-		IOException
-	{
-		if (noStitch) return getParent();
-		final int[] fileIndex = computeFileIndex(imageIndex);
-		Reader r = readers[fileIndex[0]];
-		if (r == null) {
-			r = initializeService.initializeReader(files[imageIndex]);
-			readers[fileIndex[0]] = r;
-		}
-		return r;
-	}
-
-	/**
-	 * Gets the metadata for the given image index.
-	 *
-	 * @throws IOException
-	 * @throws FormatException
-	 */
-	public Metadata getMetadata(final int imageIndex) throws FormatException,
-		IOException
-	{
-		if (noStitch) return getParent().getMetadata();
-		return getReader(imageIndex).getMetadata();
-	}
-
 	/** Gets the file pattern object used to build the list of files. */
 	public FilePattern getFilePattern() {
 		return pattern;
@@ -166,38 +147,38 @@ public class FileStitcher extends AbstractReaderFilter {
 	/**
 	 * Constructs a new FilePattern around the pattern extracted from the given
 	 * id.
+	 *
+	 * @throws IOException
 	 */
-	public FilePattern findPattern(final String id) {
-		return new FilePattern(getContext(), filePatternService.findPattern(id));
+	public FilePattern findPattern(final BrowsableLocation id)
+		throws IOException
+	{
+		return new FilePattern(id, filePatternService.findPattern(asBrowsable(id)),
+			dataHandleService);
 	}
 
 	/**
 	 * Finds the file pattern for the given ID, based on the state of the file
 	 * stitcher. Takes both ID map entries and the patternIds flag into account.
+	 *
+	 * @throws IOException
 	 */
-	public String[] findPatterns(final String id) {
+	public String[] findPatterns(final BrowsableLocation id) throws IOException {
 		if (!patternIds) {
-			// find the containing patterns
-			final HashMap<String, Object> map = locationService.getIdMap();
-			if (map.containsKey(id)) {
-				// search ID map for pattern, rather than files on disk
-				final String[] idList = new String[map.size()];
-				map.keySet().toArray(idList);
-				return filePatternService.findImagePatterns(id, null, idList);
-			}
 			// id is an unmapped file path; look to similar files on disk
-			return filePatternService.findImagePatterns(id);
+			return filePatternService.findImagePatterns(asBrowsable(id));
 		}
 		if (doNotChangePattern) {
-			return new String[] { id };
+			return new String[] { id.getName() };
 		}
 		patternIds = false;
-		String[] patterns =
-			findPatterns(new FilePattern(getContext(), id).getFiles()[0]);
-		if (patterns.length == 0) patterns = new String[] { id };
+		String[] patterns = findPatterns(asBrowsable(new FilePattern(
+			filePatternService, id, dataHandleService).getFiles()[0]));
+		if (patterns.length == 0) patterns = new String[] { id.getName() };
 		else {
-			final FilePattern test = new FilePattern(getContext(), patterns[0]);
-			if (test.getFiles().length == 0) patterns = new String[] { id };
+			final FilePattern test = new FilePattern(id, patterns[0],
+				dataHandleService);
+			if (test.getFiles().length == 0) patterns = new String[] { id.getName() };
 		}
 		patternIds = true;
 		return patterns;
@@ -206,34 +187,48 @@ public class FileStitcher extends AbstractReaderFilter {
 	// -- AbstractReaderFilter API Methods --
 
 	@Override
-	protected void
-		setSourceHelper(final String source, final SCIFIOConfig config)
+	public void setSource(final Location source, final SCIFIOConfig config)
+		throws IOException
 	{
+		setSourceHelper(source, config);
+	}
+
+	@Override
+	public void setSource(final DataHandle<Location> source,
+		final SCIFIOConfig config) throws IOException
+	{
+		setSourceHelper(source.get(), config);
+	}
+
+	@Override
+	protected void setSourceHelper(final Location source,
+		final SCIFIOConfig config)
+	{
+		final BrowsableLocation browsableSource = asBrowsable(source);
 		try {
 			cleanUp();
-			log().debug("initFile: " + source);
+			log().debug("initFile: " + browsableSource);
 
 			// Determine if we we have a multi-element file pattern
-			FilePattern fp = new FilePattern(getContext(), source);
+			FilePattern fp = new FilePattern(filePatternService, browsableSource,
+				dataHandleService);
 			if (!patternIds) {
 				patternIds = fp.isValid() && fp.getFiles().length > 1;
 			}
 			else {
-				patternIds =
-					!new Location(getContext(), source).exists() &&
-						locationService.getMappedId(source).equals(source);
+				patternIds = !dataHandleService.exists(browsableSource);
+//						&& locationService.getMappedId(source) .equals(source);
 			}
 
 			// Determine if the wrapped reader should handle the stitching
 			boolean mustGroup = false;
 			if (patternIds) {
-				mustGroup =
-					fp.isValid() &&
-						getParent().fileGroupOption(fp.getFiles()[0]) == FormatTools.MUST_GROUP;
+				mustGroup = fp.isValid() && getParent().fileGroupOption(fp
+					.getFiles()[0]) == FormatTools.MUST_GROUP;
 			}
 			else {
-				mustGroup =
-					getParent().fileGroupOption(source) == FormatTools.MUST_GROUP;
+				mustGroup = getParent().fileGroupOption(
+					browsableSource) == FormatTools.MUST_GROUP;
 			}
 
 			// If the wrapped reader will handle the stitching, we can set its
@@ -245,7 +240,7 @@ public class FileStitcher extends AbstractReaderFilter {
 				if (patternIds && fp.isValid()) {
 					getParent().setSource(fp.getFiles()[0], config);
 				}
-				else getParent().setSource(source, config);
+				else getParent().setSource(browsableSource, config);
 				return;
 			}
 
@@ -255,65 +250,96 @@ public class FileStitcher extends AbstractReaderFilter {
 			}
 
 			// Get the individual file ids
-			String[] patterns = findPatterns(source);
-			if (patterns.length == 0) patterns = new String[] { source };
-			readers = new Reader[patterns.length];
+			String[] patterns = findPatterns(browsableSource);
+			if (patterns.length == 0) patterns = new String[] { browsableSource
+				.getName() };
 
-			fp = new FilePattern(getContext(), patterns[0]);
-
-			getParent().close();
+			fp = new FilePattern(browsableSource, patterns[0], dataHandleService);
 
 			if (!fp.isValid()) {
 				throw new FormatException("Invalid file pattern: " + fp.getPattern());
 			}
-			getParent().setSource(fp.getFiles()[0], config);
 
-			final String msg = " Please rename your files or disable file stitching.";
+			final Reader reader = getParent();
+			final ImageMetadata firstImgMeta = reader.getMetadata().get(0);
+			final AxisType[] dimOrder = firstImgMeta.getAxes().stream().map(
+				CalibratedAxis::type).toArray(AxisType[]::new);
+			final long sizeZ = firstImgMeta.getAxisLength(Axes.Z);
+			final long sizeT = firstImgMeta.getAxisLength(Axes.TIME);
+			final long sizeC = firstImgMeta.getAxisLength(Axes.CHANNEL);
+			final boolean certain = firstImgMeta.isOrderCertain();
 
-			// TODO need a new UsedFiles interface..
+			final AxisGuesser ag = new AxisGuesser(fp, dimOrder, sizeZ, sizeT, sizeC,
+				certain);
+			final FileStitcherMetadata meta = (FileStitcherMetadata) getMetadata();
+			final ImageMetadata imgMeta = firstImgMeta.copy();
+
+			final AxisType[] types = ag.getAxisTypes();
+			final int[] count = fp.getCount();
+
+			// overwrite stitched axis lengths
+			for (int i = 0; i < types.length; i++) {
+				imgMeta.setAxisLength(types[i], count[i]);
+			}
+
+			imgMeta.setName(fp.getPattern());
+			meta.setImgMeta(imgMeta);
+			meta.setSourceLocation(fp.getFiles()[0]);
+
+//			getParent().setSource(fp.getFiles()[0], config);
+
 			final int nPixelsFiles = 1;
-//	      getParent().getUsedFiles().length - getParent().getUsedFiles(true).length;
 			if (nPixelsFiles > 1 || fp.getFiles().length == 1) {
 				noStitch = true;
 				return;
+				// FIXME set number of planes correctly!
 			}
 
 			// verify that file pattern is valid and matches existing files
+			final String msg = " Please rename your files or disable file stitching.";
 			if (!fp.isValid()) {
-				throw new FormatException("Invalid " +
-					(patternIds ? "file pattern" : "filename") + " (" + source + "): " +
-					fp.getErrorMessage() + msg);
+				throw new FormatException("Invalid " + (patternIds ? "file pattern"
+					: "filename") + " (" + browsableSource.getName() + "): " + fp
+						.getErrorMessage() + msg);
 			}
-			final String[] files = fp.getFiles();
+			localFiles = fp.getFiles();
 
-			if (files == null) {
-				throw new FormatException("No files matching pattern (" +
-					fp.getPattern() + "). " + msg);
+			if (localFiles == null) {
+				throw new FormatException("No files matching pattern (" + fp
+					.getPattern() + "). " + msg);
 			}
 
-			for (int i = 0; i < files.length; i++) {
-				final String file = files[i];
+			planesPerFile = new long[localFiles.length];
 
-				// TODO remove this when virtual handle is in use
+			for (int i = 0; i < localFiles.length; i++) {
+				final Location file = localFiles[i];
+
 				// HACK: skip file existence check for fake files
-				if (file.toLowerCase().endsWith(".fake")) continue;
+				if (file instanceof DummyLocation || file instanceof TestImgLocation)
+					continue;
 
-				if (!new Location(getContext(), file).exists()) {
+				if (!dataHandleService.exists(file)) {
 					throw new FormatException("File #" + i + " (" + file +
 						") does not exist.");
 				}
-			}
 
-			this.files = files;
+				Reader r = getParent();
+				r.setSource(localFiles[i], config);
+
+				if (r.getImageCount() != 1) {
+					cleanUp();
+					throw new FormatException(
+						"Only one image per source file is supported! \n But " + file
+							.toString() + " contains: " + r.getImageCount());
+				}
+				planesPerFile[i] = r.getPlaneCount(0);
+
+			}
+			totalPlanes = Arrays.stream(planesPerFile).sum();
 			pattern = fp;
 		}
-		catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (final FormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		catch (IOException | FormatException e) {
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -330,18 +356,40 @@ public class FileStitcher extends AbstractReaderFilter {
 	// -- Reader API methods --
 
 	@Override
+	public long getPlaneCount(final int imageIndex) {
+		return totalPlanes;
+	}
+
+	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds,
-		final SCIFIOConfig config) throws FormatException, IOException
+		final Interval bounds, final SCIFIOConfig config) throws FormatException,
+		IOException
+	{
+		final Plane plane = createPlane(getMetadata().get(imageIndex), bounds);
+		return openPlane(imageIndex, planeIndex, plane, bounds, config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final Interval bounds, final SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 		// If no stitching, delegate to parent
 		if (noStitch) return getParent().openPlane(imageIndex, planeIndex, plane,
 			bounds, new SCIFIOConfig().groupableSetGroupFiles(false));
 
+		if (plane == null) {
+			throw new IllegalArgumentException("Provided plane was null!");
+		}
+
+		if (imageIndex != 0) {
+			throw new FormatException("only single image sources are supported!");
+		}
+
 		// Check for plane compatibility
 		Plane bp;
-		if (plane == null || !isCompatible(plane.getClass())) {
-			bp = new ByteArrayPlane(getContext());
+		if (!isCompatible(plane.getClass())) {
+			bp = new ByteArrayPlane();
 			bp.populate(plane);
 			((ByteArrayPlane) bp).setData(new byte[plane.getBytes().length]);
 		}
@@ -349,24 +397,19 @@ public class FileStitcher extends AbstractReaderFilter {
 
 		// If this is a valid image index, get the appropriate reader and
 		// return the corresponding plane
-		final int[] adjustedIndex = computeFileIndex(imageIndex);
-		if (adjustedIndex[0] < readers.length &&
-			adjustedIndex[1] < readers[adjustedIndex[0]].getImageCount())
+		final int[] adjustedIndex = computeFileIndex(planeIndex);
+		if (adjustedIndex[0] < localFiles.length &&
+			adjustedIndex[1] < planesPerFile[imageIndex])
 		{
-			final Reader r = readers[adjustedIndex[0]];
-			return r.openPlane(adjustedIndex[1], planeIndex, bp, bounds,
-				config);
+			final Reader r = getParent();
+			r.setSource(localFiles[adjustedIndex[0]]);
+			return r.openPlane(0, adjustedIndex[1], bp, bounds, config);
 		}
 
 		// return a blank image to cover for the fact that
 		// this file does not contain enough image planes
 		Arrays.fill(bp.getBytes(), (byte) 0);
 		return bp;
-	}
-
-	@Override
-	public Reader[] getUnderlyingReaders() {
-		return readers;
 	}
 
 	// -- Prioritized API --
@@ -380,38 +423,43 @@ public class FileStitcher extends AbstractReaderFilter {
 
 	/**
 	 * Returns an int[] containing: - at index 0, the file index containing the
-	 * desired global image index - at index 0, the corresponding local image
-	 * index
+	 * desired global image index - at index 1, the corresponding local image
+	 * index.
 	 */
-	private int[] computeFileIndex(int imageIndex) {
-		if (noStitch) return new int[] { imageIndex, 0 };
+	private int[] computeFileIndex(final long planeIndex) {
 		int fileIndex = 0;
-		while (imageIndex >= imagesPerFile[fileIndex]) {
-			imageIndex -= imagesPerFile[fileIndex++];
+		long visitedPlanes = 0;
+		long localIndex = planeIndex;
+		final int[] outIndex = new int[2];
+		while (true) {
+			visitedPlanes += planesPerFile[fileIndex];
+			if (visitedPlanes - 1 >= planeIndex) { // account for index starting at 0
+				outIndex[0] = fileIndex;
+				outIndex[1] = (int) localIndex;
+				break;
+			}
+			localIndex -= planesPerFile[fileIndex];
+			fileIndex++;
 		}
+		return outIndex;
+	}
 
-		return new int[] { fileIndex, imageIndex };
+	private BrowsableLocation asBrowsable(final Location loc) {
+		if (loc instanceof BrowsableLocation) {
+			return (BrowsableLocation) loc;
+		}
+		throw new IllegalArgumentException(
+			"The provided location is not browsable!");
 	}
 
 	@Override
 	protected void cleanUp() throws IOException {
 		super.cleanUp();
 		patternIds = false;
-
 		doNotChangePattern = false;
-
-		imagesPerFile = null;
-
-		for (final Reader r : readers) {
-			if (r != null) {
-				r.close();
-			}
-		}
-
-		readers = null;
-		files = null;
+		planesPerFile = null;
 		pattern = null;
-
 		noStitch = false;
 	}
+
 }

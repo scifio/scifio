@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,7 +30,6 @@
 package io.scif.xml;
 
 import io.scif.common.Constants;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -45,7 +44,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -72,6 +71,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -97,36 +98,25 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	private static final String XML_SCHEMA_PATH =
 		"http://www.w3.org/2001/XMLSchema";
 
-	private static final SchemaFactory FACTORY = SchemaFactory
-		.newInstance(XML_SCHEMA_PATH);
+	private static final SchemaFactory FACTORY = SchemaFactory.newInstance(
+		XML_SCHEMA_PATH);
 
 	// -- Fields --
 
 	@Parameter
 	private LogService log;
 
-	private final ThreadLocal<HashMap<URI, Schema>> schemas =
-		new ThreadLocal<HashMap<URI, Schema>>() {
-
-			@Override
-			protected HashMap<URI, Schema> initialValue() {
-				return new HashMap<>();
-			}
-		};
+	private final ThreadLocal<HashMap<URI, Schema>> schemas = ThreadLocal
+		.withInitial(HashMap::new);
 
 	// -- XML to/from DOM --
 
 	@Override
-	public Document parseDOM(final File file)
-		throws ParserConfigurationException, SAXException, IOException
+	public Document parseDOM(final File file) throws ParserConfigurationException,
+		SAXException, IOException
 	{
-		final InputStream is = new FileInputStream(file);
-		try {
-			final Document doc = parseDOM(is);
-			return doc;
-		}
-		finally {
-			is.close();
+		try (InputStream is = new FileInputStream(file)) {
+			return parseDOM(is);
 		}
 	}
 
@@ -135,13 +125,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		throws ParserConfigurationException, SAXException, IOException
 	{
 		final byte[] bytes = xml.getBytes(Constants.ENCODING);
-		final InputStream is = new ByteArrayInputStream(bytes);
-		try {
-			final Document doc = parseDOM(is);
-			return doc;
-		}
-		finally {
-			is.close();
+		try (InputStream is = new ByteArrayInputStream(bytes)) {
+			return parseDOM(is);
 		}
 	}
 
@@ -149,8 +134,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	public Document parseDOM(final InputStream is)
 		throws ParserConfigurationException, SAXException, IOException
 	{
-		final InputStream in =
-			is.markSupported() ? is : new BufferedInputStream(is);
+		final InputStream in = is.markSupported() ? is : //
+			new BufferedInputStream(is);
 		checkUTF8(in);
 
 		// Java XML factories are not declared to be thread safe
@@ -161,9 +146,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	}
 
 	@Override
-	public String getXML(final Document doc)
-		throws TransformerConfigurationException, TransformerException
-	{
+	public String getXML(final Document doc) throws TransformerException {
 		final Source source = new DOMSource(doc);
 		final StringWriter stringWriter = new StringWriter();
 		final Result result = new StreamResult(stringWriter);
@@ -181,8 +164,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	public String sanitizeXML(final String s) {
 		final char[] c = s.toCharArray();
 		for (int i = 0; i < s.length(); i++) {
-			if ((Character.isISOControl(c[i]) && c[i] != '\n') ||
-				!Character.isDefined(c[i]))
+			if ((Character.isISOControl(c[i]) && c[i] != '\n') || !Character
+				.isDefined(c[i]))
 			{
 				c[i] = ' ';
 			}
@@ -301,9 +284,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	// -- Parsing --
 
 	@Override
-	public Hashtable<String, String> parseXML(final String xml)
-		throws IOException
-	{
+	public Map<String, String> parseXML(final String xml) throws IOException {
 		final MetadataHandler handler = new MetadataHandler();
 		parseXML(xml, handler);
 		return handler.getMetadata();
@@ -317,7 +298,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	}
 
 	@Override
-	public void parseXML(final RandomAccessInputStream stream,
+	public void parseXML(final DataHandle<Location> stream,
 		final DefaultHandler handler) throws IOException
 	{
 		parseXML((InputStream) stream, handler);
@@ -375,8 +356,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		try {
 			final StreamSource xsltSource = new StreamSource(xsltStream);
 			// Java XML factories are not declared to be thread safe
-			final TransformerFactory transformerFactory =
-				TransformerFactory.newInstance();
+			final TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
 			transformerFactory.setErrorListener(new XMLListener());
 			return transformerFactory.newTemplates(xsltSource);
 		}
@@ -495,13 +476,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 				new ByteArrayInputStream(xml.getBytes(Constants.ENCODING));
 			saxParser.parse(is, saxHandler);
 		}
-		catch (final ParserConfigurationException exc) {
-			exception = exc;
-		}
-		catch (final SAXException exc) {
-			exception = exc;
-		}
-		catch (final IOException exc) {
+		catch (ParserConfigurationException | SAXException | IOException exc) {
 			exception = exc;
 		}
 		if (exception != null) {
@@ -532,11 +507,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 				schema = FACTORY.newSchema(schemaLocation.toURL());
 				schemas.get().put(schemaLocation, schema);
 			}
-			catch (final MalformedURLException exc) {
-				log.info("Error parsing schema at " + schemaPath, exc);
-				return false;
-			}
-			catch (final SAXException exc) {
+			catch (MalformedURLException | SAXException exc) {
 				log.info("Error parsing schema at " + schemaPath, exc);
 				return false;
 			}
@@ -556,11 +527,8 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		try {
 			validator.validate(source);
 		}
-		catch (final IOException exc) {
-			exception = exc;
-		}
-		catch (final SAXException exc) {
-			exception = exc;
+		catch (IOException | SAXException exc) {
+			log.info("Error validating document " + exc);
 		}
 		final int errors = errorHandler.getErrorCount();
 		if (errors > 0) {

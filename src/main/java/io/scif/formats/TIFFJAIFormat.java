@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,22 +40,20 @@ import io.scif.MissingLibraryException;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
-import io.scif.io.FileHandle;
-import io.scif.io.IRandomAccess;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.services.FormatService;
-import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ReflectException;
@@ -147,18 +145,15 @@ public class TIFFJAIFormat extends AbstractFormat {
 		// -- Constants --
 
 		private static final String NO_JAI_MSG =
-			"Java Advanced Imaging (JAI) is required to read some TIFF files. "
-				+ "Please install JAI from https://jai.dev.java.net/";
+			"Java Advanced Imaging (JAI) is required to read some TIFF files. " +
+				"Please install JAI from https://jai.dev.java.net/";
 
 		// -- Fields --
-
-		@Parameter
-		private LocationService locationService;
 
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -179,30 +174,20 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 			meta.setUniverse(r);
 
-			final String id = stream.getFileName();
-
 			log().info("Reading movie dimensions");
 
 			// map Location to File or RandomAccessFile, if possible
-			final IRandomAccess ira = locationService.getMappedFile(id);
-			if (ira != null) {
-				if (ira instanceof FileHandle) {
-					final FileHandle fh = (FileHandle) ira;
-					r.setVar("file", fh.getRandomAccessFile());
-				}
-				else {
-					throw new FormatException("Unsupported handle type" +
-						ira.getClass().getName());
-				}
+
+			final Location location = stream.get();
+			if (location instanceof FileLocation) {
+				final FileLocation fl = (FileLocation) location;
+				r.setVar("file", new RandomAccessFile(fl.getFile(), "r"));
 			}
 			else {
-				final String mapId = locationService.getMappedId(id);
-				final File file = new File(mapId);
-				if (file.exists()) {
-					r.setVar("file", file);
-				}
-				else throw new FileNotFoundException(id);
+				throw new FormatException("Unsupported Location type" + location
+					.getClass().getName());
 			}
+
 			r.setVar("tiff", "tiff");
 			r.setVar("param", null);
 
@@ -237,14 +222,14 @@ public class TIFFJAIFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final Interval bounds, final SCIFIOConfig config)
-			throws FormatException, IOException
+			final Interval bounds, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
 				-1, bounds);
 			final BufferedImage img = openBufferedImage(getMetadata(), planeIndex);
-			plane.setData(AWTImageTools.getSubimage(img, getMetadata()
-				.get(imageIndex).isLittleEndian(), bounds));
+			plane.setData(AWTImageTools.getSubimage(img, getMetadata().get(imageIndex)
+				.isLittleEndian(), bounds));
 			return plane;
 		}
 	}
@@ -259,9 +244,8 @@ public class TIFFJAIFormat extends AbstractFormat {
 		RenderedImage img;
 		try {
 			meta.universe().exec("img = dec.decodeAsRenderedImage(planeIndex)");
-			img =
-				(RenderedImage) meta.universe().exec(
-					"new NullOpImage(img, null, OpImage.OP_IO_BOUND, null)");
+			img = (RenderedImage) meta.universe().exec(
+				"new NullOpImage(img, null, OpImage.OP_IO_BOUND, null)");
 		}
 		catch (final ReflectException exc) {
 			throw new FormatException(exc);

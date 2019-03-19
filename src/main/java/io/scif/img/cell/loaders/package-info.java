@@ -28,9 +28,11 @@
  */
 
 /**
- * Provides implementations of {@link io.scif.img.cell.loaders.SCIFIOArrayLoader}
- * for each basic {@link net.imglib2.img.basictypeaccess.array.ArrayDataAccess} type.
+ * Provides implementations of
+ * {@link io.scif.img.cell.loaders.SCIFIOArrayLoader} for each basic
+ * {@link net.imglib2.img.basictypeaccess.array.ArrayDataAccess} type.
  * 
  * @author Mark Hiner
  */
+
 package io.scif.img.cell.loaders;

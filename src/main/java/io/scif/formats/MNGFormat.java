@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,7 +39,6 @@ import io.scif.FormatException;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.awt.image.BufferedImage;
@@ -53,6 +52,9 @@ import javax.imageio.ImageIO;
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -112,16 +114,16 @@ public class MNGFormat extends AbstractFormat {
 				get(i).setAxisLength(Axes.X, Integer.parseInt(tokens[0]));
 				get(i).setAxisLength(Axes.Y, Integer.parseInt(tokens[1]));
 				get(i).setAxisLength(Axes.CHANNEL, Integer.parseInt(tokens[2]));
-				get(i).setPlanarAxisCount(
-					get(i).getAxisLength(Axes.CHANNEL) > 1 ? 3 : 2);
+				get(i).setPlanarAxisCount(get(i).getAxisLength(Axes.CHANNEL) > 1 ? 3
+					: 2);
 				get(i).setPixelType(Integer.parseInt(tokens[3]));
 				get(i).setMetadataComplete(true);
 				get(i).setIndexed(false);
 				get(i).setLittleEndian(false);
 				get(i).setFalseColor(false);
 
-				get(i).setAxisLength(Axes.TIME,
-					getDatasetInfo().imageInfo.get(i).offsets.size());
+				get(i).setAxisLength(Axes.TIME, getDatasetInfo().imageInfo.get(
+					i).offsets.size());
 			}
 		}
 
@@ -144,7 +146,7 @@ public class MNGFormat extends AbstractFormat {
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int blockLen = 8;
@@ -158,11 +160,11 @@ public class MNGFormat extends AbstractFormat {
 		// -- AbstractParser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			getSource().order(false);
+			getSource().setOrder(ByteOrder.BIG_ENDIAN);
 
 			log().info("Verifying MNG format");
 
@@ -187,11 +189,11 @@ public class MNGFormat extends AbstractFormat {
 
 			// read sequence of [len, code, value] tags
 
-			while (getSource().getFilePointer() < getSource().length()) {
+			while (getSource().offset() < getSource().length()) {
 				final int len = getSource().readInt();
 				final String code = getSource().readString(4);
 
-				final long fp = getSource().getFilePointer();
+				final long fp = getSource().offset();
 
 				if (code.equals("IHDR")) {
 					datasetInfo.imageInfo.get(0).offsets.add(fp - 8);
@@ -228,10 +230,8 @@ public class MNGFormat extends AbstractFormat {
 
 			// easiest way to get image dimensions is by opening the first plane
 
-			final Hashtable<String, Vector<Long>> imageOffsets =
-				new Hashtable<>();
-			final Hashtable<String, Vector<Long>> imageLengths =
-				new Hashtable<>();
+			final Hashtable<String, Vector<Long>> imageOffsets = new Hashtable<>();
+			final Hashtable<String, Vector<Long>> imageLengths = new Hashtable<>();
 
 			final MNGImageInfo info = datasetInfo.imageInfo.get(0);
 			meta.getTable().put("Number of frames", info.offsets.size());
@@ -241,10 +241,8 @@ public class MNGFormat extends AbstractFormat {
 				final long end = info.lengths.get(i);
 				if (end < offset) continue;
 				final BufferedImage img = readImage(meta, end);
-				final String data =
-					img.getWidth() + "-" + img.getHeight() + "-" +
-						img.getRaster().getNumBands() + "-" +
-						AWTImageTools.getPixelType(img);
+				final String data = img.getWidth() + "-" + img.getHeight() + "-" + img
+					.getRaster().getNumBands() + "-" + AWTImageTools.getPixelType(img);
 				Vector<Long> v = new Vector<>();
 				if (imageOffsets.containsKey(data)) {
 					v = imageOffsets.get(data);
@@ -295,22 +293,21 @@ public class MNGFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final Interval bounds, final SCIFIOConfig config)
-			throws FormatException, IOException
+			final Interval bounds, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
-			final MNGImageInfo info =
-				getMetadata().getDatasetInfo().imageInfo.get(imageIndex);
+			final MNGImageInfo info = getMetadata().getDatasetInfo().imageInfo.get(
+				imageIndex);
 			final long offset = info.offsets.get((int) planeIndex);
-			getStream().seek(offset);
+			getHandle().seek(offset);
 			final long end = info.lengths.get((int) planeIndex);
 			BufferedImage img = readImage(getMetadata(), end);
 
 			// reconstruct the image to use an appropriate raster
 			// ImageIO often returns images that cannot be scaled because a
 			// BytePackedRaster is used
-			img =
-				AWTImageTools.getSubimage(img, getMetadata().get(imageIndex)
-					.isLittleEndian(), bounds);
+			img = AWTImageTools.getSubimage(img, getMetadata().get(imageIndex)
+				.isLittleEndian(), bounds);
 
 			plane.setData(img);
 			return plane;
@@ -323,8 +320,8 @@ public class MNGFormat extends AbstractFormat {
 		throws IOException
 	{
 		final int headerSize = meta.isJNG() ? 0 : 8;
-		final byte[] b =
-			new byte[(int) (end - meta.getSource().getFilePointer() + headerSize)];
+		final byte[] b = new byte[(int) (end - meta.getSource().offset() +
+			headerSize)];
 		meta.getSource().read(b, headerSize, b.length - headerSize);
 		if (!meta.isJNG()) {
 			b[0] = (byte) 0x89;

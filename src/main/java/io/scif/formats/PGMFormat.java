@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,9 +39,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.ByteArrayHandle;
-import io.scif.io.RandomAccessInputStream;
-import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -50,6 +47,12 @@ import java.util.StringTokenizer;
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -133,13 +136,13 @@ public class PGMFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int blockLen = 2;
 			if (!FormatTools.validStream(stream, blockLen, false)) return false;
-			return stream.read() == PGM_MAGIC_CHAR &&
-				Character.isDigit((char) stream.read());
+			return stream.read() == PGM_MAGIC_CHAR && Character.isDigit((char) stream
+				.read());
 		}
 
 	}
@@ -149,7 +152,7 @@ public class PGMFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -197,17 +200,12 @@ public class PGMFormat extends AbstractFormat {
 			}
 
 			// Validate the metadata we found
-			if (magic == null || height == -1 || width == -1 ||
-				(!isBlackAndWhite && max == -1))
+			if (magic == null || height == -1 || width == -1 || (!isBlackAndWhite &&
+				max == -1))
 			{
 				throw new FormatException(
 					"Incomplete PGM metadata found. Read the following metadata: magic = " +
-						magic +
-						"; height = " +
-						height +
-						"; width = " +
-						width +
-						"; max = " +
+						magic + "; height = " + height + "; width = " + width + "; max = " +
 						max);
 			}
 
@@ -218,24 +216,27 @@ public class PGMFormat extends AbstractFormat {
 			iMeta.setAxisLength(Axes.X, width);
 			iMeta.setAxisLength(Axes.Y, height);
 
-			meta.setRawBits(magic.equals("P4") || magic.equals("P5") ||
-				magic.equals("P6"));
+			meta.setRawBits(magic.equals("P4") || magic.equals("P5") || magic.equals(
+				"P6"));
 
-			iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic
-				.equals("P6")) ? 3 : 1);
+			iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic.equals(
+				"P6")) ? 3 : 1);
 
 			if (!isBlackAndWhite) {
 				if (max > 255) iMeta.setPixelType(FormatTools.UINT16);
 				else iMeta.setPixelType(FormatTools.UINT8);
 			}
 
-			meta.setOffset(stream.getFilePointer());
+			meta.setOffset(stream.offset());
 
 			meta.getTable().put("Black and white", isBlackAndWhite);
 		}
 	}
 
 	public static class Reader extends ByteArrayReader<Metadata> {
+
+		@Parameter
+		private DataHandleService dataHandleService;
 
 		// -- AbstractReader API Methods --
 
@@ -247,46 +248,45 @@ public class PGMFormat extends AbstractFormat {
 		// -- Reader API methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
-			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, bounds);
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
+				bounds);
 
-			getStream().seek(meta.getOffset());
+			getHandle().seek(meta.getOffset());
 			if (meta.isRawBits()) {
-				readPlane(getStream(), imageIndex, bounds, plane);
+				readPlane(getHandle(), imageIndex, bounds, plane);
 			}
 			else {
-				final ByteArrayHandle handle = new ByteArrayHandle();
-				final RandomAccessOutputStream out =
-					new RandomAccessOutputStream(handle);
-				out.order(meta.get(imageIndex).isLittleEndian());
+				try (DataHandle<Location> bytes = dataHandleService.create(
+					new BytesLocation(0))) // NB: a size of 0 means the handle will grow as needed
+				{
 
-				while (getStream().getFilePointer() < getStream().length()) {
-					String line = getStream().readLine().trim();
-					line = line.replaceAll("[^0-9]", " ");
-					final StringTokenizer t = new StringTokenizer(line, " ");
-					while (t.hasMoreTokens()) {
-						final int q = Integer.parseInt(t.nextToken().trim());
-						if (meta.get(imageIndex).getPixelType() == FormatTools.UINT16) {
-							out.writeShort(q);
+					final boolean littleEndian = meta.get(imageIndex).isLittleEndian();
+					bytes.setOrder(littleEndian ? ByteOrder.LITTLE_ENDIAN
+						: ByteOrder.BIG_ENDIAN);
+
+					while (getHandle().offset() < getHandle().length()) {
+						String line = getHandle().readLine().trim();
+						line = line.replaceAll("[^0-9]", " ");
+						final StringTokenizer t = new StringTokenizer(line, " ");
+						while (t.hasMoreTokens()) {
+							final int q = Integer.parseInt(t.nextToken().trim());
+							if (meta.get(imageIndex).getPixelType() == FormatTools.UINT16) {
+								bytes.writeShort(q);
+							}
+							else bytes.writeByte(q);
 						}
-						else out.writeByte(q);
 					}
+
+					bytes.seek(0);
+					readPlane(bytes, imageIndex, bounds, plane);
 				}
-
-				out.close();
-				final RandomAccessInputStream s =
-					new RandomAccessInputStream(getContext(), handle);
-				s.seek(0);
-				readPlane(s, imageIndex, bounds, plane);
-				s.close();
 			}
-
 			return plane;
 		}
 	}

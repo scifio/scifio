@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -60,13 +60,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Fields --
 
 	/** Cached list of planar axes. */
-	private List<CalibratedAxis> planarAxes;
+	private transient List<CalibratedAxis> planarAxes;
 
 	/** Cached list of non-planar axes. */
-	private List<CalibratedAxis> extendedAxes;
+	private transient List<CalibratedAxis> extendedAxes;
 
 	/** Cached list of significant (non-trailing length 1) axes. */
-	private List<CalibratedAxis> effectiveAxes;
+	private transient List<CalibratedAxis> effectiveAxes;
 
 	/** Width (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeX")
@@ -92,7 +92,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	 * array
 	 */
 	@Field(label = "dimTypes")
-	private List<CalibratedAxis> axes;
+	private transient List<CalibratedAxis> axes;
 
 	/** Lengths of each axis. Order is parallel of dimTypes. */
 	@Field(label = "dimLengths")
@@ -264,8 +264,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Override
 	public void setAxisLengths(final long[] axisLengths) {
 		if (axisLengths.length > axes.size()) throw new IllegalArgumentException(
-			"Tried to set " + axisLengths.length + " axis lengths, but " +
-				getAxes().size() + " axes present." + " Call setAxisTypes first.");
+			"Tried to set " + axisLengths.length + " axis lengths, but " + getAxes()
+				.size() + " axes present." + " Call setAxisTypes first.");
 
 		for (int i = 0; i < axisLengths.length; i++) {
 			updateLength(axes.get(i).type(), axisLengths[i]);
@@ -549,8 +549,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Override
 	public int getAxisIndex(final AxisType axisType) {
 		// Use effectiveAxes if possible. If not, default to axes.
-		final List<CalibratedAxis> knownAxes =
-			effectiveAxes == null ? axes : effectiveAxes;
+		final List<CalibratedAxis> knownAxes = effectiveAxes == null ? axes
+			: effectiveAxes;
 
 		return getAxisIndex(axisType, knownAxes);
 	}
@@ -590,10 +590,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void copy(final ImageMetadata toCopy) {
-		populate(toCopy.getName(), toCopy.getAxes(), toCopy.getAxesLengths(),
-			toCopy.getPixelType(), toCopy.isOrderCertain(), toCopy.isLittleEndian(),
-			toCopy.isIndexed(), toCopy.isFalseColor(), toCopy.isMetadataComplete());
-		// FIXME: Use setters, not direct assignment.
+		populate(toCopy.getName(), toCopy.getAxes(), toCopy.getAxesLengths(), toCopy
+			.getPixelType(), toCopy.isOrderCertain(), toCopy.isLittleEndian(), toCopy
+				.isIndexed(), toCopy.isFalseColor(), toCopy.isMetadataComplete());
 		this.table = new DefaultMetaTable(toCopy.getTable());
 		this.thumbnail = toCopy.isThumbnail();
 		this.thumbSizeX = toCopy.getThumbSizeX();
@@ -604,12 +603,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Override
 	public void populate(final String name, final List<CalibratedAxis> axes,
 		final long[] lengths, final int pixelType, final boolean orderCertain,
-		final boolean littleEndian, final boolean indexed,
-		final boolean falseColor, final boolean metadataComplete)
+		final boolean littleEndian, final boolean indexed, final boolean falseColor,
+		final boolean metadataComplete)
 	{
-		populate(name, axes, lengths, pixelType, FormatTools
-			.getBitsPerPixel(pixelType), orderCertain, littleEndian, indexed,
-			falseColor, metadataComplete);
+		populate(name, axes, lengths, pixelType, FormatTools.getBitsPerPixel(
+			pixelType), orderCertain, littleEndian, indexed, falseColor,
+			metadataComplete);
 	}
 
 	@Override
@@ -619,7 +618,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		final boolean indexed, final boolean falseColor,
 		final boolean metadataComplete)
 	{
-		// FIXME: Use setters, not direct assignment.
 		this.name = name;
 		this.axes = new ArrayList<>(axes);
 		setAxisLengths(lengths.clone());

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
 import org.scijava.thread.ThreadService;
 
 /**
@@ -59,7 +60,7 @@ public class FormatServiceTest {
 
 	@Before
 	public void setUp() {
-		final Context context = new Context(FormatService.class);
+		final Context context = new Context();
 		formatService = context.getService(FormatService.class);
 	}
 
@@ -69,25 +70,28 @@ public class FormatServiceTest {
 	}
 
 	/** Tests {@link FormatService#getSuffixes()}. */
-	@Ignore
 	@Test
 	public void testGetSuffixes() {
 		final String[] suffixes = formatService.getSuffixes();
 		final String[] pQCTSuffixes = StratecPQCTFormat.generateSuffixes();
-		final String[] formatSuffixes = { "avi", "bmp", "btf", "csv", "dcm", "dic",
-			"dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids",
-			"ima", "img", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg",
-			"jpf", "jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx",
-			"pgm", "pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt",
-			"xml", "zip" };
+		final String[] formatSuffixes = { "avi", "bmp", "btf", "dcm", "dic",
+			"dicom", "eps", "epsi", "fits", "fts", "gif", "ics", "ids", "ima", "img",
+			"isq", "j2k", "j2ki", "j2kr", "jp2", "jpe", "jpeg", "jpf", "jpg", "mng",
+			"mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm", "pict", "png",
+			"ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml", "scifiotestimg" };
 
-		Set<String> expectedSuffixes = new HashSet<>();
+		final Set<String> expectedSuffixes = new HashSet<>();
 		Arrays.stream(formatSuffixes).forEach(expectedSuffixes::add);
 		Arrays.stream(pQCTSuffixes).forEach(expectedSuffixes::add);
 
-		assertTrue("Unexpected suffixes", Arrays.stream(suffixes).allMatch(
-			expectedSuffixes::remove));
-		assertTrue("Suffixes missing", expectedSuffixes.isEmpty());
+		for (final String suffix : suffixes) {
+			assertTrue("Unexpected suffix: " + suffix, expectedSuffixes.contains(
+				suffix));
+			expectedSuffixes.remove(suffix);
+		}
+
+		assertTrue("Suffixes missing: " + expectedSuffixes.toString(),
+			expectedSuffixes.isEmpty());
 	}
 
 	/**
@@ -96,7 +100,8 @@ public class FormatServiceTest {
 	 * NB: not annotated as a unit test due to length of execution.
 	 * </p>
 	 */
-//	@Test
+	@Ignore
+	@Test
 	public void testMultiThreaded() throws InterruptedException {
 		final ThreadService ts = formatService.getContext().service(
 			ThreadService.class);
@@ -112,9 +117,9 @@ public class FormatServiceTest {
 			while (System.currentTimeMillis() - time < 10000) {
 				final String s = new BigInteger(64, random).toString() + ".tif";
 				try {
-					formatService.getFormat(s);
+					formatService.getFormat(new FileLocation(s));
 				}
-				catch (FormatException exc) {
+				catch (final FormatException exc) {
 					return;
 				}
 			}

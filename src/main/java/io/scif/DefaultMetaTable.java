@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -102,10 +102,10 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 
 		key = key.trim();
 
-		final boolean string =
-			value instanceof String || value instanceof Character;
-		final boolean simple =
-			string || value instanceof Number || value instanceof Boolean;
+		final boolean string = value instanceof String ||
+			value instanceof Character;
+		final boolean simple = string || value instanceof Number ||
+			value instanceof Boolean;
 
 		// string value, if passed in value is a string
 		String val = string ? String.valueOf(value) : null;
@@ -127,8 +127,8 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 			if (!key.matches(".*[a-zA-Z].*")) return null;
 
 			// remove &lt;, &gt; and &amp; to prevent XML parsing errors
-			final String[] invalidSequences =
-				new String[] { "&lt;", "&gt;", "&amp;", "<", ">", "&" };
+			final String[] invalidSequences = new String[] { "&lt;", "&gt;", "&amp;",
+				"<", ">", "&" };
 			for (final String invalidSequence : invalidSequences) {
 				key = key.replaceAll(invalidSequence, "");
 				if (string) val = val.replaceAll(invalidSequence, "");

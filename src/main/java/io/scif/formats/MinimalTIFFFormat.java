@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,7 +46,6 @@ import io.scif.formats.tiff.IFDList;
 import io.scif.formats.tiff.PhotoInterp;
 import io.scif.formats.tiff.TiffCompression;
 import io.scif.formats.tiff.TiffParser;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.services.FormatService;
 import io.scif.util.FormatTools;
 
@@ -61,6 +60,9 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -235,8 +237,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				ms0.setPlanarAxisCount(planarAxes);
 				ms0.setPixelType(firstIFD.getPixelType());
 				ms0.setMetadataComplete(true);
-				ms0.setIndexed(photo == PhotoInterp.RGB_PALETTE &&
-					(getColorTable(0, 0) != null));
+				ms0.setIndexed(photo == PhotoInterp.RGB_PALETTE && (getColorTable(0,
+					0) != null));
 
 				if (ms0.isIndexed()) {
 					ms0.setAxisLength(Axes.CHANNEL, 1);
@@ -259,8 +261,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					// }
 
 					if (ifds.size() + 1 < ms0.getAxisLength(Axes.TIME)) {
-						ms0.setAxisLength(Axes.TIME, ms0.getAxisLength(Axes.TIME) -
-							(ifds.size() + 1));
+						ms0.setAxisLength(Axes.TIME, ms0.getAxisLength(Axes.TIME) - (ifds
+							.size() + 1));
 					}
 
 					for (final IFD ifd : ifds) {
@@ -307,8 +309,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- HasColorTable API methods --
 
 		@Override
-		public ColorTable
-			getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable getColorTable(final int imageIndex,
+			final long planeIndex)
 		{
 			if (ifds == null || lastPlane < 0 || lastPlane > ifds.size()) return null;
 			IFD lastIFD = ifds.get((int) lastPlane);
@@ -384,7 +386,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream) {
+		public boolean isFormat(final DataHandle<Location> stream) {
 			return new TiffParser(getContext(), stream).isValidHeader();
 		}
 	}
@@ -397,9 +399,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
-			final M meta, final SCIFIOConfig config) throws IOException,
-			FormatException
+		protected void typedParse(final DataHandle<Location> stream, final M meta,
+			final SCIFIOConfig config) throws IOException, FormatException
 		{
 			final TiffParser tiffParser = new TiffParser(getContext(), stream);
 			tiffParser.setDoCaching(false);
@@ -410,14 +411,15 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			if (littleEndian == null) {
 				throw new FormatException("Invalid TIFF file");
 			}
-			final boolean little = littleEndian.booleanValue();
-			getSource().order(little);
+
+			getSource().setOrder(littleEndian ? ByteOrder.LITTLE_ENDIAN
+				: ByteOrder.BIG_ENDIAN);
 
 			log().debug("Reading IFDs");
 
 			final IFDList allIFDs = tiffParser.getIFDs();
 
-			if (allIFDs == null || allIFDs.size() == 0) {
+			if (allIFDs == null || allIFDs.isEmpty()) {
 				throw new FormatException("No IFDs found");
 			}
 
@@ -443,8 +445,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			tiffParser.setAssumeEqualStrips(meta.isEqualStrips());
 			for (final IFD ifd : ifds) {
 				tiffParser.fillInIFD(ifd);
-				if (ifd.getCompression() == TiffCompression.JPEG_2000 ||
-					ifd.getCompression() == TiffCompression.JPEG_2000_LOSSY)
+				if (ifd.getCompression() == TiffCompression.JPEG_2000 || ifd
+					.getCompression() == TiffCompression.JPEG_2000_LOSSY)
 				{
 					log().debug("Found IFD with JPEG 2000 compression");
 					final long[] stripOffsets = ifd.getStripOffsets();
@@ -453,27 +455,27 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					if (stripOffsets.length > 0) {
 						final long stripOffset = stripOffsets[0];
 						stream.seek(stripOffset);
-						final JPEG2000Format jp2kFormat =
-							formatService.getFormatFromClass(JPEG2000Format.class);
+						final JPEG2000Format jp2kFormat = formatService.getFormatFromClass(
+							JPEG2000Format.class);
 						final JPEG2000Format.Metadata jp2kMeta =
 							(JPEG2000Format.Metadata) jp2kFormat.createMetadata();
 						((JPEG2000Format.Parser) jp2kFormat.createParser()).parse(stream,
 							jp2kMeta, stripOffset + stripByteCounts[0]);
 						meta.setResolutionLevels(jp2kMeta.getResolutionLevels());
-						if (meta.getResolutionLevels() != null &&
-							!meta.isNoSubresolutions())
+						if (meta.getResolutionLevels() != null && !meta
+							.isNoSubresolutions())
 						{
 							if (log().isDebug()) {
-								log().debug(
-									String.format(
-										"Original resolution IFD Levels %d %dx%d Tile %dx%d", meta
-											.getResolutionLevels(), ifd.getImageWidth(), ifd
+								log().debug(String.format(
+									"Original resolution IFD Levels %d %dx%d Tile %dx%d", meta
+										.getResolutionLevels(), ifd.getImageWidth(), ifd
 											.getImageLength(), ifd.getTileWidth(), ifd
-											.getTileLength()));
+												.getTileLength()));
 							}
 							final IFDList theseSubResolutionIFDs = new IFDList();
 							meta.getSubResolutionIFDs().add(theseSubResolutionIFDs);
-							for (int level = 1; level <= meta.getResolutionLevels(); level++)
+							for (int level = 1; level <= meta
+								.getResolutionLevels(); level++)
 							{
 								final IFD newIFD = new IFD(ifd, log());
 								final long imageWidth = ifd.getImageWidth();
@@ -487,35 +489,30 @@ public class MinimalTIFFFormat extends AbstractFormat {
 								newTileLength = newTileLength < 1 ? 1 : newTileLength;
 								final long evenTilesPerRow = imageWidth / tileWidth;
 								final long evenTilesPerColumn = imageLength / tileLength;
-								double remainingWidth =
-									((double) (imageWidth - (evenTilesPerRow * tileWidth))) /
-										factor;
-								remainingWidth =
-									remainingWidth < 1 ? Math.ceil(remainingWidth) : Math
-										.round(remainingWidth);
-								double remainingLength =
-									((double) (imageLength - (evenTilesPerColumn * tileLength))) /
-										factor;
-								remainingLength =
-									remainingLength < 1 ? Math.ceil(remainingLength) : Math
-										.round(remainingLength);
-								final long newImageWidth =
-									(long) ((evenTilesPerRow * newTileWidth) + remainingWidth);
-								final long newImageLength =
-									(long) ((evenTilesPerColumn * newTileLength) + remainingLength);
+								double remainingWidth = ((double) (imageWidth -
+									(evenTilesPerRow * tileWidth))) / factor;
+								remainingWidth = remainingWidth < 1 ? Math.ceil(remainingWidth)
+									: Math.round(remainingWidth);
+								double remainingLength = ((double) (imageLength -
+									(evenTilesPerColumn * tileLength))) / factor;
+								remainingLength = remainingLength < 1 ? Math.ceil(
+									remainingLength) : Math.round(remainingLength);
+								final long newImageWidth = (long) ((evenTilesPerRow *
+									newTileWidth) + remainingWidth);
+								final long newImageLength = (long) ((evenTilesPerColumn *
+									newTileLength) + remainingLength);
 
-								final int resolutionLevel =
-									Math.abs(level - meta.getResolutionLevels());
+								final int resolutionLevel = Math.abs(level - meta
+									.getResolutionLevels());
 								newIFD.put(IFD.IMAGE_WIDTH, newImageWidth);
 								newIFD.put(IFD.IMAGE_LENGTH, newImageLength);
 								newIFD.put(IFD.TILE_WIDTH, newTileWidth);
 								newIFD.put(IFD.TILE_LENGTH, newTileLength);
 								if (log().isDebug()) {
-									log().debug(
-										String.format(
-											"Added JPEG 2000 sub-resolution IFD Level %d %dx%d "
-												+ "Tile %dx%d", resolutionLevel, newImageWidth,
-											newImageLength, newTileWidth, newTileLength));
+									log().debug(String.format(
+										"Added JPEG 2000 sub-resolution IFD Level %d %dx%d " +
+											"Tile %dx%d", resolutionLevel, newImageWidth,
+										newImageLength, newTileWidth, newTileLength));
 								}
 								theseSubResolutionIFDs.add(newIFD);
 							}
@@ -542,8 +539,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
@@ -551,19 +548,21 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 			final IFDList ifds = meta.getIfds();
 			final TiffParser tiffParser = meta.getTiffParser();
-			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
-			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
-			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, bounds);
+			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
+			final int x = (int) bounds.min(xIndex);
+			final int y = (int) bounds.min(yIndex);
+			final int w = (int) bounds.dimension(xIndex);
+			final int h = (int) bounds.dimension(yIndex);
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
+				bounds);
 
 			final IFD firstIFD = ifds.get(0);
 			meta.setLastPlane(planeIndex);
 			final IFD ifd = ifds.get((int) planeIndex);
 			if ((firstIFD.getCompression() == TiffCompression.JPEG_2000 || firstIFD
-				.getCompression() == TiffCompression.JPEG_2000_LOSSY) &&
-				meta.getResolutionLevels() != null)
+				.getCompression() == TiffCompression.JPEG_2000_LOSSY) && meta
+					.getResolutionLevels() != null)
 			{
 				// FIXME: resolution levels
 //        if (getCoreIndex() > 0) {
@@ -574,16 +573,16 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 			tiffParser.getSamples(ifd, buf, x, y, w, h);
 
-			final boolean float16 =
-				meta.get(imageIndex).getPixelType() == FormatTools.FLOAT &&
-					firstIFD.getBitsPerSample()[0] == 16;
-			final boolean float24 =
-				meta.get(imageIndex).getPixelType() == FormatTools.FLOAT &&
-					firstIFD.getBitsPerSample()[0] == 24;
+			final boolean float16 = meta.get(imageIndex)
+				.getPixelType() == FormatTools.FLOAT && firstIFD
+					.getBitsPerSample()[0] == 16;
+			final boolean float24 = meta.get(imageIndex)
+				.getPixelType() == FormatTools.FLOAT && firstIFD
+					.getBitsPerSample()[0] == 24;
 
 			if (float16 || float24) {
-				final int nPixels =
-					w * h * (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
+				final int nPixels = w * h * (int) meta.get(imageIndex).getAxisLength(
+					Axes.CHANNEL);
 				final int nBytes = float16 ? 2 : 3;
 				final int mantissaBits = float16 ? 10 : 16;
 				final int exponentBits = float16 ? 5 : 7;
@@ -592,12 +591,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 				final byte[] newBuf = new byte[buf.length];
 				for (int i = 0; i < nPixels; i++) {
-					final int v =
-						Bytes.toInt(buf, i * nBytes, nBytes, meta.get(imageIndex)
-							.isLittleEndian());
+					final int v = Bytes.toInt(buf, i * nBytes, nBytes, meta.get(
+						imageIndex).isLittleEndian());
 					final int sign = v >> bits;
-					int exponent =
-						(v >> mantissaBits) & (int) (Math.pow(2, exponentBits) - 1);
+					int exponent = (v >> mantissaBits) & (int) (Math.pow(2,
+						exponentBits) - 1);
 					int mantissa = v & (int) (Math.pow(2, mantissaBits) - 1);
 
 					if (exponent == 0) {
@@ -632,7 +630,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		@Override
 		public long getOptimalTileWidth(final int imageIndex) {
-			FormatTools.assertId(getStream().getFileName(), true, 1);
+			FormatTools.assertId(getHandle().get().getName(), true, 1);
 			try {
 				return getMetadata().getIfds().get(0).getTileWidth();
 			}
@@ -644,7 +642,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		@Override
 		public long getOptimalTileHeight(final int imageIndex) {
-			FormatTools.assertId(getStream().getFileName(), true, 1);
+			FormatTools.assertId(getHandle().get().getName(), true, 1);
 			try {
 				return getMetadata().getIfds().get(0).getTileLength();
 			}
@@ -667,8 +665,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			j2kCodecOptions.resolution = 0;
 			// FIXME: resolution levels
 //      j2kCodecOptions.resolution = Math.abs(getCoreIndex() - resolutionLevels);
-			log().debug(
-				"Using JPEG 2000 resolution level " + j2kCodecOptions.resolution);
+			log().debug("Using JPEG 2000 resolution level " +
+				j2kCodecOptions.resolution);
 			meta.getTiffParser().setCodecOptions(j2kCodecOptions);
 		}
 	}

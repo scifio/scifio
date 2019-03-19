@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -240,12 +240,12 @@ public final class ImageTools {
 		else {
 			int next = 0;
 			// TODO may need to do more to sort out the actual axis order
-			for (int i = 0; i < array.length; i +=
-				bytes * ArrayUtils.safeMultiply32(maxLengths))
+			for (int i = 0; i < array.length; i += bytes * ArrayUtils.safeMultiply32(
+				maxLengths))
 			{
 				for (int k = 0; k < bytes; k++) {
-					if (next < rtn.length) rtn[next] =
-						array[(int) (i + index * bytes + k)];
+					if (next < rtn.length) rtn[next] = array[(int) (i + index * bytes +
+						k)];
 					next++;
 				}
 			}
@@ -541,8 +541,8 @@ public final class ImageTools {
 	}
 
 	public static byte[] getSubimage(final byte[] src, final byte[] dest,
-		final int originalWidth, final int originalHeight, final int x,
-		final int y, final int w, final int h, final int bpp, final int channels,
+		final int originalWidth, final int originalHeight, final int x, final int y,
+		final int w, final int h, final int bpp, final int channels,
 		final boolean interleaved)
 	{
 		for (int yy = y; yy < y + h; yy++) {
@@ -550,17 +550,14 @@ public final class ImageTools {
 				for (int cc = 0; cc < channels; cc++) {
 					int oldNdx = -1, newNdx = -1;
 					if (interleaved) {
-						oldNdx =
-							yy * originalWidth * bpp * channels + xx * bpp * channels + cc *
-								bpp;
-						newNdx =
-							(yy - y) * w * bpp * channels + (xx - x) * bpp * channels + cc *
-								bpp;
+						oldNdx = yy * originalWidth * bpp * channels + xx * bpp * channels +
+							cc * bpp;
+						newNdx = (yy - y) * w * bpp * channels + (xx - x) * bpp * channels +
+							cc * bpp;
 					}
 					else {
-						oldNdx =
-							bpp *
-								(cc * originalWidth * originalHeight + yy * originalWidth + xx);
+						oldNdx = bpp * (cc * originalWidth * originalHeight + yy *
+							originalWidth + xx);
 						newNdx = bpp * (cc * w * h + (yy - y) * w + (xx - x));
 					}
 					System.arraycopy(src, oldNdx, dest, newNdx, bpp);
@@ -644,12 +641,11 @@ public final class ImageTools {
 					}
 
 					final short v = (short) (sum / ncomps);
-					Bytes.unpack(v, buf, row * width * 6 + col * 6 + 2, 2,
-						littleEndian);
+					Bytes.unpack(v, buf, row * width * 6 + col * 6 + 2, 2, littleEndian);
 				}
 				else {
-					Bytes.unpack(s[plane + row * width + col], buf, row * width *
-						6 + col * 6 + 2, 2, littleEndian);
+					Bytes.unpack(s[plane + row * width + col], buf, row * width * 6 +
+						col * 6 + 2, 2, littleEndian);
 				}
 
 				if (needRed) {
@@ -678,8 +674,8 @@ public final class ImageTools {
 							}
 						}
 					}
-					else if ((evenCol && bayerPattern[index + 1] == 0) ||
-						(!evenCol && bayerPattern[index - 1] == 0))
+					else if ((evenCol && bayerPattern[index + 1] == 0) || (!evenCol &&
+						bayerPattern[index - 1] == 0))
 					{
 						// horizontal
 						if (col > 0) {
@@ -704,12 +700,11 @@ public final class ImageTools {
 					}
 
 					final short v = (short) (sum / ncomps);
-					Bytes.unpack(v, buf, row * width * 6 + col * 6, 2,
-						littleEndian);
+					Bytes.unpack(v, buf, row * width * 6 + col * 6, 2, littleEndian);
 				}
 				else {
-					Bytes.unpack(s[row * width + col], buf, row * width * 6 +
-						col * 6, 2, littleEndian);
+					Bytes.unpack(s[row * width + col], buf, row * width * 6 + col * 6, 2,
+						littleEndian);
 				}
 
 				if (needBlue) {
@@ -738,8 +733,8 @@ public final class ImageTools {
 							}
 						}
 					}
-					else if ((evenCol && bayerPattern[index + 1] == 2) ||
-						(!evenCol && bayerPattern[index - 1] == 2))
+					else if ((evenCol && bayerPattern[index + 1] == 2) || (!evenCol &&
+						bayerPattern[index - 1] == 2))
 					{
 						// horizontal
 						if (col > 0) {
@@ -764,12 +759,11 @@ public final class ImageTools {
 					}
 
 					final short v = (short) (sum / ncomps);
-					Bytes.unpack(v, buf, row * width * 6 + col * 6 + 4, 2,
-						littleEndian);
+					Bytes.unpack(v, buf, row * width * 6 + col * 6 + 4, 2, littleEndian);
 				}
 				else {
-					Bytes.unpack(s[2 * plane + row * width + col], buf, row *
-						width * 6 + col * 6 + 4, 2, littleEndian);
+					Bytes.unpack(s[2 * plane + row * width + col], buf, row * width * 6 +
+						col * 6 + 4, 2, littleEndian);
 				}
 			}
 		}

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,7 +44,6 @@ import io.scif.MetadataLevel;
 import io.scif.UnsupportedCompressionException;
 import io.scif.codec.BitBuffer;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
 
@@ -55,11 +54,14 @@ import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
- * BMPReader is the file format reader for <a
- * href="https://en.wikipedia.org/wiki/BMP_file_format">Microsoft Bitmap
+ * BMPReader is the file format reader for
+ * <a href="https://en.wikipedia.org/wiki/BMP_file_format">Microsoft Bitmap
  * (BMP)</a> files.
  *
  * @author Mark Hiner
@@ -197,8 +199,8 @@ public class BMPFormat extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable
-			getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable getColorTable(final int imageIndex,
+			final long planeIndex)
 		{
 			return palette;
 		}
@@ -207,7 +209,7 @@ public class BMPFormat extends AbstractFormat {
 	public static class Checker extends AbstractChecker {
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int blockLen = 2;
@@ -219,7 +221,7 @@ public class BMPFormat extends AbstractFormat {
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -228,7 +230,7 @@ public class BMPFormat extends AbstractFormat {
 			final ImageMetadata iMeta = meta.get(0);
 			final MetaTable globalTable = meta.getTable();
 
-			stream.order(true);
+			stream.setOrder(ByteOrder.LITTLE_ENDIAN);
 
 			// read the first header - 14 bytes
 
@@ -337,52 +339,56 @@ public class BMPFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
-			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
-			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
-					w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(yIndex);
+			final ImageMetadata imageMeta = meta.get(imageIndex);
+			final int xIndex = imageMeta.getAxisIndex(Axes.X);
+			final int yIndex = imageMeta.getAxisIndex(Axes.Y);
+			final int x = (int) bounds.min(xIndex);
+			final int y = (int) bounds.min(yIndex);
+			final int w = (int) bounds.dimension(xIndex);
+			final int h = (int) bounds.dimension(yIndex);
 
 			final byte[] buf = plane.getData();
 			final int compression = meta.getCompression();
-			final int bpp = meta.get(imageIndex).getBitsPerPixel();
-			final int sizeX = (int) meta.get(imageIndex).getAxisLength(Axes.X);
-			final int sizeY = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
-			final int sizeC = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
+			final int bpp = imageMeta.getBitsPerPixel();
+			final int sizeX = (int) imageMeta.getAxisLength(Axes.X);
+			final int sizeY = (int) imageMeta.getAxisLength(Axes.Y);
+			final int sizeC = (int) imageMeta.getAxisLength(Axes.CHANNEL);
 
-			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, bounds);
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
+				bounds);
 
-			if (compression != RAW &&
-				getStream().length() < FormatTools.getPlaneSize(this, imageIndex))
+			if (compression != RAW && getHandle().length() < FormatTools.getPlaneSize(
+				this, imageIndex))
 			{
 				throw new UnsupportedCompressionException(compression +
 					" not supported");
 			}
 
 			final int rowsToSkip = meta.isInvertY() ? y : sizeY - (h + y);
-			final int rowLength =
-				sizeX * (meta.get(imageIndex).isIndexed() ? 1 : sizeC);
-			getStream().seek(meta.getGlobal() + rowsToSkip * rowLength);
+			final int rowLength = sizeX * (imageMeta.isIndexed() ? 1 : sizeC);
+			getHandle().seek(meta.getGlobal() + rowsToSkip * rowLength);
 
 			int pad = ((rowLength * bpp) / 8) % 2;
-			if (pad == 0) pad = ((rowLength * bpp) / 8) % 4;
-			else pad *= sizeC;
+			if (pad == 0) {
+				pad = ((rowLength * bpp) / 8) % 4;
+			}
+			else {
+				pad *= sizeC;
+			}
 			int planeSize = sizeX * sizeC * h;
 			if (bpp >= 8) planeSize *= (bpp / 8);
 			else planeSize /= (8 / bpp);
 			planeSize += pad * h;
-			if (planeSize + getStream().getFilePointer() > getStream().length()) {
+			if (planeSize + getHandle().offset() > getHandle().length()) {
 				planeSize -= (pad * h);
 
 				// sometimes we have RGB images with a single padding byte
-				if (planeSize + sizeY + getStream().getFilePointer() <= getStream()
-					.length())
-				{
+				if (planeSize + sizeY + getHandle().offset() <= getHandle().length()) {
 					pad = 1;
 					planeSize += h;
 				}
@@ -391,30 +397,30 @@ public class BMPFormat extends AbstractFormat {
 				}
 			}
 
-			getStream().skipBytes(rowsToSkip * pad);
+			getHandle().skipBytes(rowsToSkip * pad);
 
 			final byte[] rawPlane = new byte[planeSize];
-			getStream().read(rawPlane);
+			getHandle().read(rawPlane);
 
 			final BitBuffer bb = new BitBuffer(rawPlane);
 
 			final ColorTable palette = meta.getColorTable(0, 0);
 			plane.setColorTable(palette);
 
-			final int effectiveC =
-				palette != null && palette.getLength() > 0 ? 1 : sizeC;
+			final int effectiveC = palette != null && palette.getLength() > 0 ? 1
+				: sizeC;
 			for (int row = h - 1; row >= 0; row--) {
 				final int rowIndex = meta.isInvertY() ? h - 1 - row : row;
 				bb.skipBits(x * bpp * effectiveC);
 				for (int i = 0; i < w * effectiveC; i++) {
 					if (bpp <= 8) {
-						buf[rowIndex * w * effectiveC + i] =
-							(byte) (bb.getBits(bpp) & 0xff);
+						buf[rowIndex * w * effectiveC + i] = (byte) (bb.getBits(bpp) &
+							0xff);
 					}
 					else {
 						for (int b = 0; b < bpp / 8; b++) {
-							buf[(bpp / 8) * (rowIndex * w * effectiveC + i) + b] =
-								(byte) (bb.getBits(8) & 0xff);
+							buf[(bpp / 8) * (rowIndex * w * effectiveC + i) + b] = (byte) (bb
+								.getBits(8) & 0xff);
 						}
 					}
 				}
@@ -423,10 +429,9 @@ public class BMPFormat extends AbstractFormat {
 				}
 			}
 
-			if (meta.get(imageIndex).getAxisLength(Axes.CHANNEL) > 1) {
-				ImageTools.bgrToRgb(buf,
-					meta.get(imageIndex).getInterleavedAxisCount() > 0, 1, (int) meta
-						.get(imageIndex).getAxisLength(Axes.CHANNEL));
+			if (imageMeta.getAxisLength(Axes.CHANNEL) > 1) {
+				ImageTools.bgrToRgb(buf, imageMeta.getInterleavedAxisCount() > 0, 1,
+					(int) imageMeta.getAxisLength(Axes.CHANNEL));
 			}
 			return plane;
 		}

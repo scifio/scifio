@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,14 +46,14 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Saves the current {@link Dataset} to disk.
- * 
+ *
  * @author Barry DeZonia
  * @author Mark Hiner
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Save", weight = 20, mnemonic = 's', accelerator = "^S") }, attrs = { @Attr(name = "no-legacy") })
+@Plugin(type = Command.class, menu = { @Menu(label = MenuConstants.FILE_LABEL,
+	weight = MenuConstants.FILE_WEIGHT, mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Save", weight = 20, mnemonic = 's', accelerator = "^S") },
+	attrs = { @Attr(name = "no-legacy") })
 public class SaveImage extends ContextCommand {
 
 	@Parameter
@@ -64,7 +64,7 @@ public class SaveImage extends ContextCommand {
 
 	@Override
 	public void run() {
-		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		final HashMap<String, Object> inputMap = new HashMap<>();
 		inputMap.put("dataset", dataset);
 
 		final ImgPlus<?> img = dataset.getImgPlus();
@@ -77,11 +77,11 @@ public class SaveImage extends ContextCommand {
 		}
 		commandService.run(SaveAsImage.class, true, inputMap);
 	}
-	
-	public void setDataset(Dataset d) {
+
+	public void setDataset(final Dataset d) {
 		dataset = d;
 	}
-	
+
 	public Dataset getDataset() {
 		return dataset;
 	}

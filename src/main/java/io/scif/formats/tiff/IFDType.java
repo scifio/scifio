@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,11 +41,11 @@ import java.util.Map;
  */
 public enum IFDType implements CodedEnum {
 
-	// IFD types
+		// IFD types
 		BYTE(1, 1), ASCII(2, 1), SHORT(3, 2), LONG(4, 4), RATIONAL(5, 8), SBYTE(6,
 			1), UNDEFINED(7, 1), SSHORT(8, 2), SLONG(9, 4), SRATIONAL(10, 8), FLOAT(
-			11, 4), DOUBLE(12, 8), IFD(13, 4), LONG8(16, 8), SLONG8(17, 8), IFD8(18,
-			8);
+				11, 4), DOUBLE(12, 8), IFD(13, 4), LONG8(16, 8), SLONG8(17, 8), IFD8(18,
+					8);
 
 	/** Code for the IFD type in the actual TIFF file. */
 	private int code;
@@ -53,8 +53,7 @@ public enum IFDType implements CodedEnum {
 	/** Number of bytes per element of this type. */
 	private int bytesPerElement;
 
-	private static final Map<Integer, IFDType> lookup =
-		new HashMap<>();
+	private static final Map<Integer, IFDType> lookup = new HashMap<>();
 
 	/** Reverse lookup of code to IFD type enumerate value. */
 	static {
@@ -67,8 +66,8 @@ public enum IFDType implements CodedEnum {
 	 * Retrieves a IFD type by reverse lookup of its "code".
 	 *
 	 * @param code The code to look up.
-	 * @return The {@code IFDType} instance for the {@code code} or
-	 *         {@code null} if it does not exist.
+	 * @return The {@code IFDType} instance for the {@code code} or {@code null}
+	 *         if it does not exist.
 	 */
 	public static IFDType get(final int code) {
 		final IFDType toReturn = lookup.get(code);

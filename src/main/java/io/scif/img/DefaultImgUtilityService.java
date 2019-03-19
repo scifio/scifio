@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,15 +36,7 @@ import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import net.imagej.ImgPlus;
 import net.imagej.axis.CalibratedAxis;
@@ -70,6 +62,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
@@ -89,8 +82,6 @@ public class DefaultImgUtilityService extends AbstractService implements
 
 	// -- Fields --
 
-	private final int BUFFER_SIZE = 256 * 1024; // 256K
-
 	private SCIFIO scifio = null;
 
 	// -- ImgUtilityService methods --
@@ -108,8 +99,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 		for (int i = 0; i < dimLengths.length; i++) {
 
 			if (region != null && i < region.size()) {
-				final Range range =
-					region.getRange(m.get(imageIndex).getAxis(i).type());
+				final Range range = region.getRange(m.get(imageIndex).getAxis(i)
+					.type());
 				if (range != null) {
 					dimLengths[i] = range.size();
 				}
@@ -142,90 +133,21 @@ public class DefaultImgUtilityService extends AbstractService implements
 	 * @return The number of images in the specified dataset.
 	 */
 	@Override
-	public int getImageCount(final String source) throws ImgIOException {
+	public int getImageCount(final Location source) throws ImgIOException {
 		try {
 			final Format format = scifio().format().getFormat(source);
 			return format.createParser().parse(source).getImageCount();
 		}
-		catch (final FormatException e) {
+		catch (FormatException | IOException e) {
 			throw new ImgIOException(e);
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-	}
-
-	/**
-	 * Downloads the given URL and caches it to a temporary file, which is deleted
-	 * upon JVM shutdown. This is useful in conjuction with {@link ImgOpener} to
-	 * open a URL as an {@link Img}.
-	 * <p>
-	 * Data compressed with zip or gzip is supported. In the case of zip, the
-	 * first file in the archive is cached.
-	 * </p>
-	 */
-	@Override
-	public String cacheId(final String urlPath) throws ImgIOException {
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			final URL url = new URL(urlPath);
-			final String path = url.getPath();
-			final boolean zip = path.endsWith(".zip");
-			final boolean gz = path.endsWith(".gz");
-			String filename = path.substring(path.lastIndexOf("/") + 1);
-
-			// save URL to temporary file
-			ZipInputStream inZip = null;
-			in = url.openStream();
-			if (zip) {
-				in = inZip = new ZipInputStream(in);
-				final ZipEntry zipEntry = inZip.getNextEntry();
-				filename = zipEntry.getName(); // use filename in the zip
-				// archive
-			}
-			if (gz) {
-				in = new GZIPInputStream(in);
-				filename = filename.substring(0, filename.length() - 3); // strip
-				// .gz
-			}
-			final int dot = filename.lastIndexOf(".");
-			final String prefix = dot < 0 ? filename : filename.substring(0, dot);
-			final String suffix = dot < 0 ? "" : "." + filename.substring(dot + 1);
-			final File tmpFile = File.createTempFile(prefix + "-", suffix);
-			tmpFile.deleteOnExit();
-			out = new FileOutputStream(tmpFile);
-			final byte[] buf = new byte[BUFFER_SIZE];
-			while (true) {
-				final int r = in.read(buf);
-				if (r < 0) break; // eof
-				out.write(buf, 0, r);
-			}
-			return tmpFile.getAbsolutePath();
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-		finally {
-			try {
-				if (in != null) in.close();
-			}
-			catch (final IOException e) {
-				throw new ImgIOException(e);
-			}
-			try {
-				if (out != null) out.close();
-			}
-			catch (final IOException e) {
-				throw new ImgIOException(e);
-			}
 		}
 	}
 
 	/** Obtains planar access instance backing the given img, if any. */
 	@Override
 	@SuppressWarnings("unchecked")
-	public PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(final ImgPlus<?> img)
+	public PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(
+		final ImgPlus<?> img)
 	{
 		if (img.getImg() instanceof PlanarAccess) {
 			return (PlanarAccess<ArrayDataAccess<?>>) img.getImg();
@@ -308,8 +230,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 			pixelType = FormatTools.DOUBLE;
 		}
 		else {
-			throw new ImgIOException("Pixel type not supported. "
-				+ "Please convert your image to a supported type.");
+			throw new ImgIOException("Pixel type not supported. " +
+				"Please convert your image to a supported type.");
 		}
 
 		return pixelType;

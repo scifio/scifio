@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,15 +50,17 @@ import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.dicom.DICOMDictionary;
-import io.scif.io.Location;
-import io.scif.io.RandomAccessInputStream;
+import io.scif.services.FilePatternService;
 import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
@@ -66,6 +68,11 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -104,8 +111,8 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		byte[][] lut = null;
-		short[][] shortLut = null;
+		transient byte[][] lut = null;
+		transient short[][] shortLut = null;
 		private ColorTable8 lut8;
 		private ColorTable16 lut16;
 		private long[] offsets = null;
@@ -116,8 +123,9 @@ public class DICOMFormat extends AbstractFormat {
 		private boolean oddLocations = false;
 		private int maxPixelValue;
 		private int imagesPerFile = 0;
-		private double rescaleSlope = 1.0, rescaleIntercept = 0.0;
-		private Hashtable<Integer, Vector<String>> fileList;
+		private double rescaleSlope = 1.0;
+		private double rescaleIntercept = 0.0;
+		private transient Map<Integer, List<BrowsableLocation>> fileList;
 		private boolean inverted = false;
 
 		private String pixelSizeX, pixelSizeY;
@@ -127,7 +135,7 @@ public class DICOMFormat extends AbstractFormat {
 		private String originalDate, originalTime, originalInstance;
 		private int originalSeries;
 
-		private Vector<String> companionFiles = new Vector<>();
+		private transient List<BrowsableLocation> companionFiles = new ArrayList<>();
 
 		// Getters and Setters
 
@@ -243,11 +251,13 @@ public class DICOMFormat extends AbstractFormat {
 			this.imagesPerFile = imagesPerFile;
 		}
 
-		public Hashtable<Integer, Vector<String>> getFileList() {
+		public Map<Integer, List<BrowsableLocation>> getFileList() {
 			return fileList;
 		}
 
-		public void setFileList(final Hashtable<Integer, Vector<String>> fileList) {
+		public void setFileList(
+			final Map<Integer, List<BrowsableLocation>> fileList)
+		{
 			this.fileList = fileList;
 		}
 
@@ -307,11 +317,13 @@ public class DICOMFormat extends AbstractFormat {
 			this.originalSeries = originalSeries;
 		}
 
-		public Vector<String> getCompanionFiles() {
+		public List<BrowsableLocation> getCompanionFiles() {
 			return companionFiles;
 		}
 
-		public void setCompanionFiles(final Vector<String> companionFiles) {
+		public void setCompanionFiles(
+			final List<BrowsableLocation> companionFiles)
+		{
 			this.companionFiles = companionFiles;
 		}
 
@@ -327,13 +339,14 @@ public class DICOMFormat extends AbstractFormat {
 				case FormatTools.INT8:
 				case FormatTools.UINT8:
 					if (lut8 == null) {
-						// Need to create  the lut8
+						// Need to create the lut8
 						if (isInverted()) {
 							// If inverted then lut shall be inverted
 							if (lut == null) {
 								// If lut does not exists create an inverted one
 								lut = createInvertedLut8();
-							} else {
+							}
+							else {
 								// If lut does exists inverted it
 								invertLut8(lut);
 							}
@@ -346,13 +359,14 @@ public class DICOMFormat extends AbstractFormat {
 				case FormatTools.INT16:
 				case FormatTools.UINT16:
 					if (lut16 == null) {
-						// Need to create  the lut16
+						// Need to create the lut16
 						if (isInverted()) {
 							// If inverted then lut shall be inverted
 							if (shortLut == null) {
 								// If lut does not exists create an inverted one
 								shortLut = createInvertedLut16();
-							} else {
+							}
+							else {
 								// If lut does exists inverted it
 								invertLut16(shortLut);
 							}
@@ -366,20 +380,18 @@ public class DICOMFormat extends AbstractFormat {
 
 			return null;
 		}
-		
-		private static byte[][] createInvertedLut8() 
-		{
-			byte[][] lut = new byte[3][256];
+
+		private static byte[][] createInvertedLut8() {
+			final byte[][] lut = new byte[3][256];
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
-					lut[i][lut[i].length - 1 - j] = (byte)(j & 0xff);
+					lut[i][lut[i].length - 1 - j] = (byte) (j & 0xff);
 				}
 			}
 			return lut;
 		}
 
-		private static void invertLut8(byte[][] lut) 
-		{
+		private static void invertLut8(final byte[][] lut) {
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
 					final byte v0 = lut[i][j];
@@ -390,19 +402,17 @@ public class DICOMFormat extends AbstractFormat {
 			}
 		}
 
-		private static short[][] createInvertedLut16() 
-		{
-			short[][] lut = new short[3][65536];
+		private static short[][] createInvertedLut16() {
+			final short[][] lut = new short[3][65536];
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
-					lut[i][lut[i].length - 1 - j] = (short)(j & 0xffff);
+					lut[i][lut[i].length - 1 - j] = (short) (j & 0xffff);
 				}
 			}
 			return lut;
 		}
 
-		private static void invertLut16(short[][] lut) 
-		{
+		private static void invertLut16(final short[][] lut) {
 			for (int i = 0; i < lut.length; i++) {
 				for (int j = 0; j < lut[i].length; j++) {
 					final short v0 = lut[i][j];
@@ -518,30 +528,39 @@ public class DICOMFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final String name, final SCIFIOConfig config) {
+		public boolean isFormat(final Location location,
+			final SCIFIOConfig config)
+		{
+			// NB: we need to be able look at the companion files.
+			if (!(location instanceof BrowsableLocation)) return false;
+
 			// extension is sufficient as long as it is DIC, DCM, DICOM, J2KI, or J2KR
-			if (FormatTools.checkSuffix(name, DICOM_SUFFIXES)) return true;
-			return super.isFormat(name, config);
+			if (FormatTools.checkSuffix(location.getName(), DICOM_SUFFIXES))
+				return true;
+			return super.isFormat(location, config);
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> handle)
 			throws IOException
 		{
-			final int blockLen = 2048;
-			if (!FormatTools.validStream(stream, blockLen, true)) return false;
+			// NB: we need to be able look at the companion files.
+			if (!(handle.get() instanceof BrowsableLocation)) return false;
 
-			stream.seek(128);
-			if (stream.readString(4).equals(DICOM_MAGIC_STRING)) return true;
-			stream.seek(0);
+			final int blockLen = 2048;
+			if (!FormatTools.validStream(handle, blockLen, true)) return false;
+
+			handle.seek(128);
+			if (handle.readString(4).equals(DICOM_MAGIC_STRING)) return true;
+			handle.seek(0);
 
 			try {
-				final int tag = DICOMUtils.getNextTag(stream).get();
+				final int tag = DICOMUtils.getNextTag(handle).get();
 				return TYPES.has(tag);
 			}
-			catch (final NullPointerException e) {}
-			catch (final FormatException e) {}
-			return false;
+			catch (NullPointerException | FormatException e) {
+				return false;
+			}
 		}
 	}
 
@@ -574,28 +593,39 @@ public class DICOMFormat extends AbstractFormat {
 		@Parameter
 		private CodecService codecService;
 
+		@Parameter
+		private DataHandleService dataHandleService;
+
+		@Parameter
+		private FilePatternService filePatternService;
+
 		// -- Parser API Methods --
 
 		@Override
-		public int fileGroupOption(final String id) throws FormatException,
+		public int fileGroupOption(final Location id) throws FormatException,
 			IOException
 		{
 			return FormatTools.CAN_GROUP;
 		}
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
-				FormatException
+			FormatException
 		{
 			meta.createImageMetadata(1);
 
-			stream.order(true);
+			stream.setLittleEndian(true);
 
 			final ImageMetadata iMeta = meta.get(0);
 
 			// look for companion files
-			final Vector<String> companionFiles = new Vector<>();
+
+			if (!(stream.get() instanceof BrowsableLocation)) {
+				throw new FormatException("DICOM Format requires a BrowsableLocation");
+			}
+
+			final List<BrowsableLocation> companionFiles = new ArrayList<>();
 			attachCompanionFiles(companionFiles);
 			meta.setCompanionFiles(companionFiles);
 
@@ -615,13 +645,14 @@ public class DICOMFormat extends AbstractFormat {
 			int bitsPerPixel = 0;
 			boolean interleaved;
 
-			// some DICOM files have a 128 byte header followed by a 4 byte identifier
+			// some DICOM files have a 128 byte header followed by a 4 byte
+			// identifier
 
 			log().info("Verifying DICOM format");
 			final MetadataLevel level = config.parserGetLevel();
 
 			getSource().seek(128);
-			if (getSource().readString(4).equals("DICM")) {
+			if ("DICM".equals(getSource().readString(4))) {
 				if (level != MetadataLevel.MINIMUM) {
 					// header exists, so we'll read it
 					getSource().seek(0);
@@ -641,10 +672,10 @@ public class DICOMFormat extends AbstractFormat {
 			boolean signed = false;
 
 			while (decodingTags) {
-				if (getSource().getFilePointer() + 4 >= getSource().length()) {
+				if (getSource().offset() + 4 >= getSource().length()) {
 					break;
 				}
-				log().debug("Reading tag from " + getSource().getFilePointer());
+				log().debug("Reading tag from " + getSource().offset());
 				final DICOMTag tag = DICOMUtils.getNextTag(getSource(),
 					bigEndianTransferSyntax, oddLocations);
 				iMeta.setLittleEndian(tag.isLittleEndian());
@@ -654,7 +685,7 @@ public class DICOMFormat extends AbstractFormat {
 				oddLocations = (location & 1) != 0;
 
 				log().debug("  tag=" + tag.get() + " len=" + tag.getElementLength() +
-					" fp=" + getSource().getFilePointer());
+					" fp=" + getSource().offset());
 
 				String s = null;
 				short ss;
@@ -749,7 +780,7 @@ public class DICOMFormat extends AbstractFormat {
 					case ITEM:
 					case 0xffee000:
 						if (tag.getElementLength() != 0) {
-							baseOffset = getSource().getFilePointer();
+							baseOffset = getSource().offset();
 							addInfo(meta, tag, location);
 							decodingTags = false;
 						}
@@ -765,14 +796,14 @@ public class DICOMFormat extends AbstractFormat {
 						getSource().skipBytes(tag.getElementLength());
 						break;
 					case 0:
-						getSource().seek(getSource().getFilePointer() - 4);
+						getSource().seek(getSource().offset() - 4);
 						break;
 					default:
-						final long oldfp = getSource().getFilePointer();
+						final long oldfp = getSource().offset();
 						addInfo(meta, tag, s);
 						getSource().seek(oldfp + tag.getElementLength());
 				}
-				if (getSource().getFilePointer() >= (getSource().length() - 4)) {
+				if (getSource().offset() >= (getSource().length() - 4)) {
 					decodingTags = false;
 				}
 			}
@@ -813,13 +844,11 @@ public class DICOMFormat extends AbstractFormat {
 
 			getSource().seek(baseOffset - 12);
 			final int len = getSource().readInt();
-			if (len >= 0 && len + getSource().getFilePointer() < getSource()
-				.length())
-			{
+			if (len >= 0 && len + getSource().offset() < getSource().length()) {
 				getSource().skipBytes(len);
 				final int check = getSource().readShort() & 0xffff;
 				if (check == 0xfffe) {
-					baseOffset = getSource().getFilePointer() + 2;
+					baseOffset = getSource().offset() + 2;
 				}
 			}
 
@@ -838,12 +867,12 @@ public class DICOMFormat extends AbstractFormat {
 								PackbitsCodec.class);
 							codec.decompress(getSource(), options);
 							while (getSource().read() == 0) { /* Read to non-0 data */}
-							getSource().seek(getSource().getFilePointer() - 1);
+							getSource().seek(getSource().offset() - 1);
 						}
 					}
 					getSource().skipBytes(i == 0 ? 64 : 53);
 					while (getSource().read() == 0) { /* Read to non-0 data */}
-					offsets[i] = getSource().getFilePointer() - 1;
+					offsets[i] = getSource().offset() - 1;
 				}
 				else if (isJPEG || isJP2K) {
 					// scan for next JPEG magic byte sequence
@@ -863,7 +892,7 @@ public class DICOMFormat extends AbstractFormat {
 							{
 								if (isJPEG || (isJP2K && buf[q + 3] == 0x51)) {
 									found = true;
-									offsets[i] = getSource().getFilePointer() + q - n;
+									offsets[i] = getSource().offset() + q - n;
 									break;
 								}
 							}
@@ -883,7 +912,7 @@ public class DICOMFormat extends AbstractFormat {
 		}
 
 		@Override
-		public String[] getImageUsedFiles(final int imageIndex,
+		public Location[] getImageUsedFiles(final int imageIndex,
 			final boolean noPixels)
 		{
 			FormatTools.assertId(getSource(), true, 1);
@@ -891,12 +920,12 @@ public class DICOMFormat extends AbstractFormat {
 			final Integer[] keys = getMetadata().getFileList().keySet().toArray(
 				new Integer[0]);
 			Arrays.sort(keys);
-			final Vector<String> files = getMetadata().getFileList().get(
+			final List<BrowsableLocation> files = getMetadata().getFileList().get(
 				keys[imageIndex]);
-			for (final String f : getMetadata().getCompanionFiles()) {
+			for (final BrowsableLocation f : getMetadata().getCompanionFiles()) {
 				files.add(f);
 			}
-			return files == null ? null : files.toArray(new String[files.size()]);
+			return files == null ? null : files.toArray(new Location[files.size()]);
 		}
 
 		// -- Helper methods --
@@ -911,38 +940,35 @@ public class DICOMFormat extends AbstractFormat {
 					.getOriginalDate() != null && getMetadata()
 						.getOriginalTime() != null && config.groupableIsGroupFiles())
 			{
-				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<>();
-				final Integer s = new Integer(getMetadata().getOriginalSeries());
-				fileList.put(s, new Vector<String>());
+				final Map<Integer, List<BrowsableLocation>> fileList = new HashMap<>();
+				final Integer s = getMetadata().getOriginalSeries();
+				fileList.put(s, new ArrayList<BrowsableLocation>());
 
 				final int instanceNumber = Integer.parseInt(getMetadata()
 					.getOriginalInstance()) - 1;
-				if (instanceNumber == 0) fileList.get(s).add(getSource().getFileName());
+				if (instanceNumber == 0) fileList.get(s).add(asBrowsableLocation(
+					getSource()));
 				else {
 					while (instanceNumber > fileList.get(s).size()) {
 						fileList.get(s).add(null);
 					}
-					fileList.get(s).add(getSource().getFileName());
+					fileList.get(s).add(asBrowsableLocation(getSource()));
 				}
 
 				// look for matching files in the current directory
-				final Location currentFile = new Location(getContext(), getSource()
-					.getFileName()).getAbsoluteFile();
-				Location directory = currentFile.getParentFile();
+				final BrowsableLocation currentFile = asBrowsableLocation(getSource());
+				BrowsableLocation directory = currentFile.parent();
 				scanDirectory(fileList, directory, false);
 
 				// move up a directory and look for other directories that
 				// could contain matching files
 
-				directory = directory.getParentFile();
-				final String[] subdirs = directory.list(true);
+				directory = directory.parent();
+				final Set<BrowsableLocation> subdirs = directory.children();
 				if (subdirs != null) {
-					for (final String subdir : subdirs) {
-						final Location f = new Location(getContext(), directory, subdir)
-							.getAbsoluteFile();
-						if (!f.isDirectory()) continue;
-						scanDirectory(fileList, f, true);
+					for (final BrowsableLocation subdir : subdirs) {
+						if (!subdir.isDirectory()) continue;
+						scanDirectory(fileList, subdir, true);
 					}
 				}
 
@@ -960,10 +986,10 @@ public class DICOMFormat extends AbstractFormat {
 				getMetadata().setFileList(fileList);
 			}
 			else if (getMetadata().getFileList() == null) {
-				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<>();
-				fileList.put(0, new Vector<String>());
-				fileList.get(0).add(getSource().getFileName());
+				final Map<Integer, List<BrowsableLocation>> fileList = new HashMap<>();
+				final List<BrowsableLocation> locationList = new ArrayList<>();
+				locationList.add(asBrowsableLocation(getSource()));
+				fileList.put(0, locationList);
 				getMetadata().setFileList(fileList);
 			}
 		}
@@ -973,20 +999,27 @@ public class DICOMFormat extends AbstractFormat {
 		 * http://www.ct-imaging.de/index.php/en/ct-systeme-e/mikro-ct-e.html
 		 * contain a bunch of extra metadata and log files. We do not parse these
 		 * extra files, but do locate and attach them to the DICOM file(s).
+		 *
+		 * @throws IOException
+		 * @throws FormatException
 		 */
-		private void attachCompanionFiles(final Vector<String> companionFiles) {
-			final Location parent = new Location(getContext(), getSource()
-				.getFileName()).getAbsoluteFile().getParentFile();
-			final Location grandparent = parent.getParentFile();
+		private void attachCompanionFiles(
+			final List<BrowsableLocation> companionFiles) throws IOException,
+			FormatException
+		{
+			// TODO check if valid
+			final BrowsableLocation parent = asBrowsableLocation(getSource())
+				.parent();
+			final BrowsableLocation grandparent = parent.parent();
 
-			if (new Location(getContext(), grandparent, parent.getName() + ".mif")
-				.exists())
-			{
-				final String[] list = grandparent.list(true);
-				for (final String f : list) {
-					final Location file = new Location(getContext(), grandparent, f);
-					if (!file.isDirectory()) {
-						companionFiles.add(file.getAbsolutePath());
+			final BrowsableLocation mifSibling = parent.sibling(parent.getName() +
+				".mif");
+			if (dataHandleService.exists(mifSibling)) {
+
+				final Set<BrowsableLocation> list = grandparent.children();
+				for (final BrowsableLocation f : list) {
+					if (!f.isDirectory()) {
+						companionFiles.add(f);
 					}
 				}
 			}
@@ -996,30 +1029,39 @@ public class DICOMFormat extends AbstractFormat {
 		 * Scan the given directory for files that belong to this dataset.
 		 */
 		private void scanDirectory(
-			final Hashtable<Integer, Vector<String>> fileList, final Location dir,
-			final boolean checkSeries) throws FormatException, IOException
+			final Map<Integer, List<BrowsableLocation>> fileList,
+			final BrowsableLocation dir, final boolean checkSeries)
+			throws FormatException, IOException
 		{
-			final Location currentFile = new Location(getContext(), getSource()
-				.getFileName()).getAbsoluteFile();
-			final FilePattern pattern = new FilePattern(getContext(), currentFile
-				.getName(), dir.getAbsolutePath());
-			String[] patternFiles = pattern.getFiles();
-			if (patternFiles == null) patternFiles = new String[0];
+			// FIXME improve performance on large directories
+			final BrowsableLocation currentFile = asBrowsableLocation(getSource());
+			final FilePattern pattern = new FilePattern(filePatternService,
+				currentFile, dir, dataHandleService);
+			Location[] patternFiles = pattern.getFiles();
+			if (patternFiles == null) patternFiles = new Location[0];
 			Arrays.sort(patternFiles);
-			final String[] files = dir.list(true);
+			final Set<BrowsableLocation> files = dir.children();
 			if (files == null) return;
-			Arrays.sort(files);
-			for (final String f : files) {
-				final String file = new Location(getContext(), dir, f)
-					.getAbsolutePath();
-				log().debug("Checking file " + file);
-				if (!f.equals(getSource().getFileName()) && !file.equals(getSource()
-					.getFileName()) && getFormat().createChecker().isFormat(file) &&
-					Arrays.binarySearch(patternFiles, file.replaceAll("\\\\", "\\\\\\\\")) >= 0)
+			for (final BrowsableLocation f : files) {
+				log().debug("Checking file " + f);
+
+				if (!f.equals(getSourceLocation()) && getFormat().createChecker()
+					.isFormat(f) && arrayContains(f, patternFiles))
 				{
-					addFileToList(fileList, file, checkSeries);
+					addFileToList(fileList, f, checkSeries);
 				}
 			}
+		}
+
+		private boolean arrayContains(BrowsableLocation f,
+			Location[] patternFiles)
+		{
+			for (Location location : patternFiles) {
+				if (location.getURI().equals(f.getURI())) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/**
@@ -1027,90 +1069,89 @@ public class DICOMFormat extends AbstractFormat {
 		 */
 
 		private void addFileToList(
-			final Hashtable<Integer, Vector<String>> fileList, final String file,
-			final boolean checkSeries) throws FormatException, IOException
+			final Map<Integer, List<BrowsableLocation>> fileList,
+			final BrowsableLocation file, final boolean checkSeries)
+			throws FormatException, IOException
 		{
-			final RandomAccessInputStream stream = new RandomAccessInputStream(
-				getContext(), file);
-			if (!getFormat().createChecker().isFormat(stream)) {
-				stream.close();
-				return;
-			}
-			stream.order(true);
-
-			stream.seek(128);
-			if (!stream.readString(4).equals("DICM")) stream.seek(0);
-
-			int fileSeries = -1;
-
-			String date = null, time = null, instance = null;
-			while (date == null || time == null || instance == null || (checkSeries &&
-				fileSeries < 0))
-			{
-				final long fp = stream.getFilePointer();
-				if (fp + 4 >= stream.length() || fp < 0) break;
-				final DICOMTag tag = DICOMUtils.getNextTag(stream);
-				final String key = TYPES.name(tag.get());
-				if ("Instance Number".equals(key)) {
-					instance = stream.readString(tag.getElementLength()).trim();
-					if (instance.length() == 0) instance = null;
+			try (final DataHandle<Location> stream = dataHandleService.create(file)) {
+				if (!getFormat().createChecker().isFormat(stream)) {
+					return;
 				}
-				else if ("Acquisition Time".equals(key)) {
-					time = stream.readString(tag.getElementLength());
-				}
-				else if ("Acquisition Date".equals(key)) {
-					date = stream.readString(tag.getElementLength());
-				}
-				else if ("Series Number".equals(key)) {
-					fileSeries = Integer.parseInt(stream.readString(tag
-						.getElementLength()).trim());
-				}
-				else stream.skipBytes(tag.getElementLength());
-			}
-			stream.close();
+				stream.setOrder(ByteOrder.LITTLE_ENDIAN);
 
-			if (date == null || time == null || instance == null || (checkSeries &&
-				fileSeries == getMetadata().getOriginalSeries()))
-			{
-				return;
-			}
+				stream.seek(128);
+				if (!"DICM".equals(stream.readString(4))) stream.seek(0);
 
-			int stamp = 0;
-			try {
-				stamp = Integer.parseInt(time);
-			}
-			catch (final NumberFormatException e) {}
+				int fileSeries = -1;
 
-			int timestamp = 0;
-			try {
-				timestamp = Integer.parseInt(getMetadata().getOriginalTime());
-			}
-			catch (final NumberFormatException e) {}
-
-			if (date.equals(getMetadata().getOriginalDate()) && (Math.abs(stamp -
-				timestamp) < 150))
-			{
-				int position = Integer.parseInt(instance) - 1;
-				if (position < 0) position = 0;
-				if (fileList.get(fileSeries) == null) {
-					fileList.put(fileSeries, new Vector<String>());
+				String date = null, time = null, instance = null;
+				while (date == null || time == null || instance == null ||
+					(checkSeries && fileSeries < 0))
+				{
+					final long fp = stream.offset();
+					if (fp + 4 >= stream.length() || fp < 0) break;
+					final DICOMTag tag = DICOMUtils.getNextTag(stream);
+					final String key = TYPES.name(tag.get());
+					if ("Instance Number".equals(key)) {
+						instance = stream.readString(tag.getElementLength()).trim();
+						if (instance.length() == 0) instance = null;
+					}
+					else if ("Acquisition Time".equals(key)) {
+						time = stream.readString(tag.getElementLength());
+					}
+					else if ("Acquisition Date".equals(key)) {
+						date = stream.readString(tag.getElementLength());
+					}
+					else if ("Series Number".equals(key)) {
+						fileSeries = Integer.parseInt(stream.readString(tag
+							.getElementLength()).trim());
+					}
+					else stream.skipBytes(tag.getElementLength());
 				}
-				if (position < fileList.get(fileSeries).size()) {
-					while (position < fileList.get(fileSeries).size() && fileList.get(
-						fileSeries).get(position) != null)
-					{
-						position++;
+
+				if (date == null || time == null || instance == null || (checkSeries &&
+					fileSeries == getMetadata().getOriginalSeries()))
+				{
+					return;
+				}
+
+				int stamp = 0;
+				try {
+					stamp = Integer.parseInt(time);
+				}
+				catch (final NumberFormatException e) {}
+
+				int timestamp = 0;
+				try {
+					timestamp = Integer.parseInt(getMetadata().getOriginalTime());
+				}
+				catch (final NumberFormatException e) {}
+
+				if (date.equals(getMetadata().getOriginalDate()) && (Math.abs(stamp -
+					timestamp) < 150))
+				{
+					int position = Integer.parseInt(instance) - 1;
+					if (position < 0) position = 0;
+					if (fileList.get(fileSeries) == null) {
+						fileList.put(fileSeries, new ArrayList<BrowsableLocation>());
 					}
 					if (position < fileList.get(fileSeries).size()) {
-						fileList.get(fileSeries).setElementAt(file, position);
+						while (position < fileList.get(fileSeries).size() && fileList.get(
+							fileSeries).get(position) != null)
+						{
+							position++;
+						}
+						if (position < fileList.get(fileSeries).size()) {
+							fileList.get(fileSeries).set(position, file);
+						}
+						else fileList.get(fileSeries).add(file);
 					}
-					else fileList.get(fileSeries).add(file);
-				}
-				else {
-					while (position > fileList.get(fileSeries).size()) {
-						fileList.get(fileSeries).add(null);
+					else {
+						while (position > fileList.get(fileSeries).size()) {
+							fileList.get(fileSeries).add(null);
+						}
+						fileList.get(fileSeries).add(file);
 					}
-					fileList.get(fileSeries).add(file);
 				}
 			}
 		}
@@ -1165,9 +1206,8 @@ public class DICOMFormat extends AbstractFormat {
 					final String color = key.substring(0, key.indexOf(" ")).trim();
 					final int ndx = color.equals("Red") ? 0 : color.equals("Green") ? 1
 						: 2;
-					final long fp = getSource().getFilePointer();
-					getSource().seek(getSource().getFilePointer() - tag
-						.getElementLength() + 1);
+					final long fp = getSource().offset();
+					getSource().seek(getSource().offset() - tag.getElementLength() + 1);
 					meta.shortLut[ndx] = new short[tag.getElementLength() / 2];
 					meta.lut[ndx] = new byte[tag.getElementLength() / 2];
 					for (int i = 0; i < meta.lut[ndx].length; i++) {
@@ -1240,7 +1280,7 @@ public class DICOMFormat extends AbstractFormat {
 
 			if (id != null) {
 				if (vr == DICOMUtils.IMPLICIT_VR) {
-					String vrName = TYPES.vr(tag.get());
+					final String vrName = TYPES.vr(tag.get());
 					vr = (vrName.charAt(0) << 8) + vrName.charAt(1);
 					tag.setVR(vr);
 				}
@@ -1255,10 +1295,9 @@ public class DICOMFormat extends AbstractFormat {
 				case DICOMUtils.AE:
 				case DICOMUtils.AS:
 				case DICOMUtils.AT:
-					// Cannot fix element length to 4, because AT value representation is
-					// always
-					// 4 bytes long (DICOM specs PS3.5 par.6.2), but value multiplicity is
-					// 1-n
+					// Cannot fix element length to 4, because AT value representation
+					// is always 4 bytes long (DICOM specs PS3.5 par.6.2), but value
+					// multiplicity is 1-n
 					final byte[] bytes = new byte[tag.getElementLength()];
 					// Read from stream
 					getSource().readFully(bytes);
@@ -1314,7 +1353,7 @@ public class DICOMFormat extends AbstractFormat {
 			}
 			if (skip) {
 				final long skipCount = tag.getElementLength();
-				if (getSource().getFilePointer() + skipCount <= getSource().length()) {
+				if (getSource().offset() + skipCount <= getSource().length()) {
 					getSource().skipBytes((int) skipCount);
 				}
 				tag.addLocation(tag.getElementLength());
@@ -1361,18 +1400,21 @@ public class DICOMFormat extends AbstractFormat {
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.max(xAxis), h = (int) bounds.max(yAxis);
+			final int x = (int) bounds.min(xAxis);
+			final int y = (int) bounds.min(yAxis);
+			final int w = (int) bounds.dimension(xAxis);
+			final int h = (int) bounds.dimension(yAxis);
 
-			final Hashtable<Integer, Vector<String>> fileList = meta.getFileList();
+			final Map<Integer, List<BrowsableLocation>> fileList = meta.getFileList();
 
 			final Integer[] keys = fileList.keySet().toArray(new Integer[0]);
 			Arrays.sort(keys);
 			if (fileList.get(keys[imageIndex]).size() > 1) {
 				final int fileNumber = (int) (planeIndex / meta.getImagesPerFile());
 				planeIndex = planeIndex % meta.getImagesPerFile();
-				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
-				final io.scif.Reader r = initializeService.initializeReader(file, new SCIFIOConfig().checkerSetOpen(true));
+				final Location file = fileList.get(keys[imageIndex]).get(fileNumber);
+				final io.scif.Reader r = initializeService.initializeReader(file,
+					new SCIFIOConfig().checkerSetOpen(true));
 				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
 					bounds, config);
 			}
@@ -1383,7 +1425,9 @@ public class DICOMFormat extends AbstractFormat {
 				.getPixelType());
 			final int bytes = (int) (meta.get(imageIndex).getAxisLength(Axes.X) * meta
 				.get(imageIndex).getAxisLength(Axes.Y) * bpp * ec);
-			getStream().seek(meta.getOffsets()[(int) planeIndex]);
+
+			final DataHandle<Location> handle = getHandle();
+			handle.seek(meta.getOffsets()[(int) planeIndex]);
 
 			if (meta.isRLE()) {
 				// plane is compressed using run-length encoding
@@ -1398,10 +1442,10 @@ public class DICOMFormat extends AbstractFormat {
 						// TODO unused int planeSize = bytes / (bpp * ec);
 						final byte[][] tmp = new byte[bpp][];
 						for (int i = 0; i < bpp; i++) {
-							tmp[i] = codec.decompress(getStream(), options);
+							tmp[i] = codec.decompress(handle, options);
 							if (planeIndex < meta.getImagesPerFile() - 1 || i < bpp - 1) {
-								while (getStream().read() == 0) { /* Read to non-0 data */}
-								getStream().seek(getStream().getFilePointer() - 1);
+								while (handle.read() == 0) { /* Read to non-0 data */}
+								handle.seek(handle.offset() - 1);
 							}
 						}
 						t = new byte[bytes / ec];
@@ -1416,15 +1460,15 @@ public class DICOMFormat extends AbstractFormat {
 						}
 					}
 					else {
-						t = codec.decompress(getStream(), options);
+						t = codec.decompress(handle, options);
 						if (t.length < (bytes / ec)) {
 							final byte[] tmp = t;
 							t = new byte[bytes / ec];
 							System.arraycopy(tmp, 0, t, 0, tmp.length);
 						}
 						if (planeIndex < meta.getImagesPerFile() - 1 || c < ec - 1) {
-							while (getStream().read() == 0) { /* Read to non-0 data */}
-							getStream().seek(getStream().getFilePointer() - 1);
+							while (handle.read() == 0) { /* Read to non-0 data */}
+							handle.seek(handle.offset() - 1);
 						}
 					}
 
@@ -1432,7 +1476,7 @@ public class DICOMFormat extends AbstractFormat {
 					final int srcRowLen = (int) meta.get(imageIndex).getAxisLength(
 						Axes.X) * bpp;
 
-					// TODO unused int srcPlane = meta.getAxisLength(imageIndex, Axes.Y) *
+					// TODO unused int srcPlane = meta.getAxisLength(imageIndex, Axes.Y)
 					// srcRowLen;
 
 					for (int row = 0; row < h; row++) {
@@ -1447,9 +1491,9 @@ public class DICOMFormat extends AbstractFormat {
 			else if (meta.isJPEG() || meta.isJP2K()) {
 				// plane is compressed using JPEG or JPEG-2000
 				final long end = planeIndex < meta.getOffsets().length - 1 ? meta
-					.getOffsets()[(int) planeIndex + 1] : getStream().length();
-				byte[] b = new byte[(int) (end - getStream().getFilePointer())];
-				getStream().read(b);
+					.getOffsets()[(int) planeIndex + 1] : handle.length();
+				byte[] b = new byte[(int) (end - handle.offset())];
+				handle.read(b);
 
 				if (b[2] != (byte) 0xff) {
 					final byte[] tmp = new byte[b.length + 1];
@@ -1503,7 +1547,7 @@ public class DICOMFormat extends AbstractFormat {
 			}
 			else {
 				// plane is not compressed
-				readPlane(getStream(), imageIndex, bounds, plane);
+				readPlane(getHandle(), imageIndex, bounds, plane);
 			}
 
 			// NB: do *not* apply the rescale function
@@ -1512,7 +1556,7 @@ public class DICOMFormat extends AbstractFormat {
 		}
 	}
 
-	// -- DICOM Helper Classes --
+// -- DICOM Helper Classes --
 
 	private static class DICOMUtils {
 
@@ -1526,53 +1570,52 @@ public class DICOMFormat extends AbstractFormat {
 
 		private static final int IMPLICIT_VR = 0x2d2d;
 
-		private static DICOMTag getNextTag(final RandomAccessInputStream stream)
+		private static DICOMTag getNextTag(final DataHandle<Location> handle)
 			throws FormatException, IOException
 		{
-			return getNextTag(stream, false);
+			return getNextTag(handle, false);
 		}
 
-		private static DICOMTag getNextTag(final RandomAccessInputStream stream,
-			final boolean bigEndianTransferSyntax) throws FormatException,
-				IOException
+		private static DICOMTag getNextTag(final DataHandle<Location> handle,
+			final boolean bigEndianTransferSyntax) throws FormatException, IOException
 		{
-			return getNextTag(stream, bigEndianTransferSyntax, false);
+			return getNextTag(handle, bigEndianTransferSyntax, false);
 		}
 
-		private static DICOMTag getNextTag(final RandomAccessInputStream stream,
+		private static DICOMTag getNextTag(final DataHandle<Location> handle,
 			final boolean bigEndianTransferSyntax, final boolean isOddLocations)
-				throws FormatException, IOException
+			throws FormatException, IOException
 		{
-			final long fp = stream.getFilePointer();
-			int groupWord = stream.readShort() & 0xffff;
+			final long fp = handle.offset();
+			int groupWord = handle.readShort() & 0xffff;
 			final DICOMTag diTag = new DICOMTag();
 			boolean littleEndian = true;
 
 			if (groupWord == 0x0800 && bigEndianTransferSyntax) {
 				littleEndian = false;
 				groupWord = 0x0008;
-				stream.order(false);
+				handle.setOrder(ByteOrder.BIG_ENDIAN);
 			}
 			else if (groupWord == 0xfeff || groupWord == 0xfffe) {
-				stream.skipBytes(6);
-				return DICOMUtils.getNextTag(stream, bigEndianTransferSyntax);
+				handle.skipBytes(6);
+				return DICOMUtils.getNextTag(handle, bigEndianTransferSyntax);
 			}
 
-			int elementWord = stream.readShort();
+			int elementWord = handle.readShort();
 			int tag = ((groupWord << 16) & 0xffff0000) | (elementWord & 0xffff);
 
-			diTag.setElementLength(getLength(stream, diTag));
-			if (diTag.getElementLength() > stream.length()) {
-				stream.seek(fp);
+			diTag.setElementLength(getLength(handle, diTag));
+			if (diTag.getElementLength() > handle.length()) {
+				handle.seek(fp);
 				littleEndian = !littleEndian;
-				stream.order(littleEndian);
+				handle.setLittleEndian(littleEndian);
 
-				groupWord = stream.readShort() & 0xffff;
-				elementWord = stream.readShort();
+				groupWord = handle.readShort() & 0xffff;
+				elementWord = handle.readShort();
 				tag = ((groupWord << 16) & 0xffff0000) | (elementWord & 0xffff);
-				diTag.setElementLength(getLength(stream, diTag));
+				diTag.setElementLength(getLength(handle, diTag));
 
-				if (diTag.getElementLength() > stream.length()) {
+				if (diTag.getElementLength() > handle.length()) {
 					throw new FormatException("Invalid tag length " + diTag
 						.getElementLength());
 				}
@@ -1581,25 +1624,25 @@ public class DICOMFormat extends AbstractFormat {
 			}
 
 			if (diTag.getElementLength() < 0 && groupWord == 0x7fe0) {
-				stream.skipBytes(12);
-				diTag.setElementLength(stream.readInt());
-				if (diTag.getElementLength() < 0) diTag.setElementLength(stream
+				handle.skipBytes(12);
+				diTag.setElementLength(handle.readInt());
+				if (diTag.getElementLength() < 0) diTag.setElementLength(handle
 					.readInt());
 			}
 
 			if (diTag.getElementLength() == 0 && (groupWord == 0x7fe0 ||
 				tag == 0x291014))
 			{
-				diTag.setElementLength(getLength(stream, diTag));
+				diTag.setElementLength(getLength(handle, diTag));
 			}
 			else if (diTag.getElementLength() == 0) {
-				stream.seek(stream.getFilePointer() - 4);
-				final String v = stream.readString(2);
+				handle.seek(handle.offset() - 4);
+				final String v = handle.readString(2);
 				if (v.equals("UT")) {
-					stream.skipBytes(2);
-					diTag.setElementLength(stream.readInt());
+					handle.skipBytes(2);
+					diTag.setElementLength(handle.readInt());
 				}
-				else stream.skipBytes(2);
+				else handle.skipBytes(2);
 			}
 
 			// HACK - needed to read some GE files
@@ -1619,11 +1662,11 @@ public class DICOMFormat extends AbstractFormat {
 			return diTag;
 		}
 
-		private static int getLength(final RandomAccessInputStream stream,
+		private static int getLength(final DataHandle<Location> handle,
 			final DICOMTag tag) throws IOException
 		{
 			final byte[] b = new byte[4];
-			stream.read(b);
+			handle.read(b);
 
 			// We cannot know whether the VR is implicit or explicit
 			// without the full DICOM Data Dictionary for public and
@@ -1642,10 +1685,10 @@ public class DICOMFormat extends AbstractFormat {
 				case UN:
 					// Explicit VR with 32-bit length if other two bytes are zero
 					if ((b[2] == 0) || (b[3] == 0)) {
-						return stream.readInt();
+						return handle.readInt();
 					}
 					tag.setVR(IMPLICIT_VR);
-					return Bytes.toInt(b, stream.isLittleEndian());
+					return Bytes.toInt(b, handle.isLittleEndian());
 				case AE:
 				case AS:
 				case AT:
@@ -1671,25 +1714,23 @@ public class DICOMFormat extends AbstractFormat {
 				case QQ:
 					// Explicit VR with 16-bit length
 					if (tag.get() == 0x00283006) {
-						return Bytes.toInt(b, 2, 2, stream.isLittleEndian());
+						return Bytes.toInt(b, 2, 2, handle.isLittleEndian());
 					}
-					int n1 = Bytes.toShort(b, 2, 2, stream.isLittleEndian());
-					int n2 = Bytes.toShort(b, 2, 2, !stream.isLittleEndian());
+					int n1 = Bytes.toShort(b, 2, 2, handle.isLittleEndian());
+					int n2 = Bytes.toShort(b, 2, 2, !handle.isLittleEndian());
 					n1 &= 0xffff;
 					n2 &= 0xffff;
-					if (n1 < 0 || n1 + stream.getFilePointer() > stream.length())
-						return n2;
-					if (n2 < 0 || n2 + stream.getFilePointer() > stream.length())
-						return n1;
+					if (n1 < 0 || n1 + handle.offset() > handle.length()) return n2;
+					if (n2 < 0 || n2 + handle.offset() > handle.length()) return n1;
 					return n1;
 				case 0xffff:
 					tag.setVR(IMPLICIT_VR);
 					return 8;
 				default:
 					tag.setVR(IMPLICIT_VR);
-					int len = Bytes.toInt(b, stream.isLittleEndian());
-					if (len + stream.getFilePointer() > stream.length() || len < 0) {
-						len = Bytes.toInt(b, 2, 2, stream.isLittleEndian());
+					int len = Bytes.toInt(b, handle.isLittleEndian());
+					if (len + handle.offset() > handle.length() || len < 0) {
+						len = Bytes.toInt(b, 2, 2, handle.isLittleEndian());
 						len &= 0xffff;
 					}
 					return len;

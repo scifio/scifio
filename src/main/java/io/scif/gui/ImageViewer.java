@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -75,6 +75,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.service.SciJavaService;
@@ -181,8 +183,8 @@ public class ImageViewer extends JFrame implements ActionListener,
 		sliderPanel.add(ztcPanel);
 
 		// image icon
-		final BufferedImage dummy =
-			AWTImageTools.makeImage(new byte[1][1], 1, 1, false);
+		final BufferedImage dummy = AWTImageTools.makeImage(new byte[1][1], 1, 1,
+			false);
 		icon = new ImageIcon(dummy);
 		iconLabel = new JLabel(icon, SwingConstants.LEFT);
 		iconLabel.setVerticalAlignment(SwingConstants.TOP);
@@ -256,15 +258,25 @@ public class ImageViewer extends JFrame implements ActionListener,
 		this.canCloseReader = canCloseReader;
 	}
 
-	/** Opens the given data source using the current format reader. */
+	/**
+	 * Convenience overload of {@link #open(Location)} for backwards
+	 * compatibility.
+	 *
+	 * @param id
+	 */
 	public void open(final String id) {
+		open(new FileLocation(id));
+	}
+
+	/** Opens the given data source using the current format reader. */
+	public void open(final Location id) {
 		wait(true);
 		try {
 			canCloseReader = true;
 			myReader = initializeService.initializeReader(id);
 			final long planeCount = myReader.getMetadata().get(0).getPlaneCount();
-			final ProgressMonitor progress =
-				new ProgressMonitor(this, "Reading " + id, null, 0, 1);
+			final ProgressMonitor progress = new ProgressMonitor(this, "Reading " +
+				id, null, 0, 1);
 			progress.setProgress(1);
 			final BufferedImage[] img = new BufferedImage[(int) planeCount];
 			for (long planeIndex = 0; planeIndex < planeCount; planeIndex++) {
@@ -290,18 +302,27 @@ public class ImageViewer extends JFrame implements ActionListener,
 	}
 
 	/**
+	 * Convenience overload of {@link #save}, saves the current image to the given
+	 * local file destination.
+	 *
+	 * @param id
+	 */
+	public void save(final String id) {
+		save(new FileLocation(id));
+	}
+
+	/**
 	 * Saves the current images to the given destination using the current format
 	 * writer.
 	 */
-	public void save(final String id) {
+	public void save(final Location id) {
 		if (images == null) return;
 		wait(true);
 		try {
 			myWriter.setDest(id);
 			final boolean stack = myWriter.canDoStacks();
-			final ProgressMonitor progress =
-				new ProgressMonitor(this, "Saving " + id, null, 0, stack
-					? images.length : 1);
+			final ProgressMonitor progress = new ProgressMonitor(this, "Saving " + id,
+				null, 0, stack ? images.length : 1);
 			if (stack) {
 				// save entire stack
 				for (int i = 0; i < images.length; i++) {
@@ -319,10 +340,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 			}
 			myWriter.close();
 		}
-		catch (final FormatException exc) {
-			logService.info("", exc);
-		}
-		catch (final IOException exc) {
+		catch (FormatException | IOException exc) {
 			logService.info("", exc);
 		}
 		wait(false);
@@ -338,7 +356,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	 * metadata from the specified format reader.
 	 */
 	public void setImages(final Reader reader, final BufferedImage[] img) {
-		filename = reader == null ? null : reader.getCurrentFile();
+		filename = reader == null ? null : reader.getCurrentLocation().getName();
 		myReader = reader;
 		images = img;
 
@@ -355,11 +373,11 @@ public class ImageViewer extends JFrame implements ActionListener,
 		updateLabel(-1, -1);
 		sb.setLength(0);
 		if (filename != null) {
-			sb.append(reader.getCurrentFile());
+			sb.append(reader.getCurrentLocation().getName());
 			sb.append(" ");
 		}
-		final String format =
-			reader == null ? null : reader.getFormat().getFormatName();
+		final String format = reader == null ? null : reader.getFormat()
+			.getFormatName();
 		if (format != null) {
 			sb.append("(");
 			sb.append(format);
@@ -380,7 +398,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	}
 
 	public Plane getPlane(final BufferedImage image) {
-		final BufferedImagePlane plane = new BufferedImagePlane(context);
+		final BufferedImagePlane plane = new BufferedImagePlane();
 		plane.setData(image);
 		return plane;
 	}
@@ -406,8 +424,8 @@ public class ImageViewer extends JFrame implements ActionListener,
 		final String cmd = e.getActionCommand();
 		if ("open".equals(cmd)) {
 			wait(true);
-			final JFileChooser chooser =
-				guiService.buildFileChooser(formatService.getAllFormats());
+			final JFileChooser chooser = guiService.buildFileChooser(formatService
+				.getAllFormats());
 			wait(false);
 			final int rval = chooser.showOpenDialog(this);
 			if (rval == JFileChooser.APPROVE_OPTION) {
@@ -417,8 +435,8 @@ public class ImageViewer extends JFrame implements ActionListener,
 		}
 		else if ("save".equals(cmd)) {
 			wait(true);
-			final JFileChooser chooser =
-				guiService.buildFileChooser(formatService.getOutputFormats());
+			final JFileChooser chooser = guiService.buildFileChooser(formatService
+				.getOutputFormats());
 			wait(false);
 			final int rval = chooser.showSaveDialog(this);
 			if (rval == JFileChooser.APPROVE_OPTION) {
@@ -432,14 +450,10 @@ public class ImageViewer extends JFrame implements ActionListener,
 				}
 				final File file = chooser.getSelectedFile();
 				try {
-					myWriter =
-						initializeService.initializeWriter(myReader.getMetadata(), file
-							.getAbsolutePath());
+					myWriter = initializeService.initializeWriter(myReader.getMetadata(),
+						new FileLocation(file));
 				}
-				catch (final FormatException e1) {
-					logService.error(e);
-				}
-				catch (final IOException e1) {
+				catch (FormatException | IOException e1) {
 					logService.error(e);
 				}
 				if (file != null) save(file.getAbsolutePath(), myWriter);
@@ -450,9 +464,8 @@ public class ImageViewer extends JFrame implements ActionListener,
 			// HACK - JOptionPane prevents shutdown on dispose
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-			final String result =
-				JOptionPane.showInputDialog(this,
-					"Animate using space bar. How many frames per second?", "" + fps);
+			final String result = JOptionPane.showInputDialog(this,
+				"Animate using space bar. How many frames per second?", "" + fps);
 			try {
 				fps = Integer.parseInt(result);
 			}
@@ -464,16 +477,15 @@ public class ImageViewer extends JFrame implements ActionListener,
 			// HACK - JOptionPane prevents shutdown on dispose
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-			final String msg =
-				"<html>" + "SCIFIO core for reading and " + "converting file formats."
-					+ "<br>Copyright (C) 2005 - 2013" + " Open Microscopy Environment:"
-					+ "<ul>"
-					+ "<li>Board of Regents of the University of Wisconsin-Madison</li>"
-					+ "<li>Glencoe Software, Inc.</li>" + "<li>University of Dundee</li>"
-					+ "</ul>" + "<br><br>See <a href=\""
-					+ "http://loci.wisc.edu/software/scifio\">"
-					+ "http://loci.wisc.edu/software/scifio</a>"
-					+ "<br>for help with using SCIFIO.";
+			final String msg = "<html>" + "SCIFIO core for reading and " +
+				"converting file formats." + "<br>Copyright (C) 2005 - 2013" +
+				" Open Microscopy Environment:" + "<ul>" +
+				"<li>Board of Regents of the University of Wisconsin-Madison</li>" +
+				"<li>Glencoe Software, Inc.</li>" + "<li>University of Dundee</li>" +
+				"</ul>" + "<br><br>See <a href=\"" +
+				"http://loci.wisc.edu/software/scifio\">" +
+				"http://loci.wisc.edu/software/scifio</a>" +
+				"<br>for help with using SCIFIO.";
 			JOptionPane.showMessageDialog(null, msg, "SCIFIO",
 				JOptionPane.INFORMATION_MESSAGE);
 		}
@@ -673,14 +685,4 @@ public class ImageViewer extends JFrame implements ActionListener,
 			}
 		}.start();
 	}
-
-	// -- Main method --
-
-	public static void main(final String[] args) {
-		final ImageViewer viewer =
-			new ImageViewer(new Context(SCIFIOService.class, SciJavaService.class));
-		viewer.setVisible(true);
-		if (args.length > 0) viewer.open(args[0]);
-	}
-
 }

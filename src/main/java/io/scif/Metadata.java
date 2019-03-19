@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,10 +29,11 @@
 
 package io.scif;
 
-import io.scif.io.RandomAccessInputStream;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * Interface for all SCIFIO Metadata objects. Based on the format, a Metadata
@@ -60,14 +61,43 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 *
 	 * @param in - Input source for this Metadata
 	 */
-	void setSource(RandomAccessInputStream in);
+	void setSource(DataHandle<Location> in);
 
 	/**
 	 * Returns the source used to generate this Metadata object.
 	 *
 	 * @return - The associated RandomAccessInputStream
 	 */
-	RandomAccessInputStream getSource();
+	DataHandle<Location> getSource();
+
+	/**
+	 * Sets the input source location. This is an alternative to
+	 * {@link #setSource(DataHandle)} for Formats that operate on Locations
+	 * without a corresponding {@link DataHandle}.
+	 *
+	 * @param loc the source location
+	 */
+	void setSourceLocation(Location loc);
+
+	/**
+	 * Sets the output location. This is used by formats that do not use a
+	 * DataHandle.
+	 * 
+	 * @param loc the destination location
+	 */
+	void setDestinationLocation(Location loc);
+
+	/**
+	 * @return the destination location, this is used by formats that do not use a
+	 *         DataHandle.
+	 */
+	Location getDestinationLocation();
+
+	/**
+	 * @return the source location, in most cases this is equivalent to calling
+	 *         {@link #getSource()}.get()
+	 */
+	Location getSourceLocation();
 
 	/**
 	 * Returns whether or not filterMetadata was set when parsing this Metadata
@@ -121,4 +151,5 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param imageCount - Number of ImageMetadata to create.
 	 */
 	void createImageMetadata(int imageCount);
+
 }

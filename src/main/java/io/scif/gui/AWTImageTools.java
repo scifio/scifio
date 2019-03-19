@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -86,9 +86,9 @@ import org.scijava.util.Bytes;
  * A utility class with convenience methods for manipulating images in
  * {@link java.awt.image.BufferedImage} form. To work with images in primitive
  * array form, use the {@link io.scif.util.ImageTools} class. Much code was
- * stolen and adapted from <a
- * href="http://forum.java.sun.com/thread.jspa?threadID=522483"> DrLaszloJamf's
- * posts</a> on the Java forums.
+ * stolen and adapted from
+ * <a href="http://forum.java.sun.com/thread.jspa?threadID=522483">
+ * DrLaszloJamf's posts</a> on the Java forums.
  *
  * @author Curtis Rueden
  */
@@ -451,8 +451,8 @@ public final class AWTImageTools {
 		final int h, final int c, final boolean interleaved, final int bpp,
 		final boolean fp, final boolean little, final boolean signed)
 	{
-		final Object pixels =
-			Bytes.makeArray(data, bpp % 3 == 0 ? bpp / 3 : bpp, fp, little);
+		final Object pixels = Bytes.makeArray(data, bpp % 3 == 0 ? bpp / 3 : bpp,
+			fp, little);
 
 		if (pixels instanceof byte[]) {
 			return makeImage((byte[]) pixels, w, h, c, interleaved, signed);
@@ -493,9 +493,8 @@ public final class AWTImageTools {
 		final int c = data.length;
 		Object v = null;
 		for (int i = 0; i < c; i++) {
-			final Object pixels =
-				Bytes.makeArray(data[i], bpp % 3 == 0 ? bpp / 3 : bpp, fp,
-					little);
+			final Object pixels = Bytes.makeArray(data[i], bpp % 3 == 0 ? bpp / 3
+				: bpp, fp, little);
 			if (pixels instanceof byte[]) {
 				if (v == null) v = new byte[c][];
 				((byte[][]) v)[i] = (byte[]) pixels;
@@ -674,16 +673,16 @@ public final class AWTImageTools {
 			for (int i = 0; i < c; i++) {
 				bitMasks[i] = 0xff << ((c - i - 1) * 8);
 			}
-			model =
-				new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, w, h, bitMasks);
+			model = new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, w, h,
+				bitMasks);
 		}
 		else if (banded) model = new BandedSampleModel(type, w, h, c);
 		else if (interleaved) {
 			final int[] bandOffsets = new int[c];
 			for (int i = 0; i < c; i++)
 				bandOffsets[i] = i;
-			model =
-				new PixelInterleavedSampleModel(type, w, h, c, c * w, bandOffsets);
+			model = new PixelInterleavedSampleModel(type, w, h, c, c * w,
+				bandOffsets);
 		}
 		else {
 			final int[] bandOffsets = new int[c];
@@ -692,8 +691,8 @@ public final class AWTImageTools {
 			model = new ComponentSampleModel(type, w, h, 1, w, bandOffsets);
 		}
 
-		final WritableRaster raster =
-			Raster.createWritableRaster(model, buffer, null);
+		final WritableRaster raster = Raster.createWritableRaster(model, buffer,
+			null);
 
 		BufferedImage b = null;
 
@@ -714,8 +713,8 @@ public final class AWTImageTools {
 				b.setData(raster);
 			}
 		}
-		else if (c > 2 && type == DataBuffer.TYPE_INT &&
-			buffer.getNumBanks() == 1 && !(buffer instanceof UnsignedIntBuffer))
+		else if (c > 2 && type == DataBuffer.TYPE_INT && buffer
+			.getNumBanks() == 1 && !(buffer instanceof UnsignedIntBuffer))
 		{
 			if (c == 3) {
 				b = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
@@ -739,8 +738,8 @@ public final class AWTImageTools {
 	public static BufferedImage openImage(final Plane plane, final Reader r,
 		final int imageIndex) throws FormatException, IOException
 	{
-		final long[] lengths =
-			r.getMetadata().get(imageIndex).getAxesLengthsPlanar();
+		final long[] lengths = r.getMetadata().get(imageIndex)
+			.getAxesLengthsPlanar();
 		return openImage(plane, r, lengths, imageIndex);
 	}
 
@@ -749,8 +748,7 @@ public final class AWTImageTools {
 	 * from the provided Reader's Metadata.
 	 */
 	public static BufferedImage openImage(final Plane plane, final Reader r,
-		final long[] axes, final int imageIndex) throws FormatException,
-		IOException
+		final long[] axes, final int imageIndex) throws FormatException, IOException
 	{
 		return openImage(plane, plane.getBytes(), r, axes, imageIndex);
 	}
@@ -771,8 +769,8 @@ public final class AWTImageTools {
 		final int pixelType = meta.get(imageIndex).getPixelType();
 		final boolean little = meta.get(imageIndex).isLittleEndian();
 		final boolean normal = r.isNormalized();
-		final boolean interleaved =
-			meta.get(imageIndex).getInterleavedAxisCount() > 0;
+		final boolean interleaved = meta.get(imageIndex)
+			.getInterleavedAxisCount() > 0;
 		final boolean indexed = meta.get(imageIndex).isIndexed();
 
 		if (pixelType == FormatTools.FLOAT) {
@@ -802,9 +800,8 @@ public final class AWTImageTools {
 		}
 
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
-		BufferedImage b =
-			makeImage(bytes, w, h, rgbChanCount, interleaved, bpp, false, little,
-				signed);
+		BufferedImage b = makeImage(bytes, w, h, rgbChanCount, interleaved, bpp,
+			false, little, signed);
 		if (b == null) {
 			throw new FormatException("Could not construct BufferedImage");
 		}
@@ -826,23 +823,21 @@ public final class AWTImageTools {
 			else if (ColorTable16.class.isAssignableFrom(ct.getClass())) {
 				final short[][] table = ((ColorTable16) ct).getValues();
 				if (table != null && table.length > 0 && table[0] != null) {
-					model =
-						new Index16ColorModel(16, table[0].length, table, meta.get(
-							imageIndex).isLittleEndian());
+					model = new Index16ColorModel(16, table[0].length, table, meta.get(
+						imageIndex).isLittleEndian());
 				}
 			}
 		}
 
-		if (indexed && rgbChanCount == 1 &&
-			BufferedImagePlane.class.isAssignableFrom(plane.getClass()))
+		if (indexed && rgbChanCount == 1 && BufferedImagePlane.class
+			.isAssignableFrom(plane.getClass()))
 		{
 			model = ((BufferedImagePlane) plane).getData().getColorModel();
 		}
 
 		if (model != null) {
-			final WritableRaster raster =
-				Raster.createWritableRaster(b.getSampleModel(), b.getRaster()
-					.getDataBuffer(), null);
+			final WritableRaster raster = Raster.createWritableRaster(b
+				.getSampleModel(), b.getRaster().getDataBuffer(), null);
 			b = new BufferedImage(model, raster, false, null);
 		}
 
@@ -865,8 +860,7 @@ public final class AWTImageTools {
 	 */
 	public static BufferedImage openThumbImage(final Plane plane, final Reader r,
 		final int imageIndex, final long[] axes, final int thumbSizeX,
-		final int thumbSizeY, final boolean pad) throws FormatException,
-		IOException
+		final int thumbSizeY, final boolean pad) throws FormatException, IOException
 	{
 
 		BufferedImage img = AWTImageTools.openImage(plane, r, axes, imageIndex);
@@ -976,8 +970,8 @@ public final class AWTImageTools {
 		final int y, final int w, final int h)
 	{
 		if (canUseBankDataDirectly(r, DataBuffer.TYPE_USHORT,
-			DataBufferUShort.class) &&
-			x == 0 && y == 0 && w == r.getWidth() && h == r.getHeight())
+			DataBufferUShort.class) && x == 0 && y == 0 && w == r.getWidth() && h == r
+				.getHeight())
 		{
 			return ((DataBufferUShort) r.getDataBuffer()).getBankData();
 		}
@@ -1035,8 +1029,9 @@ public final class AWTImageTools {
 	public static float[][] getFloats(final WritableRaster r, final int x,
 		final int y, final int w, final int h)
 	{
-		if (canUseBankDataDirectly(r, DataBuffer.TYPE_FLOAT, DataBufferFloat.class) &&
-			x == 0 && y == 0 && w == r.getWidth() && h == r.getHeight())
+		if (canUseBankDataDirectly(r, DataBuffer.TYPE_FLOAT,
+			DataBufferFloat.class) && x == 0 && y == 0 && w == r.getWidth() && h == r
+				.getHeight())
 		{
 			return ((DataBufferFloat) r.getDataBuffer()).getBankData();
 		}
@@ -1064,8 +1059,8 @@ public final class AWTImageTools {
 		final int y, final int w, final int h)
 	{
 		if (canUseBankDataDirectly(r, DataBuffer.TYPE_DOUBLE,
-			DataBufferDouble.class) &&
-			x == 0 && y == 0 && w == r.getWidth() && h == r.getHeight())
+			DataBufferDouble.class) && x == 0 && y == 0 && w == r.getWidth() && h == r
+				.getHeight())
 		{
 			return ((DataBufferDouble) r.getDataBuffer()).getBankData();
 		}
@@ -1394,34 +1389,33 @@ public final class AWTImageTools {
 
 	/**
 	 * Converts a java.awt.image.RenderedImage into a
-	 * java.awt.image.BufferedImage. This code was adapted from <a
-	 * href="http://www.jguru.com/faq/view.jsp?EID=114602">a jGuru post</a>.
+	 * java.awt.image.BufferedImage. This code was adapted from
+	 * <a href="http://www.jguru.com/faq/view.jsp?EID=114602">a jGuru post</a>.
 	 */
 	public static BufferedImage convertRenderedImage(final RenderedImage img) {
 		if (img instanceof BufferedImage) return (BufferedImage) img;
 		final ColorModel cm = img.getColorModel();
 		final int width = img.getWidth();
 		final int height = img.getHeight();
-		final WritableRaster raster =
-			cm.createCompatibleWritableRaster(width, height);
+		final WritableRaster raster = cm.createCompatibleWritableRaster(width,
+			height);
 		final boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-		final Hashtable<String, Object> properties =
-			new Hashtable<>();
+		final Hashtable<String, Object> properties = new Hashtable<>();
 		final String[] keys = img.getPropertyNames();
 		if (keys != null) {
 			for (int i = 0; i < keys.length; i++) {
 				properties.put(keys[i], img.getProperty(keys[i]));
 			}
 		}
-		final BufferedImage result =
-			new BufferedImage(cm, raster, isAlphaPremultiplied, properties);
+		final BufferedImage result = new BufferedImage(cm, raster,
+			isAlphaPremultiplied, properties);
 		img.copyData(raster);
 		return result;
 	}
 
 	/** Get the bytes from an image, merging the channels as necessary. */
-	public static byte[]
-		getBytes(final BufferedImage img, final boolean separated)
+	public static byte[] getBytes(final BufferedImage img,
+		final boolean separated)
 	{
 		final byte[][] p = getBytes(img);
 		if (separated || p.length == 1) return p[0];
@@ -1457,7 +1451,8 @@ public final class AWTImageTools {
 		final boolean littleEndian, final Interval bounds)
 	{
 		return getSubimage(image, littleEndian, //
-			i(bounds.min(0)), i(bounds.min(1)), i(bounds.dimension(0)), i(bounds.dimension(1)));
+			i(bounds.min(0)), i(bounds.min(1)), i(bounds.dimension(0)), i(bounds
+				.dimension(1)));
 	}
 
 	/** Returns a subimage of the specified image. */
@@ -1623,16 +1618,16 @@ public final class AWTImageTools {
 	 * Pads (or crops) the image to the given width and height. The image will be
 	 * centered within the new bounds.
 	 */
-	public static BufferedImage padImage(final BufferedImage img,
-		final int width, final int height)
+	public static BufferedImage padImage(final BufferedImage img, final int width,
+		final int height)
 	{
 		if (img == null) {
 			final byte[][] data = new byte[1][width * height];
 			return makeImage(data, width, height, false);
 		}
 
-		final boolean needsPadding =
-			img.getWidth() != width || img.getHeight() != height;
+		final boolean needsPadding = img.getWidth() != width || img
+			.getHeight() != height;
 
 		if (needsPadding) {
 			final Object pixels = getPixels(img);
@@ -1643,8 +1638,8 @@ public final class AWTImageTools {
 				final byte[][] b = (byte[][]) pixels;
 				final byte[][] newBytes = new byte[b.length][width * height];
 				for (int i = 0; i < b.length; i++) {
-					newBytes[i] =
-						ImageTools.padImage(b[i], false, 1, img.getWidth(), width, height);
+					newBytes[i] = ImageTools.padImage(b[i], false, 1, img.getWidth(),
+						width, height);
 				}
 				return makeImage(newBytes, width, height, signed);
 			}
@@ -1652,8 +1647,8 @@ public final class AWTImageTools {
 				final short[][] b = (short[][]) pixels;
 				final short[][] newShorts = new short[b.length][width * height];
 				for (int i = 0; i < b.length; i++) {
-					newShorts[i] =
-						ImageTools.padImage(b[i], false, 1, img.getWidth(), width, height);
+					newShorts[i] = ImageTools.padImage(b[i], false, 1, img.getWidth(),
+						width, height);
 				}
 				return makeImage(newShorts, width, height, signed);
 			}
@@ -1661,8 +1656,8 @@ public final class AWTImageTools {
 				final int[][] b = (int[][]) pixels;
 				final int[][] newInts = new int[b.length][width * height];
 				for (int i = 0; i < b.length; i++) {
-					newInts[i] =
-						ImageTools.padImage(b[i], false, 1, img.getWidth(), width, height);
+					newInts[i] = ImageTools.padImage(b[i], false, 1, img.getWidth(),
+						width, height);
 				}
 				return makeImage(newInts, width, height, signed);
 			}
@@ -1670,8 +1665,8 @@ public final class AWTImageTools {
 				final float[][] b = (float[][]) pixels;
 				final float[][] newFloats = new float[b.length][width * height];
 				for (int i = 0; i < b.length; i++) {
-					newFloats[i] =
-						ImageTools.padImage(b[i], false, 1, img.getWidth(), width, height);
+					newFloats[i] = ImageTools.padImage(b[i], false, 1, img.getWidth(),
+						width, height);
 				}
 				return makeImage(newFloats, width, height);
 			}
@@ -1679,8 +1674,8 @@ public final class AWTImageTools {
 				final double[][] b = (double[][]) pixels;
 				final double[][] newDoubles = new double[b.length][width * height];
 				for (int i = 0; i < b.length; i++) {
-					newDoubles[i] =
-						ImageTools.padImage(b[i], false, 1, img.getWidth(), width, height);
+					newDoubles[i] = ImageTools.padImage(b[i], false, 1, img.getWidth(),
+						width, height);
 				}
 				return makeImage(newDoubles, width, height);
 			}
@@ -1805,8 +1800,8 @@ public final class AWTImageTools {
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
 		final double scalex = (double) target.getWidth() / source.getWidth();
 		final double scaley = (double) target.getHeight() / source.getHeight();
-		final AffineTransform xform =
-			AffineTransform.getScaleInstance(scalex, scaley);
+		final AffineTransform xform = AffineTransform.getScaleInstance(scalex,
+			scaley);
 		g2.drawRenderedImage(source, xform);
 		g2.dispose();
 		return target;
@@ -1833,8 +1828,8 @@ public final class AWTImageTools {
 	public static BufferedImage scale2D(final BufferedImage image,
 		final int width, final int height, final Object hint, final ColorModel cm)
 	{
-		final WritableRaster raster =
-			cm.createCompatibleWritableRaster(width, height);
+		final WritableRaster raster = cm.createCompatibleWritableRaster(width,
+			height);
 		final boolean isRasterPremultiplied = cm.isAlphaPremultiplied();
 		return copyScaled(image, new BufferedImage(cm, raster,
 			isRasterPremultiplied, null), hint);
@@ -1851,8 +1846,8 @@ public final class AWTImageTools {
 	 * Scales the image using the most appropriate API, with the resultant image
 	 * having the same color model as the original image.
 	 */
-	public static BufferedImage scale(BufferedImage source, int width,
-		int height, final boolean pad)
+	public static BufferedImage scale(BufferedImage source, int width, int height,
+		final boolean pad)
 	{
 		final int w = source.getWidth();
 		final int h = source.getHeight();
@@ -1883,8 +1878,8 @@ public final class AWTImageTools {
 			(sourceModel instanceof SignedColorModel))
 		{
 			final DataBuffer buffer = source.getData().getDataBuffer();
-			WritableRaster raster =
-				Raster.createWritableRaster(source.getSampleModel(), buffer, null);
+			WritableRaster raster = Raster.createWritableRaster(source
+				.getSampleModel(), buffer, null);
 
 			ColorModel model = makeColorModel(1, buffer.getDataType());
 			if (sourceModel instanceof SignedColorModel) {
@@ -1892,13 +1887,12 @@ public final class AWTImageTools {
 			}
 			source = new BufferedImage(model, raster, false, null);
 
-			final Image scaled =
-				scaleAWT(source, width, height, Image.SCALE_AREA_AVERAGING);
+			final Image scaled = scaleAWT(source, width, height,
+				Image.SCALE_AREA_AVERAGING);
 			result = makeBuffered(scaled, sourceModel);
 
-			raster =
-				Raster.createWritableRaster(result.getSampleModel(), result.getData()
-					.getDataBuffer(), null);
+			raster = Raster.createWritableRaster(result.getSampleModel(), result
+				.getData().getDataBuffer(), null);
 			result = new BufferedImage(sourceModel, raster, false, null);
 		}
 		else {
@@ -1906,8 +1900,8 @@ public final class AWTImageTools {
 				source = makeUnsigned(source);
 				sourceModel = null;
 			}
-			final Image scaled =
-				scaleAWT(source, width, height, Image.SCALE_AREA_AVERAGING);
+			final Image scaled = scaleAWT(source, width, height,
+				Image.SCALE_AREA_AVERAGING);
 			result = makeBuffered(scaled, sourceModel);
 		}
 		return padImage(result, finalWidth, finalHeight);
@@ -1924,9 +1918,8 @@ public final class AWTImageTools {
 
 		// TODO: better way to handle color model (don't just assume RGB)
 		loadImage(image);
-		final BufferedImage img =
-			new BufferedImage(image.getWidth(OBS), image.getHeight(OBS),
-				BufferedImage.TYPE_INT_RGB);
+		final BufferedImage img = new BufferedImage(image.getWidth(OBS), image
+			.getHeight(OBS), BufferedImage.TYPE_INT_RGB);
 		final Graphics g = img.getGraphics();
 		g.drawImage(image, 0, 0, OBS);
 		g.dispose();
@@ -1951,8 +1944,8 @@ public final class AWTImageTools {
 		final int w = image.getWidth(OBS), h = image.getHeight(OBS);
 		final boolean alphaPremultiplied = cm.isAlphaPremultiplied();
 		final WritableRaster raster = cm.createCompatibleWritableRaster(w, h);
-		final BufferedImage result =
-			new BufferedImage(cm, raster, alphaPremultiplied, null);
+		final BufferedImage result = new BufferedImage(cm, raster,
+			alphaPremultiplied, null);
 		final Graphics2D g = result.createGraphics();
 		g.drawImage(image, 0, 0, OBS);
 		g.dispose();
@@ -2010,8 +2003,8 @@ public final class AWTImageTools {
 
 	/** Gets the default graphics configuration for the environment. */
 	public static GraphicsConfiguration getDefaultConfiguration() {
-		final GraphicsEnvironment ge =
-			GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final GraphicsEnvironment ge = GraphicsEnvironment
+			.getLocalGraphicsEnvironment();
 		final GraphicsDevice gd = ge.getDefaultScreenDevice();
 		return gd.getDefaultConfiguration();
 	}
@@ -2104,7 +2097,7 @@ public final class AWTImageTools {
 		return lut;
 	}
 
-	private static int i(long value) {
+	private static int i(final long value) {
 		if (value > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Value too large: " + value);
 		}

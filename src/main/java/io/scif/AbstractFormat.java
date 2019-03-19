@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -180,26 +180,16 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 		// manually set its Format.
 		if (DefaultComponent.class.isAssignableFrom(t.getClass())) {
 			try {
-				final java.lang.reflect.Field fmt =
-					t.getClass().getDeclaredField("format");
+				final java.lang.reflect.Field fmt = t.getClass().getDeclaredField(
+					"format");
 				fmt.setAccessible(true);
 				fmt.set(t, this);
 			}
-			catch (final NoSuchFieldException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
-			}
-			catch (final SecurityException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
-			}
-			catch (final IllegalArgumentException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
-			}
-			catch (final IllegalAccessException e) {
-				throw new FormatException("Failed to populate DefaultComponent field",
-					e);
+			catch (NoSuchFieldException | SecurityException | IllegalArgumentException
+					| IllegalAccessException e)
+			{
+				throw new FormatException(//
+					"Failed to populate DefaultComponent field", e);
 			}
 		}
 		return t;
@@ -214,10 +204,7 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 		try {
 			return c.newInstance();
 		}
-		catch (final InstantiationException e) {
-			throw new FormatException(e);
-		}
-		catch (final IllegalAccessException e) {
+		catch (InstantiationException | IllegalAccessException e) {
 			throw new FormatException(e);
 		}
 	}

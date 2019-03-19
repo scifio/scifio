@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,7 +32,6 @@ package io.scif.util;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.filters.MetadataWrapper;
-import io.scif.io.RandomAccessOutputStream;
 
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -43,6 +42,9 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imglib2.Interval;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * A utility class for working with {@link io.scif.Metadata} objects.
@@ -66,8 +68,8 @@ public class SCIFIOMetadataTools {
 	{
 		final boolean wholePlane = wholeRow(imageIndex, meta, bounds);
 		final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
-		return wholePlane && bounds.min(yIndex) == 0 &&
-			bounds.max(yIndex) == meta.get(imageIndex).getAxisLength(Axes.Y) - 1;
+		return wholePlane && bounds.min(yIndex) == 0 && bounds.max(yIndex) == meta
+			.get(imageIndex).getAxisLength(Axes.Y) - 1;
 	}
 
 	/**
@@ -114,8 +116,8 @@ public class SCIFIOMetadataTools {
 		final long[] planarAxes = meta.get(imageIndex).getAxesLengthsPlanar();
 
 		for (final AxisValue v : axes) {
-			planarAxes[meta.get(imageIndex).getAxisIndex(v.getType())] =
-				v.getLength();
+			planarAxes[meta.get(imageIndex).getAxisIndex(v.getType())] = v
+				.getLength();
 		}
 
 		return planarAxes;
@@ -162,7 +164,7 @@ public class SCIFIOMetadataTools {
 	 *           metadata object is uninitialized
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
-		final RandomAccessOutputStream out) throws FormatException
+		final DataHandle<Location> out) throws FormatException
 	{
 		verifyMinimumPopulated(src, out, 0);
 	}
@@ -175,17 +177,16 @@ public class SCIFIOMetadataTools {
 	 *           metadata object is uninitialized
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
-		final RandomAccessOutputStream out, final int imageIndex)
-		throws FormatException
+		final DataHandle<Location> out, final int imageIndex) throws FormatException
 	{
 		if (src == null) {
-			throw new FormatException("Metadata object is null; "
-				+ "call Writer.setMetadata() first");
+			throw new FormatException("Metadata object is null; " +
+				"call Writer.setMetadata() first");
 		}
 
 		if (out == null) {
-			throw new FormatException("RandomAccessOutputStream object is null; "
-				+ "call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
+			throw new FormatException("DataHandle object is null; " +
+				"call Writer.setSource(<Location/DataHandle>) first");
 		}
 
 		if (src.get(imageIndex).getAxes().size() == 0) {
@@ -194,6 +195,30 @@ public class SCIFIOMetadataTools {
 	}
 
 	// -- Utility methods -- dimensional axes --
+
+	public static void verifyMinimumPopulated(Metadata src, Location loc)
+		throws FormatException
+	{
+		verifyMinimumPopulated(src, loc, 0);
+	}
+
+	public static void verifyMinimumPopulated(Metadata src, Location loc,
+		int imageIndex) throws FormatException
+	{
+		if (src == null) {
+			throw new FormatException("Metadata object is null; " +
+				"call Writer.setMetadata() first");
+		}
+
+		if (loc == null) {
+			throw new FormatException("Location object is null; " +
+				"call Writer.setSource(<Location>) first");
+		}
+
+		if (src.get(imageIndex).getAxes().size() == 0) {
+			throw new FormatException("Axiscount #" + imageIndex + " is 0");
+		}
+	}
 
 	/**
 	 * Guesses at a reasonable default planar axis count for the given list of

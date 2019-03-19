@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,10 +30,11 @@
 package io.scif;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import net.imglib2.Interval;
 
 /**
@@ -120,31 +121,29 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	/**
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval, Plane)}
+	 * {@link io.scif.Reader#readPlane(DataHandle, int, Interval, Plane)}
 	 * <p>
 	 * NB Presumes that the source stream {@code s} is set to the correct offset,
 	 * i.e. start of the plane
 	 * </p>
 	 *
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval,
-	 *      Plane)
+	 * @see io.scif.Reader#readPlane(DataHandle, int, Interval, Plane)
 	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, Interval bounds,
-		P plane) throws IOException;
+	P readPlane(DataHandle<Location> s, int imageIndex, Interval bounds, P plane)
+		throws IOException;
 
 	/**
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval, int, Plane)}
+	 * {@link io.scif.Reader#readPlane(DataHandle, int, Interval, int, Plane)}
 	 * <p>
 	 * NB Presumes that the source stream {@code s} is set to the correct offset,
 	 * i.e. start of the plane
 	 * </p>
 	 *
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval, int,
-	 *      Plane)
+	 * @see io.scif.Reader#readPlane(DataHandle, int, Interval, int, Plane)
 	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, Interval bounds,
+	P readPlane(DataHandle<Location> s, int imageIndex, Interval bounds,
 		int scanlinePad, P plane) throws IOException;
 
 	@Override

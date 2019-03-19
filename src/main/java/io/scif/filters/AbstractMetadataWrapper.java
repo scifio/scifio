@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,10 +34,11 @@ import io.scif.Format;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -84,6 +85,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	@Override
 	public void wrap(final Metadata meta) {
 		this.meta = meta;
+		setSourceLocation(meta.getSourceLocation());
 		setSource(meta.getSource());
 		populateImageMetadata();
 	}
@@ -113,9 +115,18 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	// -- Metadata API Methods --
 
 	@Override
-	public void setSource(final RandomAccessInputStream source) {
+	public void setSource(final DataHandle<Location> source) {
+		if (source != null) {
+			meta.setSourceLocation(source.get());
+		}
 		super.setSource(source);
 		meta.setSource(source);
+	}
+
+	@Override
+	public void setSourceLocation(Location loc) {
+		super.setSourceLocation(loc);
+		meta.setSourceLocation(loc);
 	}
 
 	@Override

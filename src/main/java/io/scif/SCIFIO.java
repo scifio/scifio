@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,18 +36,17 @@ import io.scif.formats.tiff.TiffService;
 import io.scif.gui.GUIService;
 import io.scif.img.ImgUtilityService;
 import io.scif.img.converters.PlaneConverterService;
-import io.scif.io.NIOService;
 import io.scif.services.DatasetIOService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
-import io.scif.services.LocationService;
 import io.scif.services.TranslatorService;
 import io.scif.xml.XMLService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
 import org.scijava.Gateway;
+import org.scijava.io.nio.NIOService;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.SciJavaService;
 
@@ -66,7 +65,6 @@ import org.scijava.service.SciJavaService;
  * @see io.scif.services.InitializeService
  * @see io.scif.services.FormatService
  * @see io.scif.services.TranslatorService
- * @see io.scif.services.LocationService
  * @see io.scif.services.FilePatternService
  * @author Mark Hiner
  */
@@ -86,7 +84,7 @@ public class SCIFIO extends AbstractGateway {
 	/**
 	 * Creates a new SCIFIO application context which wraps the given existing
 	 * SciJava context.
-	 * 
+	 *
 	 * @see Context
 	 */
 	public SCIFIO(final Context context) {
@@ -156,15 +154,6 @@ public class SCIFIO extends AbstractGateway {
 	 */
 	public InitializeService initializer() {
 		return get(InitializeService.class);
-	}
-
-	/**
-	 * Gets this application context's {@link LocationService}.
-	 *
-	 * @return The {@link LocationService} of this application context.
-	 */
-	public LocationService location() {
-		return get(LocationService.class);
 	}
 
 	/**

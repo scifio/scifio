@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,11 +31,12 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -54,8 +55,7 @@ public class HuffmanCodec extends AbstractCodec {
 
 	private int leafCounter;
 
-	private final HashMap<short[], Decoder> cachedDecoders =
-		new HashMap<>();
+	private final HashMap<short[], Decoder> cachedDecoders = new HashMap<>();
 
 	// -- Codec API methods --
 
@@ -73,16 +73,17 @@ public class HuffmanCodec extends AbstractCodec {
 	 * {@link HuffmanCodecOptions#table table} {@link CodecOptions#bitsPerSample
 	 * bitsPerSample} {@link CodecOptions#maxBytes maxBytes}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
+	public byte[] decompress(final DataHandle<Location> in,
 		final CodecOptions options) throws FormatException, IOException
 	{
-		if (in == null) throw new IllegalArgumentException("No data to decompress.");
+		if (in == null) throw new IllegalArgumentException(
+			"No data to decompress.");
 		if (options == null || !(options instanceof HuffmanCodecOptions)) {
-			throw new FormatException("Options must be an instance of "
-				+ "loci.formats.codec.HuffmanCodecOptions.");
+			throw new FormatException("Options must be an instance of " +
+				"loci.formats.codec.HuffmanCodecOptions.");
 		}
 
 		final HuffmanCodecOptions huffman = (HuffmanCodecOptions) options;
@@ -114,8 +115,8 @@ public class HuffmanCodec extends AbstractCodec {
 			throw new IllegalArgumentException("No data to handle.");
 		}
 		if (options == null || !(options instanceof HuffmanCodecOptions)) {
-			throw new FormatException("Options must be an instance of "
-				+ "loci.formats.codec.HuffmanCodecOptions.");
+			throw new FormatException("Options must be an instance of " +
+				"loci.formats.codec.HuffmanCodecOptions.");
 		}
 
 		final HuffmanCodecOptions huffman = (HuffmanCodecOptions) options;

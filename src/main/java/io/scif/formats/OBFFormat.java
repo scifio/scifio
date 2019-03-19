@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,7 +39,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -51,6 +50,9 @@ import java.util.zip.Inflater;
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -147,7 +149,7 @@ public class OBFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final int fileVersion = OBFUtilities.getFileVersion(stream);
@@ -167,7 +169,7 @@ public class OBFFormat extends AbstractFormat {
 		// -- AbstractParser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -198,8 +200,8 @@ public class OBFFormat extends AbstractFormat {
 		{
 			getSource().seek(current);
 
-			final String magicString =
-				getSource().readString(STACK_MAGIC_STRING.length());
+			final String magicString = getSource().readString(STACK_MAGIC_STRING
+				.length());
 			final short magicNumber = getSource().readShort();
 			final int version = getSource().readInt();
 
@@ -218,7 +220,8 @@ public class OBFFormat extends AbstractFormat {
 				}
 
 				final int[] sizes = new int[MAXIMAL_NUMBER_OF_DIMENSIONS];
-				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
+				for (int dimension =
+					0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
 					final int size = getSource().readInt();
 					sizes[dimension] = dimension < numberOfDimensions ? size : 1;
@@ -231,7 +234,8 @@ public class OBFFormat extends AbstractFormat {
 				iMeta.setAxisLength(Axes.TIME, sizes[4]);
 
 				final List<Double> lengths = new ArrayList<>();
-				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
+				for (int dimension =
+					0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
 					final double length = getSource().readDouble();
 					if (dimension < numberOfDimensions) {
@@ -241,7 +245,8 @@ public class OBFFormat extends AbstractFormat {
 				iMeta.getTable().put("Lengths", lengths);
 
 				final List<Double> offsets = new ArrayList<>();
-				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
+				for (int dimension =
+					0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
 					final double offset = getSource().readDouble();
 					if (dimension < numberOfDimensions) {
@@ -276,18 +281,19 @@ public class OBFFormat extends AbstractFormat {
 				final String description = getSource().readString(lengthOfDescription);
 				iMeta.getTable().put("Description", description);
 
-				stack.setPosition(getSource().getFilePointer());
+				stack.setPosition(getSource().offset());
 
 				getMetadata().getStacks().add(stack);
 
 				if (fileVersion >= 1) {
 					getSource().skip(lengthOfData);
 
-					final long footer = getSource().getFilePointer();
+					final long footer = getSource().offset();
 					final int offset = getSource().readInt();
 
 					final List<Boolean> stepsPresent = new ArrayList<>();
-					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
+					for (int dimension =
+						0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
 						final int present = getSource().readInt();
 						if (dimension < numberOfDimensions) {
@@ -295,7 +301,8 @@ public class OBFFormat extends AbstractFormat {
 						}
 					}
 					final List<Boolean> stepLabelsPresent = new ArrayList<>();
-					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
+					for (int dimension =
+						0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
 						final int present = getSource().readInt();
 						if (dimension < numberOfDimensions) {
@@ -306,7 +313,8 @@ public class OBFFormat extends AbstractFormat {
 					getSource().seek(footer + offset);
 
 					final List<String> labels = new ArrayList<>();
-					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
+					for (int dimension =
+						0; dimension != numberOfDimensions; ++dimension)
 					{
 						final int length = getSource().readInt();
 						final String label = getSource().readString(length);
@@ -315,7 +323,8 @@ public class OBFFormat extends AbstractFormat {
 					iMeta.getTable().put("Labels", labels);
 
 					final List<List<Double>> steps = new ArrayList<>();
-					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
+					for (int dimension =
+						0; dimension != numberOfDimensions; ++dimension)
 					{
 						final List<Double> list = new ArrayList<>();
 						if (stepsPresent.get(dimension)) {
@@ -329,7 +338,8 @@ public class OBFFormat extends AbstractFormat {
 					iMeta.getTable().put("Steps", steps);
 
 					final List<List<String>> stepLabels = new ArrayList<>();
-					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
+					for (int dimension =
+						0; dimension != numberOfDimensions; ++dimension)
 					{
 						final List<String> list = new ArrayList<>();
 						if (stepLabelsPresent.get(dimension)) {
@@ -379,19 +389,22 @@ public class OBFFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buffer = plane.getBytes();
-			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
-			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
-			final int rows = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
-			final int columns = (int) meta.get(imageIndex).getAxisLength(Axes.X);
-			final int bytesPerPixel = meta.get(imageIndex).getBitsPerPixel() / 8;
+			final ImageMetadata imageMetadata = meta.get(imageIndex);
+			final int xIndex = imageMetadata.getAxisIndex(Axes.X);
+			final int yIndex = imageMetadata.getAxisIndex(Axes.Y);
+			final int x = (int) bounds.min(xIndex);
+			final int y = (int) bounds.min(yIndex);
+			final int w = (int) bounds.dimension(xIndex);
+			final int h = (int) bounds.dimension(yIndex);
+			final int rows = (int) imageMetadata.getAxisLength(Axes.Y);
+			final int columns = (int) imageMetadata.getAxisLength(Axes.X);
+			final int bytesPerPixel = imageMetadata.getBitsPerPixel() / 8;
 
 			final Stack stack = meta.getStacks().get(imageIndex);
 			if (stack.isCompression()) {
@@ -409,7 +422,7 @@ public class OBFFormat extends AbstractFormat {
 						cInflatedFrame.setNumber(-1);
 					}
 					if (cInflatedFrame.getNumber() == -1) {
-						getStream().seek(stack.getPosition());
+						getHandle().seek(stack.getPosition());
 						meta.getInflater().reset();
 					}
 
@@ -418,14 +431,13 @@ public class OBFFormat extends AbstractFormat {
 						int offset = 0;
 						while (offset != bytes.length) {
 							if (meta.getInflater().needsInput()) {
-								final long remainder =
-									stack.getPosition() + stack.getLength() -
-										getStream().getFilePointer();
+								final long remainder = stack.getPosition() + stack.getLength() -
+									getHandle().offset();
 								if (remainder > 0) {
-									final int length =
-										remainder > input.length ? input.length : (int) remainder;
+									final int length = remainder > input.length ? input.length
+										: (int) remainder;
 
-									getStream().read(input, 0, length);
+									getHandle().read(input, 0, length);
 									meta.getInflater().setInput(input, 0, length);
 								}
 								else {
@@ -436,9 +448,8 @@ public class OBFFormat extends AbstractFormat {
 								throw new FormatException("Unsupported zlib compression");
 							}
 							try {
-								offset +=
-									meta.getInflater().inflate(bytes, offset,
-										bytes.length - offset);
+								offset += meta.getInflater().inflate(bytes, offset,
+									bytes.length - offset);
 							}
 							catch (final DataFormatException exception) {
 								throw new FormatException(exception.getMessage());
@@ -454,10 +465,9 @@ public class OBFFormat extends AbstractFormat {
 			}
 			else {
 				for (int row = 0; row != h; ++row) {
-					getStream().seek(
-						stack.getPosition() +
-							((planeIndex * rows + row + y) * columns + x) * bytesPerPixel);
-					getStream().read(buffer, row * w * bytesPerPixel, w * bytesPerPixel);
+					getHandle().seek(stack.getPosition() + ((planeIndex * rows + row +
+						y) * columns + x) * bytesPerPixel);
+					getHandle().read(buffer, row * w * bytesPerPixel, w * bytesPerPixel);
 				}
 			}
 
@@ -522,18 +532,20 @@ public class OBFFormat extends AbstractFormat {
 			}
 		}
 
-		public static int getFileVersion(final RandomAccessInputStream stream)
+		public static int getFileVersion(final DataHandle<Location> stream)
 			throws IOException
 		{
-			if (!FormatTools.validStream(stream, FILE_MAGIC_STRING.length(), false)) return -1;
+			if (!FormatTools.validStream(stream, FILE_MAGIC_STRING.length(), false))
+				return -1;
 
 			stream.seek(0);
 
-			stream.order(OBFUtilities.LITTLE_ENDIAN);
+			stream.setOrder(OBFUtilities.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN
+				: ByteOrder.BIG_ENDIAN);
 
 			try {
-				final String magicString =
-					stream.readString(FILE_MAGIC_STRING.length());
+				final String magicString = stream.readString(FILE_MAGIC_STRING
+					.length());
 				final short magicNumber = stream.readShort();
 				final int version = stream.readInt();
 

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -96,8 +96,8 @@ public class DefaultMetadataService extends AbstractService implements
 
 	@Override
 	public void populate(final Object metadata, final Map<String, Object> map) {
-		final List<java.lang.reflect.Field> fields =
-			ClassUtils.getAnnotatedFields(metadata.getClass(), Field.class);
+		final List<java.lang.reflect.Field> fields = ClassUtils.getAnnotatedFields(
+			metadata.getClass(), Field.class);
 		for (final java.lang.reflect.Field field : fields) {
 			final String name = field.getName();
 			if (!map.containsKey(name)) {

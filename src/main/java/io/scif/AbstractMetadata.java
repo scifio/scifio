@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,13 +29,14 @@
 
 package io.scif;
 
-import io.scif.io.RandomAccessInputStream;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Metadata} implementations.
@@ -52,14 +53,19 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	// -- Fields --
 
 	/* The image source associated with this Metadata. */
-	private RandomAccessInputStream source;
+	private transient DataHandle<Location> source;
+
+	/* The image source location associated with this Metadata. */
+	private transient Location sourceLocation;
+
+	/** The location an image with this metadata will be written to. */
+	private transient Location destinationLocation;
 
 	/* Whether the Metadata should be filtered or not. */
 	private boolean filtered;
 
 	/* Contains a list of metadata objects for each image in this dataset */
-	@io.scif.Field(label = "imageMeta", isList = true)
-	private List<ImageMetadata> imageMeta;
+	private transient List<ImageMetadata> imageMeta;
 
 	/* A string id for this dataset. */
 	private String datasetName = null;
@@ -93,14 +99,34 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	// -- Metadata API Methods --
 
 	@Override
-	public void setSource(final RandomAccessInputStream source) {
+	public void setSource(final DataHandle<Location> source) {
 		this.source = source;
 
-		if (source != null) setDatasetName(source.getFileName());
+		if (source != null) setDatasetName(source.get().getName());
 	}
 
 	@Override
-	public RandomAccessInputStream getSource() {
+	public void setSourceLocation(Location loc) {
+		sourceLocation = loc;
+	}
+	
+	@Override
+	public Location getSourceLocation() {
+		return sourceLocation;
+	}
+
+	@Override
+	public Location getDestinationLocation() {
+		return destinationLocation;
+	}
+
+	@Override
+	public void setDestinationLocation(Location loc) {
+		this.destinationLocation = loc;
+	}
+
+	@Override
+	public DataHandle<Location> getSource() {
 		return source;
 	}
 

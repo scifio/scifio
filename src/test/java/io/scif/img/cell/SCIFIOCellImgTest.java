@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,35 +34,16 @@ import static org.junit.Assert.assertNull;
 
 import io.scif.img.IO;
 import io.scif.img.SCIFIOImgPlus;
-import io.scif.io.TestParameters;
-
-import java.util.Collection;
+import io.scif.io.location.TestImgLocation;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for the {@link SCIFIOCellImg} and related classes.
  *
  * @author Mark Hiner
  */
-@RunWith(Parameterized.class)
 public class SCIFIOCellImgTest {
-
-	@Parameters
-	public static Collection<Object[]> parameters() {
-		return TestParameters.parameters("cellTests");
-	}
-
-	private final String provider;
-
-	public SCIFIOCellImgTest(final String provider, final boolean checkGrowth,
-		final boolean testLength)
-	{
-		this.provider = provider;
-	}
 
 	/**
 	 * Test that when a {@link SCIFIOCellImg} is opened and disposed, the
@@ -71,8 +52,10 @@ public class SCIFIOCellImgTest {
 	@Test
 	public void testReaderCleanup() {
 		// Make an id that will trigger cell creation
-		final String id = "lotsofplanes&axes=X,Y,Z&lengths=256,256,100000.fake";
-		final SCIFIOImgPlus<?> img = IO.open(id);
+		TestImgLocation loc = TestImgLocation.builder().name("lotsofplanes").axes(
+			"X", "Y", "Z").lengths(256, 256, 100000).build();
+		final SCIFIOImgPlus<?> img = IO.open(loc).get(0);
+
 		assertNotNull(((SCIFIOCellImg) img.getImg()).reader().getMetadata());
 		img.dispose();
 		assertNull(((SCIFIOCellImg) img.getImg()).reader().getMetadata());

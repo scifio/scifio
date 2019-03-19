@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,6 +31,8 @@ package io.scif;
 
 import java.io.IOException;
 
+import org.scijava.io.location.Location;
+
 /**
  * Interface for components that can group multiple files together (e.g. for
  * Parsing metadata or reading pixels)
@@ -43,10 +45,10 @@ public interface Groupable {
 	 * Returns an int indicating that we cannot, must, or might group the files in
 	 * a given dataset.
 	 */
-	int fileGroupOption(String id) throws FormatException, IOException;
+	int fileGroupOption(Location id) throws FormatException, IOException;
 
 	/** Returns true if this is a single-file format. */
-	boolean isSingleFile(String id) throws FormatException, IOException;
+	boolean isSingleFile(Location id) throws FormatException, IOException;
 
 	/** Returns true if this format supports multi-file datasets. */
 	boolean hasCompanionFiles();

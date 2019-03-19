@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,11 +34,13 @@ import static org.junit.Assert.assertEquals;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 
 import org.junit.Test;
 import org.scijava.InstantiableException;
+import org.scijava.io.location.Location;
 
 /**
  * Tests for {@link PlaneSeparator}.
@@ -49,8 +51,8 @@ public class PlaneSeparatorTest {
 
 	private final SCIFIO scifio = new SCIFIO();
 
-	private final String id =
-		"testImg&lengths=3,4,512,512&axes=Channel,Time,X,Y.fake";
+	private final Location id = TestImgLocation.builder().lengths(3, 4, 512, 512)
+		.axes("Channel", "Time", "X", "Y").build();
 
 	/**
 	 * Verify that multiple interleaved axes are automatically extracted.
@@ -58,8 +60,8 @@ public class PlaneSeparatorTest {
 	 * @throws InstantiableException
 	 */
 	@Test
-	public void testMultipleInterleavedAxes() throws FormatException,
-		IOException, InstantiableException
+	public void testMultipleInterleavedAxes() throws FormatException, IOException,
+		InstantiableException
 	{
 		final Reader filter = scifio.initializer().initializeReader(id);
 		// Verify that we are starting with 4 planar axes, 2 of which are

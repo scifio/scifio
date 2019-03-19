@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,7 +39,6 @@ import io.scif.Reader;
 import io.scif.Writer;
 import io.scif.app.SCIFIOApp;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -53,6 +52,9 @@ import java.util.TreeSet;
 import java.util.WeakHashMap;
 
 import org.scijava.app.AppService;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
+import org.scijava.io.location.RemoteLocation;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -128,7 +130,7 @@ public class DefaultFormatService extends AbstractService implements
 	 * TODO: Update this logic for
 	 * https://github.com/scifio/scifio/issues/237
 	 */
-	private Map<String, Format> formatCache;
+	private Map<Location, Format> formatCache;
 
 	private boolean dirtyFormatCache = false;
 
@@ -165,7 +167,7 @@ public class DefaultFormatService extends AbstractService implements
 		// already have an entry for this format
 		if (formatMap().get(format.getClass()) != null) return false;
 
-		synchronized(formats) {
+		synchronized (formats) {
 			// synchronized lock to protect format adding
 			if (formatMap().get(format.getClass()) == null) {
 				formats().add(format);
@@ -249,7 +251,7 @@ public class DefaultFormatService extends AbstractService implements
 	}
 
 	@Override
-	public Writer getWriterByExtension(final String fileId)
+	public Writer getWriterForLocation(final Location fileId)
 		throws FormatException
 	{
 		boolean matched = false;
@@ -257,7 +259,15 @@ public class DefaultFormatService extends AbstractService implements
 		Writer w = null;
 
 		for (final Format f : formats()) {
-			if (!matched && FormatTools.checkSuffix(fileId, f.getSuffixes())) {
+			
+			if (f.ownsLocationType(fileId)) {
+				w = f.createWriter();
+				matched = true;
+			}
+			
+			if (!matched && FormatTools.checkSuffix(fileId.getName(), f
+				.getSuffixes()))
+			{
 
 				if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
 					w = f.createWriter();
@@ -268,7 +278,7 @@ public class DefaultFormatService extends AbstractService implements
 
 		if (w == null) {
 			throw new FormatException(
-				"No compatible output format found for extension: " + fileId);
+				"No compatible output format found for location: " + fileId);
 		}
 		return w;
 	}
@@ -295,14 +305,19 @@ public class DefaultFormatService extends AbstractService implements
 	}
 
 	@Override
-	public Format getFormat(final String id) throws FormatException {
+	public Format getFormat(final Location id) throws FormatException {
 		return getFormat(id, new SCIFIOConfig().checkerSetOpen(false));
 	}
 
 	@Override
-	public Format getFormat(final String id, final SCIFIOConfig config)
+	public Format getFormat(final Location id, final SCIFIOConfig config)
 		throws FormatException
 	{
+		// We do not want remote file access by each checker
+		if (id instanceof RemoteLocation) {
+			config.checkerSetOpen(false);
+		}
+
 		Format format = formatCache().get(id);
 		if (format == null) {
 			format = getFormatList(id, config, true).get(0);
@@ -315,26 +330,24 @@ public class DefaultFormatService extends AbstractService implements
 	}
 
 	@Override
-	public List<Format> getFormatList(final String id) throws FormatException {
+	public List<Format> getFormatList(final Location id) throws FormatException {
 		return getFormatList(id, new SCIFIOConfig().checkerSetOpen(false), false);
 	}
 
 	@Override
-	public List<Format> getFormatList(final String id, final SCIFIOConfig config,
-		final boolean greedy) throws FormatException
+	public List<Format> getFormatList(final Location id,
+		final SCIFIOConfig config, final boolean greedy) throws FormatException
 	{
 
 		final List<Format> formatList = new ArrayList<>();
 
-		boolean found = false;
-
 		for (final Format format : formats()) {
-			if (!found && format.isEnabled() &&
-				format.createChecker().isFormat(id, config))
-			{
-				// if greedy is true, we can end after finding the first format
-				found = greedy;
+			if (format.isEnabled() && format.createChecker().isFormat(id, config)) {
+
 				formatList.add(format);
+
+				// if greedy is true, we can end after finding the first format
+				if (greedy) break;
 			}
 		}
 
@@ -342,28 +355,29 @@ public class DefaultFormatService extends AbstractService implements
 	}
 
 	@Override
-	public Format getFormat(final RandomAccessInputStream source)
+	public Format getFormat(final DataHandle<Location> source)
 		throws FormatException
 	{
 		return getFormat(source, new SCIFIOConfig().checkerSetOpen(true));
 	}
 
 	@Override
-	public Format getFormat(final RandomAccessInputStream source, final SCIFIOConfig config)
-		throws FormatException
+	public Format getFormat(final DataHandle<Location> source,
+		final SCIFIOConfig config) throws FormatException
 	{
 		return getFormatList(source, config, true).get(0);
 	}
 
 	@Override
-	public List<Format> getFormatList(final RandomAccessInputStream source)
+	public List<Format> getFormatList(final DataHandle<Location> source)
 		throws FormatException
 	{
-		return getFormatList(source, new SCIFIOConfig().checkerSetOpen(true), false);
+		return getFormatList(source, new SCIFIOConfig().checkerSetOpen(true),
+			false);
 	}
 
 	@Override
-	public List<Format> getFormatList(final RandomAccessInputStream source,
+	public List<Format> getFormatList(final DataHandle<Location> source,
 		final SCIFIOConfig config, final boolean greedy) throws FormatException
 	{
 		final List<Format> formatList = new ArrayList<>();
@@ -372,8 +386,8 @@ public class DefaultFormatService extends AbstractService implements
 
 		for (final Format format : formats()) {
 			try {
-				if (!found && format.isEnabled() &&
-					format.createChecker().isFormat(source))
+				if (!found && format.isEnabled() && format.createChecker().isFormat(
+					source))
 				{
 					// if greedy is true, we can end after finding the first format
 					found = greedy;
@@ -434,7 +448,7 @@ public class DefaultFormatService extends AbstractService implements
 				try {
 					Thread.sleep(50);
 				}
-				catch (InterruptedException exc) { }
+				catch (final InterruptedException exc) {}
 			}
 
 			// Initialize format information
@@ -485,7 +499,7 @@ public class DefaultFormatService extends AbstractService implements
 		return metadataMap;
 	}
 
-	private Map<String, Format> formatCache() {
+	private Map<Location, Format> formatCache() {
 		checkLock();
 		if (dirtyFormatCache) {
 			// Double lock so that a cache is only cleared once
@@ -518,7 +532,7 @@ public class DefaultFormatService extends AbstractService implements
 						// Limit excessive polling
 						Thread.sleep(100);
 					}
-					catch (InterruptedException e) {
+					catch (final InterruptedException e) {
 						logService.error("DefaultFormatService: " +
 							"Interrupted while waiting for format initialization.", e);
 					}

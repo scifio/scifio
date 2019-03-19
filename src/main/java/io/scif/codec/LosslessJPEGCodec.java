@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,10 +31,11 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -140,13 +141,14 @@ public class LosslessJPEGCodec extends AbstractCodec {
 	 * {@link CodecOptions#interleaved interleaved}
 	 * {@link CodecOptions#littleEndian littleEndian}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
-		if (in == null) throw new IllegalArgumentException("No data to decompress.");
+		if (in == null) throw new IllegalArgumentException(
+			"No data to decompress.");
 		if (options == null) options = CodecOptions.getDefaultOptions();
 		byte[] buf = new byte[0];
 
@@ -160,10 +162,10 @@ public class LosslessJPEGCodec extends AbstractCodec {
 
 		int[] dcTable = null, acTable = null;
 
-		while (in.getFilePointer() < in.length() - 1) {
+		while (in.offset() < in.length() - 1) {
 			final int code = in.readShort() & 0xffff;
 			int length = in.readShort() & 0xffff;
-			final long fp = in.getFilePointer();
+			final long fp = in.offset();
 			if (length > 0xff00) {
 				length = 0;
 				in.seek(fp - 2);
@@ -184,7 +186,7 @@ public class LosslessJPEGCodec extends AbstractCodec {
 
 				// read image data
 
-				byte[] toDecode = new byte[(int) (in.length() - in.getFilePointer())];
+				byte[] toDecode = new byte[(int) (in.length() - in.offset())];
 				in.read(toDecode);
 
 				// scrub out byte stuffing
@@ -231,20 +233,17 @@ public class LosslessJPEGCodec extends AbstractCodec {
 						final int componentOffset = i * (buf.length / nComponents);
 
 						final int indexA = nextSample - bytesPerSample + componentOffset;
-						final int indexB =
-							nextSample - width * bytesPerSample + componentOffset;
-						final int indexC =
-							nextSample - (width + 1) * bytesPerSample + componentOffset;
+						final int indexB = nextSample - width * bytesPerSample +
+							componentOffset;
+						final int indexC = nextSample - (width + 1) * bytesPerSample +
+							componentOffset;
 
-						final int sampleA =
-							indexA < 0 ? 0 : Bytes.toInt(buf, indexA,
-								bytesPerSample, false);
-						final int sampleB =
-							indexB < 0 ? 0 : Bytes.toInt(buf, indexB,
-								bytesPerSample, false);
-						final int sampleC =
-							indexC < 0 ? 0 : Bytes.toInt(buf, indexC,
-								bytesPerSample, false);
+						final int sampleA = indexA < 0 ? 0 : Bytes.toInt(buf, indexA,
+							bytesPerSample, false);
+						final int sampleB = indexB < 0 ? 0 : Bytes.toInt(buf, indexB,
+							bytesPerSample, false);
+						final int sampleC = indexC < 0 ? 0 : Bytes.toInt(buf, indexC,
+							bytesPerSample, false);
 
 						if (nextSample > 0) {
 							int pred = 0;

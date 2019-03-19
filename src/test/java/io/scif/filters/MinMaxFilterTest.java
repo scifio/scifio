@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,12 +34,14 @@ import static org.junit.Assert.assertEquals;
 
 import io.scif.FormatException;
 import io.scif.SCIFIO;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
 
 import org.junit.Test;
+import org.scijava.io.location.Location;
 
 /**
  * Tests for {@link MinMaxFilter}.
@@ -50,8 +52,8 @@ public class MinMaxFilterTest {
 
 	private final SCIFIO scifio = new SCIFIO();
 
-	private final String id =
-		"testImg&lengths=3,127,127,4&axes=Channel,X,Y,Time&planarDims=3.fake";
+	private final Location id = new TestImgLocation.Builder().lengths(3, 127, 127,
+		4).axes("Channel", "X", "Y", "Time").planarDims(3).build();
 
 	@Test
 	public void testMinMax() throws FormatException, IOException {

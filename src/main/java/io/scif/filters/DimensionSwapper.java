@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,6 +43,7 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imglib2.Interval;
 
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -94,8 +95,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 				"newOrder specifies different axes");
 		}
 
-		if (metaCheck() &&
-			!(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null))
+		if (metaCheck() && !(((DimensionSwapperMetadata) getMetadata())
+			.getOutputOrder() == null))
 		{
 			((DimensionSwapperMetadata) getMetadata()).getOutputOrder()[imageIndex] =
 				getInputOrder(imageIndex);
@@ -118,8 +119,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	{
 //		FormatTools.assertId(getCurrentFile(), true, 2);
 
-		if (metaCheck() &&
-			!(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null))
+		if (metaCheck() && !(((DimensionSwapperMetadata) getMetadata())
+			.getOutputOrder() == null))
 		{
 			((DimensionSwapperMetadata) getMetadata()).getOutputOrder()[imageIndex] =
 				outputOrder;
@@ -150,8 +151,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		List<AxisType> outOrder = null;
 
 		if (metaCheck()) {
-			outOrder =
-				((DimensionSwapperMetadata) getMetadata()).getOutputOrder()[imageIndex];
+			outOrder = ((DimensionSwapperMetadata) getMetadata())
+				.getOutputOrder()[imageIndex];
 		}
 		if (outOrder != null) return outOrder;
 		return getInputOrder(imageIndex);
@@ -160,14 +161,14 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	// -- AbstractReaderFilter API Methods --
 
 	@Override
-	protected void
-		setSourceHelper(final String source, final SCIFIOConfig config)
+	protected void setSourceHelper(final Location source,
+		final SCIFIOConfig config)
 	{
-		final String oldFile = getCurrentFile();
-		if (!source.equals(oldFile) ||
-			metaCheck() &&
-			(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null || ((DimensionSwapperMetadata) getMetadata())
-				.getOutputOrder().length != getImageCount()))
+		final Location oldFile = getCurrentLocation();
+		if (!source.equals(oldFile) || metaCheck() &&
+			(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null ||
+				((DimensionSwapperMetadata) getMetadata())
+					.getOutputOrder().length != getImageCount()))
 		{
 			@SuppressWarnings("unchecked")
 			final List<AxisType>[] axisTypeList = new ArrayList[getImageCount()];
@@ -176,8 +177,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 			// NB: Create our own copy of the Metadata,
 			// which we can manipulate safely.
 			// TODO should be a copy method
-			if (metaCheck()) ((DimensionSwapperMetadata) getMetadata())
-				.wrap(getParent().getMetadata());
+			if (metaCheck()) ((DimensionSwapperMetadata) getMetadata()).wrap(
+				getParent().getMetadata());
 		}
 	}
 
@@ -199,20 +200,17 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds) throws FormatException,
-		IOException
+		final Interval bounds) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, bounds,
-			new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final Interval bounds)
-		throws FormatException, IOException
+		final Plane plane, final Interval bounds) throws FormatException,
+		IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, bounds,
-			new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
 	}
 
 	@Override
@@ -224,11 +222,11 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Interval bounds, final SCIFIOConfig config)
-		throws FormatException, IOException
+		final Interval bounds, final SCIFIOConfig config) throws FormatException,
+		IOException
 	{
-		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex),
-			bounds, config);
+		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), bounds,
+			config);
 	}
 
 	@Override
@@ -268,9 +266,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	private long reorder(final int imageIndex, final long planeIndex) {
 		if (!metaCheck()) return planeIndex;
 
-		final long[] originalPosition =
-			FormatTools.rasterToPosition(getMetadata().get(imageIndex)
-				.getAxesLengthsNonPlanar(), planeIndex);
+		final long[] originalPosition = FormatTools.rasterToPosition(getMetadata()
+			.get(imageIndex).getAxesLengthsNonPlanar(), planeIndex);
 
 		final List<AxisType> swappedOrder = getDimensionOrder(imageIndex);
 
@@ -281,9 +278,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 			final int offset = getMetadata().get(imageIndex).getPlanarAxisCount();
 			final AxisType type = swappedOrder.get(i + offset);
 			lengths[i] = getMetadata().get(imageIndex).getAxisLength(type);
-			swappedPosition[i] =
-				originalPosition[getMetadata().get(imageIndex).getAxisIndex(type) -
-					offset];
+			swappedPosition[i] = originalPosition[getMetadata().get(imageIndex)
+				.getAxisIndex(type) - offset];
 		}
 
 		return (int) FormatTools.positionToRaster(lengths, swappedPosition);

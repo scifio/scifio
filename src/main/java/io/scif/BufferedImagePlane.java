@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,7 +36,6 @@ import java.awt.image.BufferedImage;
 import net.imglib2.Interval;
 import net.imglib2.util.Intervals;
 
-import org.scijava.Context;
 import org.scijava.util.Bytes;
 
 /**
@@ -59,14 +58,12 @@ public class BufferedImagePlane extends
 
 	// -- Constructor --
 
-	public BufferedImagePlane(final Context context) {
-		super(context);
+	public BufferedImagePlane() {
+		// nothing to do here
 	}
 
-	public BufferedImagePlane(final Context context, final ImageMetadata meta,
-		final Interval bounds)
-	{
-		super(context, meta, bounds);
+	public BufferedImagePlane(final ImageMetadata meta, final Interval bounds) {
+		super(meta, bounds);
 	}
 
 	// -- Plane API methods --
@@ -95,8 +92,8 @@ public class BufferedImagePlane extends
 					for (int c = 0; c < ts.length; c++) {
 						int offset = c * ts[c].length * 2;
 						for (int i = 0; i < ts[c].length; i++) {
-							Bytes.unpack(ts[c][i], cachedBytes, offset, 2,
-								getImageMetadata().isLittleEndian());
+							Bytes.unpack(ts[c][i], cachedBytes, offset, 2, getImageMetadata()
+								.isLittleEndian());
 							offset += 2;
 						}
 					}

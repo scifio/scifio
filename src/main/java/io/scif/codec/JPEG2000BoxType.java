@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,9 +40,9 @@ import java.util.Map;
  */
 public enum JPEG2000BoxType implements CodedEnum {
 
-	SIGNATURE(0x6A502020, "Signature"), SIGNATURE_WRONG_ENDIANNESS(0x2020506A,
-		"Signature (Wrong endianness)"), FILE(0x66747970, "File"), HEADER(
-		0x6A703268, "Header"), IMAGE_HEADER(0x69686472, "Image header"),
+		SIGNATURE(0x6A502020, "Signature"), SIGNATURE_WRONG_ENDIANNESS(0x2020506A,
+			"Signature (Wrong endianness)"), FILE(0x66747970, "File"), HEADER(
+				0x6A703268, "Header"), IMAGE_HEADER(0x69686472, "Image header"),
 		BITS_PER_COMPONENT(0x62706363, "Bits per component"), COLOUR_SPECIFICATION(
 			0x636F6C72, "Colour specification"), PALETTE(0x70636C72, "Palette"),
 		COMPONENT_MAPPING(0x636D6170, "Component mapping"), CHANNEL_DEFINITION(
@@ -54,7 +54,7 @@ public enum JPEG2000BoxType implements CodedEnum {
 			"XML"), UUID(0x75756964, "UUID"), UUID_INFO(0x75696E66, "UUID info"),
 		UUID_LIST(0x756C7374, "UUID list"), URL(0x75726C20, "URL"), ASSOCIATION(
 			0x61736F63, "Association"), LABEL(0x6C626C20, "Label"), PLACEHOLDER(
-			0x70686C64, "Placeholder");
+				0x70686C64, "Placeholder");
 
 	/** Code for the box type. */
 	private int code;
@@ -63,8 +63,7 @@ public enum JPEG2000BoxType implements CodedEnum {
 	private String name;
 
 	/** Map used to retrieve the box type corresponding to the code. */
-	private static final Map<Integer, JPEG2000BoxType> lookup =
-		new HashMap<>();
+	private static final Map<Integer, JPEG2000BoxType> lookup = new HashMap<>();
 
 	/** Reverse lookup of code to box type enumerate value. */
 	static {
@@ -77,8 +76,8 @@ public enum JPEG2000BoxType implements CodedEnum {
 	 * Retrieves the box type by reverse lookup of its "code".
 	 *
 	 * @param code The code to look up.
-	 * @return The {@code JPEG2000BoxType} instance for the {@code code}
-	 *         or {@code null} if it does not exist.
+	 * @return The {@code JPEG2000BoxType} instance for the {@code code} or
+	 *         {@code null} if it does not exist.
 	 */
 	public static JPEG2000BoxType get(final int code) {
 		return lookup.get(code);

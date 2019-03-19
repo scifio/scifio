@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,10 +31,11 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -46,8 +47,8 @@ public class MJPBCodec extends AbstractCodec {
 
 	// -- Constants --
 
-	private static final byte[] HEADER = new byte[] { (byte) 0xff, (byte) 0xd8,
-		0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0x48, 0x48, 0, 0 };
+	private static final byte[] HEADER = new byte[] { (byte) 0xff, (byte) 0xd8, 0,
+		16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0x48, 0x48, 0, 0 };
 
 	@Parameter
 	private CodecService codecService;
@@ -66,27 +67,26 @@ public class MJPBCodec extends AbstractCodec {
 	 * The CodecOptions parameter must be an instance of {@link MJPBCodecOptions},
 	 * and should have the following fields set:
 	 * {@link MJPBCodecOptions#interlaced interlaced} {@link CodecOptions#width
-	 * width} {@link CodecOptions#height height}
-	 * {@link CodecOptions#bitsPerSample bitsPerSample}
-	 * {@link CodecOptions#littleEndian littleEndian}
+	 * width} {@link CodecOptions#height height} {@link CodecOptions#bitsPerSample
+	 * bitsPerSample} {@link CodecOptions#littleEndian littleEndian}
 	 * {@link CodecOptions#interleaved interleaved}
 	 *
-	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 * @see Codec#decompress(DataHandle, CodecOptions)
 	 */
 	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		CodecOptions options) throws FormatException, IOException
+	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
+		throws FormatException, IOException
 	{
 		if (options == null) options = CodecOptions.getDefaultOptions();
 		if (!(options instanceof MJPBCodecOptions)) {
-			throw new FormatException("Options must be an instance of "
-				+ "loci.formats.codec.MJPBCodecOptions");
+			throw new FormatException("Options must be an instance of " +
+				"loci.formats.codec.MJPBCodecOptions");
 		}
 
 		byte[] raw = null;
 		byte[] raw2 = null;
 
-		final long fp = in.getFilePointer();
+		final long fp = in.offset();
 
 		try {
 			in.skipBytes(4);
@@ -97,7 +97,7 @@ public class MJPBCodec extends AbstractCodec {
 			final String s1 = in.readString(4);
 			in.skipBytes(12);
 			final String s2 = in.readString(4);
-			in.seek(in.getFilePointer() - 4);
+			in.seek(in.offset() - 4);
 			if (s1.equals("mjpg") || s2.equals("mjpg")) {
 				int extra = 16;
 				if (s1.startsWith("m")) {
@@ -120,11 +120,10 @@ public class MJPBCodec extends AbstractCodec {
 					in.read(quant);
 				}
 				else {
-					quant =
-						new byte[] { 7, 5, 5, 6, 5, 5, 7, 6, 6, 6, 8, 7, 7, 8, 10, 17, 11,
-							10, 9, 9, 10, 20, 15, 15, 12, 17, 24, 21, 25, 25, 23, 21, 23, 23,
-							26, 29, 37, 32, 26, 28, 35, 28, 23, 23, 33, 44, 33, 35, 39, 40,
-							42, 42, 42, 25, 31, 46, 49, 45, 41, 49, 37, 41, 42, 40 };
+					quant = new byte[] { 7, 5, 5, 6, 5, 5, 7, 6, 6, 6, 8, 7, 7, 8, 10, 17,
+						11, 10, 9, 9, 10, 20, 15, 15, 12, 17, 24, 21, 25, 25, 23, 21, 23,
+						23, 26, 29, 37, 32, 26, 28, 35, 28, 23, 23, 33, 44, 33, 35, 39, 40,
+						42, 42, 42, 25, 31, 46, 49, 45, 41, 49, 37, 41, 42, 40 };
 				}
 
 				if (huffmanOffset != 0 && huffmanOffset + fp < in.length()) {
@@ -167,8 +166,8 @@ public class MJPBCodec extends AbstractCodec {
 				}
 
 				in.seek(fp + sod);
-				int numBytes = (int) (offset - in.getFilePointer());
-				if (offset == 0) numBytes = (int) (in.length() - in.getFilePointer());
+				int numBytes = (int) (offset - in.offset());
+				if (offset == 0) numBytes = (int) (in.length() - in.offset());
 				raw = new byte[numBytes];
 				in.read(raw);
 
@@ -176,9 +175,9 @@ public class MJPBCodec extends AbstractCodec {
 					in.seek(fp + offset + 36);
 					final int n = in.readInt();
 					in.skipBytes(n);
-					in.seek(in.getFilePointer() - 40);
+					in.seek(in.offset() - 40);
 
-					numBytes = (int) (in.length() - in.getFilePointer());
+					numBytes = (int) (in.length() - in.offset());
 					raw2 = new byte[numBytes];
 					in.read(raw2);
 				}
@@ -219,8 +218,8 @@ public class MJPBCodec extends AbstractCodec {
 			v.add(quant);
 
 			v.add(new byte[] { (byte) 0xff, (byte) 0xc4 });
-			length =
-				(lumDcBits.length + lumDc.length + lumAcBits.length + lumAc.length) * 2 + 6;
+			length = (lumDcBits.length + lumDc.length + lumAcBits.length +
+				lumAc.length) * 2 + 6;
 			v.add((byte) ((length >>> 8) & 0xff));
 			v.add((byte) (length & 0xff));
 
@@ -248,8 +247,8 @@ public class MJPBCodec extends AbstractCodec {
 			if (((MJPBCodecOptions) options).interlaced) fieldHeight /= 2;
 			if (options.height % 2 == 1) fieldHeight++;
 
-			final int c =
-				options.bitsPerSample == 24 ? 3 : (options.bitsPerSample == 32 ? 4 : 1);
+			final int c = options.bitsPerSample == 24 ? 3
+				: (options.bitsPerSample == 32 ? 4 : 1);
 
 			v.add(options.bitsPerSample >= 40 ? (byte) (options.bitsPerSample - 32)
 				: (byte) (options.bitsPerSample / c));
@@ -309,12 +308,11 @@ public class MJPBCodec extends AbstractCodec {
 				final byte[] top = jpeg.decompress(v.toByteArray(), options);
 				final byte[] bottom = jpeg.decompress(v2.toByteArray(), options);
 
-				final int bpp =
-					options.bitsPerSample < 40 ? options.bitsPerSample / 8
-						: (options.bitsPerSample - 32) / 8;
+				final int bpp = options.bitsPerSample < 40 ? options.bitsPerSample / 8
+					: (options.bitsPerSample - 32) / 8;
 				final int ch = options.bitsPerSample < 40 ? 3 : 1;
-				final byte[] result =
-					new byte[options.width * options.height * bpp * ch];
+				final byte[] result = new byte[options.width * options.height * bpp *
+					ch];
 
 				int topNdx = 0;
 				int bottomNdx = 0;

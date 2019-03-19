@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,6 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import io.scif.img.axes.SCIFIOAxes;
+import io.scif.io.location.TestImgLocation;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -42,6 +43,7 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 
 import org.junit.Test;
+import org.scijava.io.location.Location;
 
 /**
  * Unit tests for {@link io.scif.Metadata} interface methods.
@@ -52,11 +54,12 @@ public class MetadataTest {
 
 	private final SCIFIO scifio = new SCIFIO();
 
-	private final String id =
-		"testImg&lengths=620,512,5,6,7&axes=X,Y,Time,Z,Channel.fake";
+	private final Location id = new TestImgLocation.Builder().name("testImg")
+		.lengths(620, 512, 5, 6, 7).axes("X", "Y", "Time", "Z", "Channel").build();
 
-	private final String ndId =
-		"ndImg&axes=X,Y,Z,Channel,Time,Lifetime,Spectra,&lengths=256,128,2,6,10,4,8.fake";
+	private final Location ndId = new TestImgLocation.Builder().name("ndImg")
+		.axes("X", "Y", "Z", "Channel", "Time", "Lifetime", "Spectra").lengths(256,
+			128, 2, 6, 10, 4, 8).build();
 
 	/**
 	 * Down the middle test that verifies each method of the Metadata API.
@@ -214,8 +217,8 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testTrailingAxis() throws IOException, FormatException {
-		final String id =
-			"testImg&planarDims=2&lengths=620,512,1,&axes=X,Y,Time.fake";
+		final Location id = new TestImgLocation.Builder().planarDims(2).lengths(620,
+			512, 1).axes("X", "Y", "Time").build();
 		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(2, m.get(0).getAxes().size());
@@ -234,8 +237,8 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testAxisCount() throws IOException, FormatException {
-		final String id =
-			"testImg&lengths=620,512,1,5,1&axes=X,Y,Time,Z,Channel.fake";
+		final Location id = new TestImgLocation.Builder().name("testImg").lengths(
+			620, 512, 1, 5, 1).axes("X", "Y", "Time", "Z", "Channel").build();
 		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(4, m.get(0).getAxes().size());
@@ -247,7 +250,8 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testAdjustingTrailingAxis() throws IOException, FormatException {
-		final String id = "testImg&lengths=620,512,1&axes=X,Y,Time.fake";
+		final Location id = new TestImgLocation.Builder().name("testImg").lengths(
+			620, 512, 1).axes("X", "Y", "Time").build();
 		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(2, m.get(0).getAxes().size());

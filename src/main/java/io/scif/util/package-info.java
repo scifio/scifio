@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,18 +28,18 @@
  */
 
 /**
- *  Provides utility classes for common operations on or by SCIFIO components.
- *
+ * Provides utility classes for common operations on or by SCIFIO components.
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
- *  <li>
- *  Because of the split between SCIFIO and OME-XML classes, the Bio-Formats
- *  tools class was split into {@code ome.xml.services.DefaultOMEXMLMetadataService} and
- *  {@link io.scif.util.SCIFIOMetadataTools}. The OMEXMLMetadata classes can now
- *  be found in the <a href=https://github.com/scifio/ome-formats>OME-Formats project</a>.
- *  </li>
+ * <li>Because of the split between SCIFIO and OME-XML classes, the Bio-Formats
+ * tools class was split into
+ * {@code ome.xml.services.DefaultOMEXMLMetadataService} and
+ * {@link io.scif.util.SCIFIOMetadataTools}. The OMEXMLMetadata classes can now
+ * be found in the <a href=https://github.com/scifio/ome-formats>OME-Formats
+ * project</a>.</li>
  * </ul>
- * 
+ *
  * @author Mark Hiner
  */
+
 package io.scif.util;
