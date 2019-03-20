@@ -52,6 +52,7 @@ import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -166,8 +167,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 
 	/** Converts SCIFIO pixel type to ImgLib2 Type object. */
 	@Override
-	public RealType<?> makeType(final int pixelType) {
-		final RealType<?> type;
+	public Type<?> makeType(final int pixelType) {
+		final Type<?> type;
 		switch (pixelType) {
 			case FormatTools.UINT8:
 				type = new UnsignedByteType();

@@ -34,7 +34,6 @@ import io.scif.config.SCIFIOConfig.ImgMode;
 
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.type.NativeType;
 
 /**
  * Interface for selecting an {@link ImgFactory} type based on a list of
@@ -52,6 +51,6 @@ public interface ImgFactoryHeuristic {
 	 * @throws IncompatibleTypeException If an ImgFactory of type T can't be
 	 *           created matching the type described by the Metadata.
 	 */
-	<T extends NativeType<T>> ImgFactory<T> createFactory(final Metadata m,
-		ImgMode[] imgModes, T t) throws IncompatibleTypeException;
+	<T> ImgFactory<T> createFactory(final Metadata m, ImgMode[] imgModes, T t)
+		throws IncompatibleTypeException;
 }

@@ -35,10 +35,15 @@ import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.util.FormatTools;
 import io.scif.util.MemoryTools;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import net.imagej.axis.Axes;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.list.ListImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.type.NativeType;
 
@@ -62,6 +67,7 @@ import org.scijava.util.ArrayUtils;
  * </p>
  *
  * @author Mark Hiner
+ * @author Curtis Rueden
  */
 public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
@@ -73,77 +79,71 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 	// -- ImgFactoryHeuristic API Methods --
 
 	@Override
-	public <T extends NativeType<T>> ImgFactory<T> createFactory(final Metadata m,
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public <T> ImgFactory<T> createFactory(final Metadata m,
 		final ImgMode[] imgModes, final T type) throws IncompatibleTypeException
 	{
-		ImgFactory<T> tmpFactory = null;
+		if (!(type instanceof NativeType)) return new ListImgFactory<>(type);
+		return createNativeFactory(m, imgModes, (NativeType) type);
+	}
 
+	// -- Helper methods --
+
+	private <T extends NativeType<T>> ImgFactory<T> createNativeFactory(
+		final Metadata m, final ImgMode[] imgModes, final T type)
+		throws IncompatibleTypeException
+	{
 		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg.
 		// 2GB.
 		final long maxSize = ArrayUtils.safeMultiply64(2, 1024, 1024, 1024);
 
-		final long availableMem = (long) (MemoryTools.totalAvailableMemory() *
-			MEMORY_THRESHOLD);
+		final long availableMem = //
+			(long) (MemoryTools.totalAvailableMemory() * MEMORY_THRESHOLD);
 		long datasetSize = m.getDatasetSize();
 
 		// check for overflow
 		if (datasetSize <= 0) datasetSize = Long.MAX_VALUE;
 
 		// divide by 1024 to compare to max_size and avoid overflow
-		final long planeSize = m.get(0).getAxisLength(Axes.X) * m.get(0)
-			.getAxisLength(Axes.Y) * FormatTools.getBytesPerPixel(m.get(0)
-				.getPixelType());
+		final long planeSize = m.get(0).getAxisLength(Axes.X) * //
+			m.get(0).getAxisLength(Axes.Y) * //
+			FormatTools.getBytesPerPixel(m.get(0).getPixelType());
 
 		final boolean fitsInMemory = availableMem > datasetSize;
 
-		boolean decided = false;
-		int modeIndex = 0;
-
 		// loop over ImgOptions in preferred order
-		while (!decided) {
+		final List<ImgMode> modes = new ArrayList<>(Arrays.asList(imgModes));
+		modes.add(ImgMode.AUTO);
 
-			// get the current mode, or AUTO if we've exhausted the list of
-			// modes
-			final ImgMode mode = modeIndex >= imgModes.length ? ImgMode.AUTO
-				: imgModes[modeIndex++];
-
-			if (mode.equals(ImgMode.AUTO)) {
-				if (!fitsInMemory) tmpFactory = new SCIFIOCellImgFactory<>();
-				else if (datasetSize < maxSize) tmpFactory = new ArrayImgFactory<>();
-				else tmpFactory = new PlanarImgFactory<>();
-
-				// FIXME: no CellImgFactory right now.. isn't guaranteed to
-				// handle all
-				// images well (e.g. RGB)
-//        else if (planeSize < maxSize) tmpFactory = new PlanarImgFactory<T>();
-//        else tmpFactory = new CellImgFactory<T>();
-
-				decided = true;
-			}
-			else if (mode.equals(ImgMode.ARRAY) && datasetSize < maxSize &&
-				fitsInMemory)
-			{
-				tmpFactory = new ArrayImgFactory<>();
-				decided = true;
-			}
-			else if (mode.equals(ImgMode.PLANAR) && planeSize < maxSize &&
-				fitsInMemory)
-			{
-				tmpFactory = new PlanarImgFactory<>();
-				decided = true;
-			}
-			else if (mode.equals(ImgMode.CELL)) {
-				// FIXME: no CellImgFactory right now.. isn't guaranteed to
-				// handle all
-				// images well (e.g. RGB)
-//        if (fitsInMemory) tmpFactory = new CellImgFactory<T>();
-//        else tmpFactory = new SCIFIOCellImgFactory<T>();
-				tmpFactory = new SCIFIOCellImgFactory<>();
-
-				decided = true;
+		for (final ImgMode mode : modes) {
+			switch (mode) {
+				case AUTO:
+					if (!fitsInMemory) return new SCIFIOCellImgFactory<>(type);
+					if (datasetSize < maxSize) return new ArrayImgFactory<>(type);
+					// FIXME: No CellImgFactory right now.
+					// Isn't guaranteed to handle all images well (e.g. RGB).
+					//if (planeSize < maxSize) return new PlanarImgFactory<>(type);
+					//return new CellImgFactory<>(type);
+					return new PlanarImgFactory<>(type);
+				case ARRAY:
+					if (datasetSize < maxSize && fitsInMemory)
+						return new ArrayImgFactory<>(type);
+					break;
+				case PLANAR:
+					if (planeSize < maxSize && fitsInMemory)
+						return new PlanarImgFactory<>(type);
+					break;
+				case CELL:
+					// FIXME: No CellImgFactory right now.
+					// Isn't guaranteed to handle all images well (e.g. RGB).
+					//if (fitsInMemory) return new CellImgFactory<>(type);
+					//return new SCIFIOCellImgFactory<>(type);
+					return new SCIFIOCellImgFactory<>(type);
 			}
 		}
 
-		return tmpFactory.imgFactory(type);
+		// No compatible modes.
+		throw new IncompatibleTypeException(this,
+			"Cannot create ImgFactory of type " + type.getClass().getName());
 	}
 }

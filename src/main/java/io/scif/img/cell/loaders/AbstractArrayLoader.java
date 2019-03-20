@@ -48,6 +48,7 @@ import net.imagej.axis.CalibratedAxis;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 
@@ -84,8 +85,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		this.reader = reader;
 		this.subRegion = subRegion;
 		reader.getContext().inject(this);
-		final RealType<?> inputType = imgUtilityService.makeType(reader
-			.getMetadata().get(0).getPixelType());
+		final Type<?> inputType = //
+			imgUtilityService.makeType(reader.getMetadata().get(0).getPixelType());
 		compatible = outputClass().isAssignableFrom(inputType.getClass());
 	}
 

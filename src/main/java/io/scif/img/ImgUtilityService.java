@@ -40,6 +40,7 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.io.location.Location;
@@ -60,7 +61,7 @@ public interface ImgUtilityService extends SCIFIOService {
 	ArrayImg<?, ?> getArrayAccess(final ImgPlus<?> img);
 
 	/** Converts SCIFIO pixel type to ImgLib2 Type object. */
-	RealType<?> makeType(final int pixelType);
+	Type<?> makeType(final int pixelType);
 
 	/**
 	 * Converts ImgLib2 Type object to SCIFIO pixel type.
