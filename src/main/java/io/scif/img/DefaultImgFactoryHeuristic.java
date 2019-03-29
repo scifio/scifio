@@ -79,12 +79,14 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 	// -- ImgFactoryHeuristic API Methods --
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> ImgFactory<T> createFactory(final Metadata m,
 		final ImgMode[] imgModes, final T type) throws IncompatibleTypeException
 	{
 		if (!(type instanceof NativeType)) return new ListImgFactory<>(type);
-		return createNativeFactory(m, imgModes, (NativeType) type);
+		@SuppressWarnings({ "cast", "rawtypes", "unchecked" })
+		final ImgFactory<T> result = //
+			(ImgFactory<T>) createNativeFactory(m, imgModes, (NativeType) type);
+		return result;
 	}
 
 	// -- Helper methods --
