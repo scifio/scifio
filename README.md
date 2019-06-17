@@ -1,4 +1,4 @@
-[SCIFIO](http://scif.io/)
+[SCIFIO](https://scif.io/)
 ======
 
 [![](https://travis-ci.org/scifio/scifio.svg?branch=master)](https://travis-ci.org/scifio/scifio)
@@ -45,7 +45,7 @@ The SCIFIO core includes support for:
 * Zipped images
 
 Additionally,
-[Bio-Formats](http://www.openmicroscopy.org/site/products/bio-formats) is
+[Bio-Formats](https://www.openmicroscopy.org/site/products/bio-formats) is
 [available as a SCIFIO plugin](https://github.com/scifio/scifio-bf-compat) for
 supporting more than a hundred additional proprietary formats.
 
@@ -74,21 +74,21 @@ Developer documentation:
 * See the [SCIFIO tutorials](https://github.com/scifio/scifio-tutorials) for a
   step-by-step introduction to the SCIFIO API.
 * See also the
-  [SCIFIO Javadocs](https://javadoc.imagej.net/SCIFIO/).
+  [SCIFIO Javadocs](https://javadoc.scijava.org/SCIFIO/).
 
 
 More information
 ----------------
 
 For more information, see the [SCIFIO FAQ](https://github.com/scifio/scifio/wiki/FAQ)
-and [SCIFIO web site](http://scif.io/).
+and [SCIFIO web site](https://scif.io/).
 
 
 Getting help
 ------------
 
-SCIFIO uses the [ImageJ Forum](http://forum.imagej.net/) for support. Start
-a new topic [tagged with `scifio`](http://forum.imagej.net/tag/scifio).
+SCIFIO uses the [Image.sc Forum](https://forum.image.sc/) for support. Start
+a new topic [tagged with `scifio`](https://forum.image.sc/tag/scifio).
 
 Contributing to SCIFIO
 ----------------------
