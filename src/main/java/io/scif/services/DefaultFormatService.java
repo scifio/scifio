@@ -278,7 +278,7 @@ public class DefaultFormatService extends AbstractService implements
 
 		if (w == null) {
 			throw new FormatException(
-				"No compatible output format found for location: " + fileId);
+				"No compatible output format found for extension: " + fileId);
 		}
 		return w;
 	}
@@ -320,7 +320,9 @@ public class DefaultFormatService extends AbstractService implements
 
 		Format format = formatCache().get(id);
 		if (format == null) {
-			format = getFormatList(id, config, true).get(0);
+			List<Format> formatList = getFormatList(id, config, true);
+			if(formatList.isEmpty()) return null;
+			format = formatList.get(0);
 			synchronized (formats) {
 				// Synchronized to protect cache modification
 				if (formatCache().get(id) == null) formatCache().put(id, format);
@@ -365,7 +367,8 @@ public class DefaultFormatService extends AbstractService implements
 	public Format getFormat(final DataHandle<Location> source,
 		final SCIFIOConfig config) throws FormatException
 	{
-		return getFormatList(source, config, true).get(0);
+		List<Format> formatList = getFormatList(source, config, true);
+		return formatList.isEmpty() ? null : formatList.get(0);
 	}
 
 	@Override
