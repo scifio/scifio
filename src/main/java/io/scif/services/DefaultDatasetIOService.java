@@ -81,9 +81,6 @@ public class DefaultDatasetIOService extends AbstractService implements
 	@Parameter
 	private LogService log;
 
-	@Parameter
-	private LocationService dataHandleService;
-
 	@Override
 	public boolean canOpen(final Location source) {
 		try {
