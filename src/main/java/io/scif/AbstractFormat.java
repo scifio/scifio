@@ -29,6 +29,7 @@
 
 package io.scif;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -216,6 +217,8 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	private void updateCustomClasses() {
 
 		for (final Class<?> c : buildClassList()) {
+			if ((c.getModifiers() & Modifier.ABSTRACT) != 0)
+				continue;
 			if (Metadata.class.isAssignableFrom(c)) metadataClass =
 				(Class<? extends Metadata>) c;
 			else if (Checker.class.isAssignableFrom(c)) checkerClass =
