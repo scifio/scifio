@@ -70,6 +70,7 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
+import org.scijava.io.location.FileLocation;
 import org.scijava.io.location.Location;
 import org.scijava.io.location.LocationService;
 import org.scijava.plugin.Parameter;
@@ -480,6 +481,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		ReaderFilter r = null;
 		try {
+			if (source instanceof FileLocation && !((FileLocation)source).getFile().exists()) {
+				throw new IOException("File does not exist: " + source);
+			}
 			r = initializeService.initializeReader(source, config);
 			r.enable(ChannelFiller.class);
 			r.enable(PlaneSeparator.class).separate(axesToSplit(r));
