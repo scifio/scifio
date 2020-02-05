@@ -32,6 +32,7 @@ package io.scif.img;
 import static org.scijava.util.ListUtils.first;
 
 import io.scif.Reader;
+import io.scif.Writer;
 import io.scif.config.SCIFIOConfig;
 import io.scif.refs.RefManagerService;
 
@@ -536,6 +537,38 @@ public final class IO {
 		final int imageIndex)
 	{
 		save(new ImgSaver(), dest, imgPlus, imageIndex);
+	}
+
+	/**
+	 * @see ImgSaver#saveImg(Writer, Img)
+	 */
+	public static void save(final Writer writer, final Img<?> img) {
+		try {
+			new ImgSaver().saveImg(writer, img);
+		}
+		catch (final IncompatibleTypeException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
+		catch (final ImgIOException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
+	}
+
+	/**
+	 * @see ImgSaver#saveImg(Writer, SCIFIOImgPlus, int)
+	 */
+	public static void save(final Writer writer,
+	                           final SCIFIOImgPlus<?> imgPlus, final int imageIndex)
+	{
+		try {
+			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
+		}
+		catch (final IncompatibleTypeException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
+		catch (final ImgIOException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
 	}
 
 	// -- Utility methods --
@@ -1103,5 +1136,39 @@ public final class IO {
 		final int imageIndex)
 	{
 		save(dest, imgPlus, imageIndex);
+	}
+
+
+	/**
+	 * @deprecated Use {@link #save(Writer, Img)}.
+	 */
+	@Deprecated
+	public static void saveImg(final Writer writer, final Img<?> img) {
+		try {
+			new ImgSaver().saveImg(writer, img);
+		}
+		catch (final IncompatibleTypeException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
+		catch (final ImgIOException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
+	}
+
+	/**
+	 * @deprecated Use {@link #save(Writer, SCIFIOImgPlus, int)}.
+	 */
+	public static void saveImg(final Writer writer,
+	                           final SCIFIOImgPlus<?> imgPlus, final int imageIndex)
+	{
+		try {
+			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
+		}
+		catch (final IncompatibleTypeException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
+		catch (final ImgIOException e) {
+			saveError(writer.getMetadata().getDestinationLocation(), e);
+		}
 	}
 }
