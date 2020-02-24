@@ -1464,9 +1464,6 @@ public class TIFFFormat extends AbstractFormat {
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			super.setDest(dest, imageIndex, config);
-			synchronized (this) {
-				setupTiffSaver(dest, imageIndex);
-			}
 
 			// Check if a bigTIFF setting was requested
 			isBigTIFF = null;
@@ -1490,6 +1487,10 @@ public class TIFFFormat extends AbstractFormat {
 			// write bigTIFF to be safe.
 			if (isBigTIFF == null && getMetadata().getDatasetSize() > 2147483648L) {
 				isBigTIFF = true;
+			}
+
+			synchronized (this) {
+				setupTiffSaver(dest, imageIndex);
 			}
 		}
 
