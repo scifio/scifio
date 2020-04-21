@@ -262,10 +262,10 @@ public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 					blockcache, grid, backingLoader, AccessIo.get(type, options
 						.accessFlags()), entitiesPerPixel);
 
-		final IoSync<Long, Cell<A>> iosync = new IoSync<>(diskcache, options
+		final IoSync<Long, Cell<A>, A> iosync = new IoSync<>(diskcache, options
 			.numIoThreads(), options.maxIoQueueSize());
 
-		LoaderRemoverCache<Long, Cell<A>> listenableCache;
+		LoaderRemoverCache<Long, Cell<A>, A> listenableCache;
 		switch (options.cacheType()) {
 			case BOUNDED:
 				listenableCache = new GuardedStrongRefLoaderRemoverCache<>(options
