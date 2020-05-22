@@ -159,6 +159,15 @@ public final class IO {
 	}
 
 	/**
+	 * @see #open(Location, SCIFIOConfig)
+	 */
+	public static SCIFIOImgPlus<?> open(final String source,
+	                                    final SCIFIOConfig config)
+	{
+		return open(resolve(source), config);
+	}
+
+	/**
 	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
 	 */
 	public static SCIFIOImgPlus<?> open(final Location source,
@@ -177,6 +186,25 @@ public final class IO {
 	}
 
 	/**
+	 * @see #open(Location, T, SCIFIOConfig)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final String source, final T type, final SCIFIOConfig config)
+	{
+		return open(resolve(source), type, config);
+	}
+
+	/**
+	 * @see #open(Location, ImgFactory)
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final String source, final ImgFactory imgFactory)
+	{
+		return open(resolve(source), imgFactory);
+	}
+
+	/**
 	 * @see ImgOpener#openImgs(Location, ImgFactory)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -184,6 +212,17 @@ public final class IO {
 	open(final Location source, final ImgFactory imgFactory)
 	{
 		return first(openAll(source, imgFactory));
+	}
+
+	/**
+	 * @see #open(Location, ImgFactory, SCIFIOConfig)
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final String source, final ImgFactory imgFactory,
+	     final SCIFIOConfig config)
+	{
+		return open(resolve(source), imgFactory, config);
 	}
 
 	/**
@@ -195,6 +234,15 @@ public final class IO {
 	     final SCIFIOConfig config)
 	{
 		return first(openAll(source, imgFactory, config));
+	}
+
+	/**
+	 * @see #open(Location, ImgFactory, T)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final String source, final ImgFactory<T> imgFactory, final T type)
+	{
+		return open(resolve(source), imgFactory, type);
 	}
 
 	/**
@@ -352,6 +400,15 @@ public final class IO {
 	}
 
 	/**
+	 * @see #openAll(Location, SCIFIOConfig)
+	 */
+	public static List<SCIFIOImgPlus<?>> openAll(final String source,
+		final SCIFIOConfig config)
+	{
+		return openAll(resolve(source), config);
+	}
+
+	/**
 	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
 	 */
 	public static List<SCIFIOImgPlus<?>> openAll(final Location source,
@@ -370,6 +427,15 @@ public final class IO {
 	}
 
 	/**
+	 * @see #openAll(Location, T, SCIFIOConfig)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+	openAll(final String source, final T type, final SCIFIOConfig config)
+	{
+		return openAll(resolve(source), type, config);
+	}
+
+	/**
 	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
@@ -385,6 +451,16 @@ public final class IO {
 			openError(source, e);
 		}
 		return imgPlus;
+	}
+
+	/**
+	 * @see #openAll(Location, ImgFactory)
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+	openAll(final String source, final ImgFactory imgFactory)
+	{
+		return openAll(resolve(source), imgFactory);
 	}
 
 	/**
@@ -407,6 +483,17 @@ public final class IO {
 	}
 
 	/**
+	 * @see #openAll(Location, ImgFactory, SCIFIOConfig)
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+	openAll(final String source, final ImgFactory imgFactory,
+	        final SCIFIOConfig config)
+	{
+		return openAll(resolve(source), imgFactory, config);
+	}
+
+	/**
 	 * @see ImgOpener#openImgs(Location, ImgFactory, SCIFIOConfig)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -424,6 +511,15 @@ public final class IO {
 			openError(source, e);
 		}
 		return imgPlus;
+	}
+
+	/**
+	 * @see #openAll(Location, ImgFactory, T)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+	openAll(final String source, final ImgFactory<T> imgFactory, final T type)
+	{
+		return openAll(resolve(source), imgFactory, type);
 	}
 
 	/**
@@ -484,6 +580,13 @@ public final class IO {
 	// -- Output Methods --
 
 	/**
+	 * @see #save(Location, Img)
+	 */
+	public static void save(final String dest, final Img<?> img) {
+		save(resolve(dest), img);
+	}
+
+	/**
 	 * @see ImgSaver#saveImg(Location, Img)
 	 */
 	public static void save(final Location dest, final Img<?> img) {
@@ -496,6 +599,15 @@ public final class IO {
 		catch (final ImgIOException e) {
 			saveError(dest, e);
 		}
+	}
+
+	/**
+	 * @see #save(Location, SCIFIOImgPlus, int)
+	 */
+	public static void save(final String dest, final SCIFIOImgPlus<?> imgPlus,
+	                        final int imageIndex)
+	{
+		save(resolve(dest), imgPlus, imageIndex);
 	}
 
 	/**
