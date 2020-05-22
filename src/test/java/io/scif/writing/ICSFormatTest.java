@@ -45,32 +45,31 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 	public void testWriting_uint8() throws IOException {
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWriting(sourceImg);
 
 		final ImgPlus<?> sourceImg2 = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y", "C", "Time").lengths(100,
-				100, 3, 3).build()).get(0);
+				100, 3, 3).build());
 		testWriting(sourceImg2);
 
 		final ImgPlus<?> sourceImg3 = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y", "Channel", "Z", "Time")
-			.lengths(100, 100, 3, 10, 13).build()).get(0);
+			.lengths(100, 100, 3, 10, 13).build());
 		testWriting(sourceImg3);
 
 		final ImgPlus<?> sourceImg4 = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y", "C", "Z", "T").lengths(100,
-				100, 3, 3, 3).build()).get(0);
+				100, 3, 3, 3).build());
 		testWriting(sourceImg4);
 
 		final ImgPlus<?> sourceImg5 = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y", "Z", "Custom").lengths(100,
-				100, 3, 3).build()).get(0);
+				100, 3, 3).build());
 		testWriting(sourceImg5);
 
 		final ImgPlus<?> sourceImg6 = IO.open(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100).build())
-			.get(0);
+			"testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100).build());
 		testWriting(sourceImg6);
 	}
 
@@ -78,7 +77,7 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 	public void testWriting_int8() throws IOException {
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWriting(sourceImg);
 	}
 
@@ -87,7 +86,7 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWriting(sourceImg);
 	}
 
@@ -96,7 +95,7 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWriting(sourceImg);
 	}
 
@@ -105,7 +104,7 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWriting(sourceImg);
 	}
 
@@ -114,7 +113,7 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWriting(sourceImg);
 	}
 
@@ -122,7 +121,7 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 	public void testWriting_float() throws IOException {
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("float").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWriting(sourceImg);
 	}
 }

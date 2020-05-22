@@ -50,6 +50,8 @@ import org.scijava.io.location.Location;
 import org.scijava.io.location.LocationService;
 import org.scijava.log.LogService;
 
+import static org.scijava.util.ListUtils.first;
+
 /**
  * A static utility class for easy access to {@link ImgSaver} and
  * {@link ImgOpener} methods. Also includes type-convenience methods for quickly
@@ -75,7 +77,158 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImgs(Location)
 	 */
-	public static List<SCIFIOImgPlus<?>> open(final Location source) {
+	public static SCIFIOImgPlus<?> open(final Location source) {
+		return first(openAll(source));
+	}
+
+	/**
+	 * @see #open(Location)
+	 */
+	public static SCIFIOImgPlus<?> open(final String source) {
+		return first(openAll(resolve(source)));
+	}
+
+	/**
+	 * As {@link ImgOpener#openImgs(Location)} with a guaranteed {@link FloatType}
+	 * .
+	 */
+	public static SCIFIOImgPlus<FloatType> openFloat(
+			final Location source)
+	{
+		return first(openAllFloat(source));
+	}
+
+	/**
+	 * @see #openFloat(Location)
+	 */
+	public static SCIFIOImgPlus<FloatType> openFloat(final String source) {
+		return first(openAllFloat(source));
+	}
+
+	/**
+	 * As {@link ImgOpener#openImgs(Location)} with a guaranteed
+	 * {@link DoubleType}.
+	 */
+	public static SCIFIOImgPlus<DoubleType> openDouble(
+			final Location source)
+	{
+		return first(openAllDouble(source));
+	}
+
+	/**
+	 * @see #openAllDouble(Location)
+	 */
+	public static SCIFIOImgPlus<DoubleType> openDouble(
+			final String source)
+	{
+		return first(openAllDouble(source));
+	}
+
+	/**
+	 * As {@link ImgOpener#openImgs(Location)} with a guaranteed
+	 * {@link UnsignedByteType}.
+	 */
+	public static SCIFIOImgPlus<UnsignedByteType> openUnsignedByte(
+			final Location source)
+	{
+		return first(openAllUnsignedByte(source));
+	}
+
+	/**
+	 * @see #openUnsignedByte(Location)
+	 */
+	public static SCIFIOImgPlus<UnsignedByteType> openUnsignedByte(
+			final String source)
+	{
+		return first(openAllUnsignedByte(source));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Location)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final Location source, final T type)
+	{
+		return first(openAll(source, type));
+	}
+
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final String source, final T type)
+	{
+		return first(openAll(source, type));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
+	 */
+	public static SCIFIOImgPlus<?> open(final Location source,
+	                                    final SCIFIOConfig config)
+	{
+		return first(openAll(source, config));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final Location source, final T type, final SCIFIOConfig config)
+	{
+		return first(openAll(source, type, config));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Location, ImgFactory)
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final Location source, final ImgFactory imgFactory)
+	{
+		return first(openAll(source, imgFactory));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Location, ImgFactory, SCIFIOConfig)
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final Location source, final ImgFactory imgFactory,
+	     final SCIFIOConfig config)
+	{
+		return first(openAll(source, imgFactory, config));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Location, ImgFactory)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final Location source, final ImgFactory<T> imgFactory, final T type)
+	{
+		return first(openAll(source, imgFactory, type));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Reader, SCIFIOConfig)
+	 */
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+	open(final Reader reader, final T type, final SCIFIOConfig config)
+	{
+		return first(openAll(reader, type, config));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Reader, ImgFactory, SCIFIOConfig)
+	 */
+	public static <T extends RealType<T>> SCIFIOImgPlus<T> open(
+			final Reader reader, final T type, final ImgFactory<T> imgFactory,
+			final SCIFIOConfig config)
+	{
+		return first(openAll(reader, type, imgFactory, config));
+	}
+
+	/**
+	 * @see ImgOpener#openImgs(Location)
+	 */
+	public static List<SCIFIOImgPlus<?>> openAll(final Location source) {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<?>> imgPlus = null;
 		try {
@@ -89,17 +242,17 @@ public final class IO {
 	}
 
 	/**
-	 * @see #open(Location)
+	 * @see #openAll(Location)
 	 */
-	public static List<SCIFIOImgPlus<?>> open(final String source) {
-		return open(resolve(source));
+	public static List<SCIFIOImgPlus<?>> openAll(final String source) {
+		return openAll(resolve(source));
 	}
 
 	/**
 	 * As {@link ImgOpener#openImgs(Location)} with a guaranteed {@link FloatType}
 	 * .
 	 */
-	public static List<SCIFIOImgPlus<FloatType>> openFloat(
+	public static List<SCIFIOImgPlus<FloatType>> openAllFloat(
 		final Location source)
 	{
 		final ImgOpener opener = opener();
@@ -115,17 +268,17 @@ public final class IO {
 	}
 
 	/**
-	 * @see #openFloat(Location)
+	 * @see #openAllFloat(Location)
 	 */
-	public static List<SCIFIOImgPlus<FloatType>> openFloat(final String source) {
-		return openFloat(resolve(source));
+	public static List<SCIFIOImgPlus<FloatType>> openAllFloat(final String source) {
+		return openAllFloat(resolve(source));
 	}
 
 	/**
 	 * As {@link ImgOpener#openImgs(Location)} with a guaranteed
 	 * {@link DoubleType}.
 	 */
-	public static List<SCIFIOImgPlus<DoubleType>> openDouble(
+	public static List<SCIFIOImgPlus<DoubleType>> openAllDouble(
 		final Location source)
 	{
 		final ImgOpener opener = opener();
@@ -141,19 +294,19 @@ public final class IO {
 	}
 
 	/**
-	 * @see #openDouble(Location)
+	 * @see #openAllDouble(Location)
 	 */
-	public static List<SCIFIOImgPlus<DoubleType>> openDouble(
+	public static List<SCIFIOImgPlus<DoubleType>> openAllDouble(
 		final String source)
 	{
-		return openDouble(resolve(source));
+		return openAllDouble(resolve(source));
 	}
 
 	/**
 	 * As {@link ImgOpener#openImgs(Location)} with a guaranteed
 	 * {@link UnsignedByteType}.
 	 */
-	public static List<SCIFIOImgPlus<UnsignedByteType>> openUnsignedByte(
+	public static List<SCIFIOImgPlus<UnsignedByteType>> openAllUnsignedByte(
 		final Location source)
 	{
 		final ImgOpener opener = opener();
@@ -168,17 +321,17 @@ public final class IO {
 		return imgPlus;
 	}
 
-	public static List<SCIFIOImgPlus<UnsignedByteType>> openUnsignedByte(
+	public static List<SCIFIOImgPlus<UnsignedByteType>> openAllUnsignedByte(
 		final String source)
 	{
-		return openUnsignedByte(resolve(source));
+		return openAllUnsignedByte(resolve(source));
 	}
 
 	/**
 	 * @see ImgOpener#openImgs(Location)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		open(final Location source, final T type)
+		openAll(final Location source, final T type)
 	{
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
@@ -193,15 +346,15 @@ public final class IO {
 	}
 
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		open(final String source, final T type)
+		openAll(final String source, final T type)
 	{
-		return open(resolve(source), type);
+		return openAll(resolve(source), type);
 	}
 
 	/**
 	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
 	 */
-	public static List<SCIFIOImgPlus<?>> open(final Location source,
+	public static List<SCIFIOImgPlus<?>> openAll(final Location source,
 		final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
@@ -220,7 +373,7 @@ public final class IO {
 	 * @see ImgOpener#openImgs(Location, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		open(final Location source, final T type, final SCIFIOConfig config)
+		openAll(final Location source, final T type, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
@@ -239,7 +392,7 @@ public final class IO {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		open(final Location source, final ImgFactory imgFactory)
+		openAll(final Location source, final ImgFactory imgFactory)
 	{
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
@@ -258,7 +411,7 @@ public final class IO {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		open(final Location source, final ImgFactory imgFactory,
+		openAll(final Location source, final ImgFactory imgFactory,
 			final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
@@ -277,7 +430,7 @@ public final class IO {
 	 * @see ImgOpener#openImgs(Location, ImgFactory)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		open(final Location source, final ImgFactory<T> imgFactory, final T type)
+		openAll(final Location source, final ImgFactory<T> imgFactory, final T type)
 	{
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
@@ -295,7 +448,7 @@ public final class IO {
 	 * @see ImgOpener#openImgs(Reader, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		open(final Reader reader, final T type, final SCIFIOConfig config)
+		openAll(final Reader reader, final T type, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
@@ -312,7 +465,7 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImgs(Reader, ImgFactory, SCIFIOConfig)
 	 */
-	public static <T extends RealType<T>> List<SCIFIOImgPlus<T>> open(
+	public static <T extends RealType<T>> List<SCIFIOImgPlus<T>> openAll(
 		final Reader reader, final T type, final ImgFactory<T> imgFactory,
 		final SCIFIOConfig config)
 	{

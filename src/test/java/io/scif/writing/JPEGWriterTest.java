@@ -51,7 +51,7 @@ public class JPEGWriterTest extends AbstractSyntheticWriterTest {
 		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>) IO
 			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
 				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).planarDims(3)
-				.build()).get(0);
+				.build());
 
 		testWritingApprox(sourceImg, 58.1647058823);
 	}

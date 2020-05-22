@@ -56,8 +56,7 @@ public class ManualReadImg {
 	}
 
 	private static void readImg(final File file) throws Exception {
-		final ImgPlus<?> img = IO.open(new FileLocation(file.getAbsolutePath()))
-			.get(0);
+		final ImgPlus<?> img = IO.open(new FileLocation(file.getAbsolutePath()));
 
 		System.out.println("file = " + file);
 		System.out.println("Dimensions:");

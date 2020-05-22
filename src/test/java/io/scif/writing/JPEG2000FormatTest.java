@@ -45,7 +45,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 	public void testWriting_uint8() throws IOException {
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWritingApprox(sourceImg, 2.3529411764705);
 	}
 
@@ -53,7 +53,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 	public void testWriting_int8() throws IOException {
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWritingApprox(sourceImg, 29515.294117642843);
 	}
 
@@ -62,7 +62,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWritingApprox(sourceImg, 21889.002059970047);
 	}
 
@@ -71,7 +71,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWritingApprox(sourceImg, 17.26710917830161);
 	}
 
@@ -80,7 +80,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWritingApprox(sourceImg, 14699.999640880153);
 	}
 
@@ -89,7 +89,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+			.build());
 		testWritingApprox(sourceImg, 0.00036388822);
 	}
 

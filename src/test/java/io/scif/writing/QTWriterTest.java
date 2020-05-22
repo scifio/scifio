@@ -50,8 +50,7 @@ public class QTWriterTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<IntType> sourceImg = (ImgPlus<IntType>) IO.open(
 			new TestImgLocation.Builder().name("8bit-unsigned").pixelType("uint8")
-				.axes("X", "Y", "Channel", "Time").lengths(100, 100, 3, 30).build())
-			.get(0);
+				.axes("X", "Y", "Channel", "Time").lengths(100, 100, 3, 30).build());
 		testWriting(sourceImg);
 	}
 

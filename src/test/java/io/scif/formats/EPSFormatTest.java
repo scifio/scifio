@@ -63,7 +63,7 @@ public class EPSFormatTest extends AbstractFormatTest {
 //	@Test
 	public void createTestImg() {
 		final String source = "/home/gabriel/Desktop/input/scifio-test.png";
-		final SCIFIOImgPlus<?> img = IO.open(source).get(0);
+		final SCIFIOImgPlus<?> img = IO.open(source);
 		IO.save(new FileLocation("/home/gabriel/Desktop/input/scifio-test.eps"),
 			img);
 	}

@@ -51,12 +51,12 @@ public class APNGWriterTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>) IO
 			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
-				"uint8").axes("X", "Y", "C").lengths(100, 100, 3).build()).get(0);
+				"uint8").axes("X", "Y", "C").lengths(100, 100, 3).build());
 		testWriting(sourceImg);
 
 		final ImgPlus<UnsignedByteType> sourceImg2 = (ImgPlus<UnsignedByteType>) IO
 			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
-				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).build()).get(0);
+				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).build());
 		testWriting(sourceImg2);
 	}
 
@@ -66,13 +66,13 @@ public class APNGWriterTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<ByteType> sourceImg = (ImgPlus<ByteType>) IO.open(
 			new TestImgLocation.Builder().name("16bit-unsigned").pixelType("uint16")
-				.axes("X", "Y", "C").lengths(100, 100, 3).build()).get(0);
+				.axes("X", "Y", "C").lengths(100, 100, 3).build());
 
 		testWriting(sourceImg);
 
 		final ImgPlus<ByteType> sourceImg2 = (ImgPlus<ByteType>) IO.open(
 			new TestImgLocation.Builder().name("16bit-unsigned").pixelType("uint16")
-				.axes("X", "Y").lengths(100, 100).build()).get(0);
+				.axes("X", "Y").lengths(100, 100).build());
 
 		testWriting(sourceImg2);
 	}

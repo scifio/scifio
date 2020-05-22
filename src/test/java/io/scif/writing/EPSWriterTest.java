@@ -50,7 +50,7 @@ public class EPSWriterTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>) IO
 			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
-				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).build()).get(0);
+				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).build());
 		testWriting(sourceImg);
 	}
 
@@ -60,7 +60,7 @@ public class EPSWriterTest extends AbstractSyntheticWriterTest {
 
 		final ImgPlus<UnsignedByteType> sourceImg2 = (ImgPlus<UnsignedByteType>) IO
 			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
-				"uint8").axes("X", "Y").lengths(100, 100).build()).get(0);
+				"uint8").axes("X", "Y").lengths(100, 100).build());
 		testWriting(sourceImg2);
 	}
 }
