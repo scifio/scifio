@@ -48,6 +48,7 @@ import java.nio.file.Files;
 
 import net.imagej.axis.Axes;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.io.location.FileLocation;
@@ -60,9 +61,14 @@ import org.scijava.io.location.Location;
  */
 public class TranslatorTest {
 
-	private final SCIFIO scifio = new SCIFIO();
+	private final static SCIFIO scifio = new SCIFIO();
 	private Location in;
 	private FileLocation out;
+
+	@AfterClass
+	public static void dispose() {
+		scifio.dispose();
+	}
 
 	@Before
 	public void setup() throws IOException {

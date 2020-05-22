@@ -32,10 +32,12 @@ package io.scif.img.cell;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import io.scif.img.IO;
+import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -44,6 +46,18 @@ import org.junit.Test;
  * @author Mark Hiner
  */
 public class SCIFIOCellImgTest {
+
+	private static ImgOpener opener;
+
+	@BeforeClass
+	public static void createOpener() {
+		opener = new ImgOpener();
+	}
+
+	@AfterClass
+	public static void disposeOpener() {
+		opener.context().dispose();
+	}
 
 	/**
 	 * Test that when a {@link SCIFIOCellImg} is opened and disposed, the
@@ -54,7 +68,7 @@ public class SCIFIOCellImgTest {
 		// Make an id that will trigger cell creation
 		TestImgLocation loc = TestImgLocation.builder().name("lotsofplanes").axes(
 			"X", "Y", "Z").lengths(256, 256, 100000).build();
-		final SCIFIOImgPlus<?> img = IO.open(loc);
+		final SCIFIOImgPlus<?> img = opener.openImgs(loc).get(0);
 
 		assertNotNull(((SCIFIOCellImg) img.getImg()).reader().getMetadata());
 		img.dispose();

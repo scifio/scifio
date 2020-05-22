@@ -28,14 +28,28 @@
  */
 package io.scif.writing;
 
-import io.scif.img.IO;
+import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
 import java.io.IOException;
 
 import net.imagej.ImgPlus;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
+
+	private static ImgOpener opener;
+
+	@BeforeClass
+	public static void createOpener() {
+		opener = new ImgOpener();
+	}
+
+	@AfterClass
+	public static void disposeOpener() {
+		opener.context().dispose();
+	}
 
 	public JPEG2000FormatTest() {
 		super(".j2k");
@@ -43,53 +57,53 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 
 	@Test
 	public void testWriting_uint8() throws IOException {
-		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build());
+			.build()).get(0);
 		testWritingApprox(sourceImg, 2.3529411764705);
 	}
 
 	@Test
 	public void testWriting_int8() throws IOException {
-		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build());
+			.build()).get(0);
 		testWritingApprox(sourceImg, 29515.294117642843);
 	}
 
 	@Test
 	public void testWriting_int16() throws IOException {
 
-		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build());
+			.build()).get(0);
 		testWritingApprox(sourceImg, 21889.002059970047);
 	}
 
 	@Test
 	public void testWriting_uint16() throws IOException {
 
-		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build());
+			.build()).get(0);
 		testWritingApprox(sourceImg, 17.26710917830161);
 	}
 
 	@Test
 	public void testWriting_int32() throws IOException {
 
-		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build());
+			.build()).get(0);
 		testWritingApprox(sourceImg, 14699.999640880153);
 	}
 
 	@Test
 	public void testWriting_uint32() throws IOException {
 
-		final ImgPlus<?> sourceImg = IO.open(new TestImgLocation.Builder().name(
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build());
+			.build()).get(0);
 		testWritingApprox(sourceImg, 0.00036388822);
 	}
 

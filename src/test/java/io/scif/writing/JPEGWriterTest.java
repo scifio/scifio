@@ -28,7 +28,7 @@
  */
 package io.scif.writing;
 
-import io.scif.img.IO;
+import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
@@ -36,9 +36,23 @@ import java.io.IOException;
 import net.imagej.ImgPlus;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class JPEGWriterTest extends AbstractSyntheticWriterTest {
+
+	private static ImgOpener opener;
+
+	@BeforeClass
+	public static void createOpener() {
+		opener = new ImgOpener();
+	}
+
+	@AfterClass
+	public static void disposeOpener() {
+		opener.context().dispose();
+	}
 
 	public JPEGWriterTest() {
 		super(".jpeg");
@@ -48,10 +62,10 @@ public class JPEGWriterTest extends AbstractSyntheticWriterTest {
 	@Test
 	public void testWriting_uint8() throws IOException {
 
-		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>) IO
-			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
+		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>) opener
+			.openImgs(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
 				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).planarDims(3)
-				.build());
+				.build()).get(0);
 
 		testWritingApprox(sourceImg, 58.1647058823);
 	}

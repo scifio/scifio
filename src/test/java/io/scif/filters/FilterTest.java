@@ -44,6 +44,7 @@ import java.net.URL;
 import net.imagej.axis.Axes;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.io.location.FileLocation;
@@ -57,19 +58,24 @@ import org.scijava.plugin.PluginInfo;
  */
 public class FilterTest {
 
-	private final SCIFIO scifio = makeSCIFIO();
+	private final static SCIFIO scifio = makeSCIFIO();
 
 	private final Location id = new TestImgLocation.Builder().name("testImg")
 		.lengths(512, 512).build();
 
 	private Reader readerFilter;
 
+	@AfterClass
+	public static void dispose() {
+		scifio.dispose();
+	}
+
 	@After
 	public void tearDown() throws IOException {
 		readerFilter.close();
 	}
 
-	private SCIFIO makeSCIFIO() {
+	private static SCIFIO makeSCIFIO() {
 		final SCIFIO scifio = new SCIFIO();
 
 		final Context ctx = scifio.getContext();

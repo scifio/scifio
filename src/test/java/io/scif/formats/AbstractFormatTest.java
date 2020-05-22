@@ -46,6 +46,8 @@ import java.io.IOException;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.scijava.Context;
 import org.scijava.io.handle.DataHandleService;
 import org.scijava.io.location.FileLocation;
@@ -61,9 +63,20 @@ public class AbstractFormatTest {
 
 	private FileLocation baseFolder;
 	private final Location[] sources;
-	private final Context ctx = new Context();
-	private final InitializeService init = ctx.getService(
-		InitializeService.class);
+	private static Context ctx;
+	private static InitializeService init;
+
+	@BeforeClass
+	public static void setup() {
+		ctx = new Context();
+		init = ctx.getService(
+				InitializeService.class);
+	}
+
+	@AfterClass
+	public static void dispose() {
+		if(ctx != null) ctx.dispose();
+	}
 
 	public AbstractFormatTest(final Location... sources) {
 		if (sources.length == 0) {

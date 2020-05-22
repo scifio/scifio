@@ -39,6 +39,7 @@ import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -51,7 +52,13 @@ public class FormatToolsTest {
 
 	// -- Fields --
 
-	private final SCIFIO scifio = new SCIFIO();
+	private static final SCIFIO scifio = new SCIFIO();
+
+
+	@AfterClass
+	public static void dispose() {
+		scifio.dispose();
+	}
 
 	// -- Indexed color tests --
 

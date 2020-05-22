@@ -28,7 +28,7 @@
  */
 package io.scif.writing;
 
-import io.scif.img.IO;
+import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
@@ -36,9 +36,23 @@ import java.io.IOException;
 import net.imagej.ImgPlus;
 import net.imglib2.type.numeric.integer.IntType;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class QTWriterTest extends AbstractSyntheticWriterTest {
+
+	private static ImgOpener opener;
+
+	@BeforeClass
+	public static void createOpener() {
+		opener = new ImgOpener();
+	}
+
+	@AfterClass
+	public static void disposeOpener() {
+		opener.context().dispose();
+	}
 
 	public QTWriterTest() {
 		super(".mov");
@@ -48,9 +62,9 @@ public class QTWriterTest extends AbstractSyntheticWriterTest {
 	@Test
 	public void testWriting_uint8() throws IOException {
 
-		final ImgPlus<IntType> sourceImg = (ImgPlus<IntType>) IO.open(
+		final ImgPlus<IntType> sourceImg = (ImgPlus<IntType>) opener.openImgs(
 			new TestImgLocation.Builder().name("8bit-unsigned").pixelType("uint8")
-				.axes("X", "Y", "Channel", "Time").lengths(100, 100, 3, 30).build());
+				.axes("X", "Y", "Channel", "Time").lengths(100, 100, 3, 30).build()).get(0);
 		testWriting(sourceImg);
 	}
 

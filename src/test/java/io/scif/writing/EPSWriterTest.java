@@ -28,7 +28,7 @@
  */
 package io.scif.writing;
 
-import io.scif.img.IO;
+import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
@@ -36,9 +36,17 @@ import java.io.IOException;
 import net.imagej.ImgPlus;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EPSWriterTest extends AbstractSyntheticWriterTest {
+
+	private static ImgOpener opener;
+
+	@BeforeClass
+	public static void createOpener() {
+		opener = new ImgOpener();
+	}
 
 	public EPSWriterTest() {
 		super(".eps");
@@ -48,9 +56,9 @@ public class EPSWriterTest extends AbstractSyntheticWriterTest {
 	@Test
 	public void testWriting_uint8() throws IOException {
 
-		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>) IO
-			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
-				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).build());
+		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>) opener
+			.openImgs(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
+				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).build()).get(0);
 		testWriting(sourceImg);
 	}
 
@@ -58,9 +66,9 @@ public class EPSWriterTest extends AbstractSyntheticWriterTest {
 	@Test
 	public void testWriting_uint8_2() throws IOException {
 
-		final ImgPlus<UnsignedByteType> sourceImg2 = (ImgPlus<UnsignedByteType>) IO
-			.open(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
-				"uint8").axes("X", "Y").lengths(100, 100).build());
+		final ImgPlus<UnsignedByteType> sourceImg2 = (ImgPlus<UnsignedByteType>) opener
+			.openImgs(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
+				"uint8").axes("X", "Y").lengths(100, 100).build()).get(0);
 		testWriting(sourceImg2);
 	}
 }

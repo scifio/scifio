@@ -42,6 +42,7 @@ import java.io.IOException;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -52,7 +53,7 @@ import org.scijava.io.location.Location;
  */
 public class MetadataTest {
 
-	private final SCIFIO scifio = new SCIFIO();
+	private static final SCIFIO scifio = new SCIFIO();
 
 	private final Location id = new TestImgLocation.Builder().name("testImg")
 		.lengths(620, 512, 5, 6, 7).axes("X", "Y", "Time", "Z", "Channel").build();
@@ -60,6 +61,11 @@ public class MetadataTest {
 	private final Location ndId = new TestImgLocation.Builder().name("ndImg")
 		.axes("X", "Y", "Z", "Channel", "Time", "Lifetime", "Spectra").lengths(256,
 			128, 2, 6, 10, 4, 8).build();
+
+	@AfterClass
+	public static void dispose() {
+		scifio.dispose();
+	}
 
 	/**
 	 * Down the middle test that verifies each method of the Metadata API.
