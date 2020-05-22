@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import net.imagej.axis.Axes;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -50,10 +51,16 @@ import org.scijava.io.location.Location;
  */
 public class MinMaxFilterTest {
 
-	private final SCIFIO scifio = new SCIFIO();
+	private static final SCIFIO scifio = new SCIFIO();
 
 	private final Location id = new TestImgLocation.Builder().lengths(3, 127, 127,
 		4).axes("Channel", "X", "Y", "Time").planarDims(3).build();
+
+
+	@AfterClass
+	public static void dispose() {
+		scifio.dispose();
+	}
 
 	@Test
 	public void testMinMax() throws FormatException, IOException {

@@ -41,9 +41,10 @@ import io.scif.io.location.TestImgLocation;
 import java.io.IOException;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.scijava.Context;
 import org.scijava.io.handle.DataHandle;
 import org.scijava.io.handle.DataHandleService;
 import org.scijava.io.location.DummyLocation;
@@ -66,19 +67,26 @@ public class CheckerTest {
 
 	private FakeChecker fc;
 
-	private Context context;
+	private static DataHandleService dataHandleService;
+	private static SCIFIO scifio;
 
-	private DataHandleService dataHandleService;
+	@BeforeClass
+	public static void createContext() {
+		scifio = new SCIFIO();
+		dataHandleService = scifio.getContext().getService(DataHandleService.class);
+	}
+
+	@AfterClass
+	public static void disposeContext() {
+		scifio.dispose();
+	}
 
 	@Before
 	public void setUp() throws FormatException {
-		context = new Context();
-		final SCIFIO scifio = new SCIFIO();
 		final Format f = scifio.format().getFormat(id);
 		c = f.createChecker();
-		fc = new FakeChecker();
-		fc.setContext(context);
-		dataHandleService = context.getService(DataHandleService.class);
+		fc = new FakeChecker(scifio);
+		fc.setContext(scifio.getContext());
 	}
 
 	@Test
@@ -154,7 +162,6 @@ public class CheckerTest {
 
 	@After
 	public void tearDown() {
-		context = null;
 		c = null;
 		fc = null;
 	}
@@ -165,6 +172,12 @@ public class CheckerTest {
 	 * @author Mark Hiner
 	 */
 	private static class FakeChecker extends io.scif.DefaultChecker {
+
+		private final SCIFIO scifio;
+
+		public FakeChecker(SCIFIO scifio) {
+			this.scifio = scifio;
+		}
 
 		private boolean suffixSufficient = false;
 
@@ -195,7 +208,6 @@ public class CheckerTest {
 		// you can have a list of components returned... maybe? Or not..
 		@Override
 		public Format getFormat() {
-			final SCIFIO scifio = new SCIFIO(getContext());
 			return scifio.format().getFormatFromClass(TestImgFormat.class);
 		}
 	}

@@ -31,10 +31,12 @@ package io.scif.util;
 
 import static org.junit.Assert.assertEquals;
 
-import io.scif.img.IO;
+import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -44,28 +46,40 @@ import org.junit.Test;
  */
 public class ImageHashTest {
 
+	private static ImgOpener opener;
+
+	@BeforeClass
+	public static void createOpener() {
+		opener = new ImgOpener();
+	}
+
+	@AfterClass
+	public static void disposeOpener() {
+		opener.context().dispose();
+	}
+
 	@Test
 	public void testImageHash() {
 
-		final SCIFIOImgPlus<?> img1 = IO.open(new TestImgLocation.Builder().lengths(
+		final SCIFIOImgPlus<?> img1 = opener.openImgs(new TestImgLocation.Builder().lengths(
 			300, 300).axes("X", "Y").build()).get(0);
 		assertEquals("745519b1e8822c774b542bc9cb21df78302dde20", //
 			ImageHash.hashImg(img1));
 
 		// swapping axis changes the hash
-		final SCIFIOImgPlus<?> img2 = IO.open(new TestImgLocation.Builder().lengths(
+		final SCIFIOImgPlus<?> img2 = opener.openImgs(new TestImgLocation.Builder().lengths(
 			300, 300).axes("Y", "X").build()).get(0);
 		assertEquals("a4e1400d3f61073def0652f91fe30110059ef809", //
 			ImageHash.hashImg(img2));
 
 		// changing dims changes the hash
-		final SCIFIOImgPlus<?> img3 = IO.open(new TestImgLocation.Builder().lengths(
+		final SCIFIOImgPlus<?> img3 = opener.openImgs(new TestImgLocation.Builder().lengths(
 			100, 100).axes("Y", "X").build()).get(0);
 		assertEquals("f1f869851a0018dd115baa9bb8550da0f03cf0d6", //
 			ImageHash.hashImg(img3));
 
 		// 5D is supported
-		final SCIFIOImgPlus<?> img4 = IO.open(new TestImgLocation.Builder().lengths(
+		final SCIFIOImgPlus<?> img4 = opener.openImgs(new TestImgLocation.Builder().lengths(
 			100, 100, 3, 3, 3).axes("Y", "X", "Z", "Channel", "Time").build()).get(0);
 		assertEquals("3bbd0424c5b53baad73e969aed7b949a102625bb", //
 			ImageHash.hashImg(img4));

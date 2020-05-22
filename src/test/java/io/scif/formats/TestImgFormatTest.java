@@ -43,6 +43,7 @@ import java.io.IOException;
 import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -58,7 +59,12 @@ public class TestImgFormatTest {
 
 	// -- Fields --
 
-	private final SCIFIO scifio = new SCIFIO();
+	private static final SCIFIO scifio = new SCIFIO();
+
+	@AfterClass
+	public static void dispose() {
+		scifio.dispose();
+	}
 
 	// -- Indexed color tests --
 

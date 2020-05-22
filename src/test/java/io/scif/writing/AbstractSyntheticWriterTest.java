@@ -79,6 +79,7 @@ public abstract class AbstractSyntheticWriterTest {
 
 		new ImgSaver(ctx).saveImg(out, sourceImg, config);
 		final ImgPlus<?> written = new ImgOpener(ctx).openImgs(out).get(0);
+		ctx.dispose();
 		assertEquals(ImageHash.hashImg(written), ImageHash.hashImg(sourceImg));
 	}
 
@@ -97,6 +98,8 @@ public abstract class AbstractSyntheticWriterTest {
 
 		new ImgSaver(ctx).saveImg(out, sourceImg, config);
 		final ImgPlus<?> written = new ImgOpener(ctx).openImgs(out).get(0);
+
+		ctx.dispose();
 
 		final Cursor<RealType> inC = (Cursor<RealType>) sourceImg.cursor();
 		final RandomAccess<RealType> readRA = (RandomAccess<RealType>) written

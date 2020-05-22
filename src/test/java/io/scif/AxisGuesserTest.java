@@ -126,6 +126,7 @@ public class AxisGuesserTest {
 
 			assertArrayEquals(dimOrder, newOrder);
 		}
+		context.dispose();
 	}
 
 	@Test
@@ -184,6 +185,7 @@ public class AxisGuesserTest {
 
 			assertArrayEquals(dimOrder, newOrder);
 		}
+		context.dispose();
 	}
 
 }

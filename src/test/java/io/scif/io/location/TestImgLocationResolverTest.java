@@ -36,6 +36,7 @@ import io.scif.io.location.TestImgLocationResolver;
 
 import java.net.URISyntaxException;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.io.location.LocationService;
@@ -47,9 +48,14 @@ import org.scijava.io.location.LocationService;
  */
 public class TestImgLocationResolverTest {
 
-	private Context ctx = new Context(LocationService.class,
+	private static Context ctx = new Context(LocationService.class,
 		MetadataService.class);
 	private LocationService loc = ctx.getService(LocationService.class);
+
+	@AfterClass
+	public static void dispose() {
+		ctx.dispose();
+	}
 
 	@Test
 	public void testResolveString() throws URISyntaxException {
