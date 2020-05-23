@@ -43,6 +43,7 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -53,7 +54,7 @@ import org.scijava.io.location.Location;
  */
 public class MetadataTest {
 
-	private static final SCIFIO scifio = new SCIFIO();
+	private static SCIFIO scifio;
 
 	private final Location id = new TestImgLocation.Builder().name("testImg")
 		.lengths(620, 512, 5, 6, 7).axes("X", "Y", "Time", "Z", "Channel").build();
@@ -61,6 +62,11 @@ public class MetadataTest {
 	private final Location ndId = new TestImgLocation.Builder().name("ndImg")
 		.axes("X", "Y", "Z", "Channel", "Time", "Lifetime", "Spectra").lengths(256,
 			128, 2, 6, 10, 4, 8).build();
+
+	@BeforeClass
+	public static void setup() {
+		scifio = new SCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {

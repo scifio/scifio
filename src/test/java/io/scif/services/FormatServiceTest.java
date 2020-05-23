@@ -41,8 +41,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.scijava.Context;
@@ -56,16 +56,16 @@ import org.scijava.thread.ThreadService;
  */
 public class FormatServiceTest {
 
-	private FormatService formatService;
+	private static FormatService formatService;
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUp() {
 		final Context context = new Context();
 		formatService = context.getService(FormatService.class);
 	}
 
-	@After
-	public void tearDown() {
+	@AfterClass
+	public static void tearDown() {
 		formatService.getContext().dispose();
 	}
 

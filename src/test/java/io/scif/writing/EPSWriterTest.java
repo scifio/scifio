@@ -36,6 +36,7 @@ import java.io.IOException;
 import net.imagej.ImgPlus;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -46,6 +47,11 @@ public class EPSWriterTest extends AbstractSyntheticWriterTest {
 	@BeforeClass
 	public static void createOpener() {
 		opener = new ImgOpener();
+	}
+
+	@AfterClass
+	public static void disposeOpener() {
+		opener.context().dispose();
 	}
 
 	public EPSWriterTest() {

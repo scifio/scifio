@@ -50,6 +50,7 @@ import net.imagej.axis.Axes;
 
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.io.location.FileLocation;
 import org.scijava.io.location.Location;
@@ -61,9 +62,14 @@ import org.scijava.io.location.Location;
  */
 public class TranslatorTest {
 
-	private final static SCIFIO scifio = new SCIFIO();
+	private static SCIFIO scifio;
 	private Location in;
 	private FileLocation out;
+
+	@BeforeClass
+	public static void setupSCIFIO() {
+		scifio = new SCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {

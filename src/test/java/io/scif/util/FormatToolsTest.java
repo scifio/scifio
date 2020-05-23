@@ -40,6 +40,7 @@ import io.scif.io.location.TestImgLocation;
 import java.io.IOException;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -52,8 +53,12 @@ public class FormatToolsTest {
 
 	// -- Fields --
 
-	private static final SCIFIO scifio = new SCIFIO();
+	private static SCIFIO scifio;
 
+	@BeforeClass
+	public static void setup() {
+		scifio = new SCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {

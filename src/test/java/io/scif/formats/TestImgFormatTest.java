@@ -44,6 +44,7 @@ import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -59,7 +60,12 @@ public class TestImgFormatTest {
 
 	// -- Fields --
 
-	private static final SCIFIO scifio = new SCIFIO();
+	private static SCIFIO scifio;
+
+	@BeforeClass
+	public static void setup() {
+		scifio = new SCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {
