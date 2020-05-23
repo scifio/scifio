@@ -175,14 +175,14 @@ public final class IO {
 		return open(opener(), source, type);
 	}
 
-	private static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
-	open(final ImgOpener opener, final Location source, final T type)
+	private static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> open(
+		final ImgOpener opener, final Location source, final T type)
 	{
 		return first(openAll(opener, source, type));
 	}
 
-	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
-	open(final String source, final T type)
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> open(
+		final String source, final T type)
 	{
 		return first(openAll(source, type));
 	}
@@ -292,28 +292,26 @@ public final class IO {
 	}
 
 	/**
-	 * @see #open(Location, ImgFactory, T)
+	 * @deprecated Use {@link #open(String, ImgFactory)}.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
-	open(final String source, final ImgFactory<T> imgFactory, final T type)
+	@Deprecated
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> open(
+		final String source, final ImgFactory<T> imgFactory,
+		@SuppressWarnings("unused") final T type)
 	{
 		final ImgOpener opener = new ImgOpener();
-		return open(opener, resolve(source, opener.context()), imgFactory, type);
+		return open(opener, resolve(source, opener.context()), imgFactory);
 	}
 
 	/**
-	 * @see ImgOpener#openImgs(Location, ImgFactory)
+	 * @deprecated Use {@link #open(Location, ImgFactory)}.
 	 */
-	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
-	open(final Location source, final ImgFactory<T> imgFactory, final T type)
+	@Deprecated
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> open(
+		final Location source, final ImgFactory<T> imgFactory,
+		@SuppressWarnings("unused") final T type)
 	{
-		return open(opener(), source, imgFactory, type);
-	}
-
-	private static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
-	open(final ImgOpener opener, final Location source, final ImgFactory<T> imgFactory, final T type)
-	{
-		return first(openAll(opener, source, imgFactory, type));
+		return open(opener(), source, imgFactory);
 	}
 
 	/**
@@ -634,36 +632,26 @@ public final class IO {
 	}
 
 	/**
-	 * @see #openAll(Location, ImgFactory, T)
+	 * @deprecated Use {@link #openAll(String, ImgFactory)}.
 	 */
+	@Deprecated
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-	openAll(final String source, final ImgFactory<T> imgFactory, final T type)
+		openAll(final String source, final ImgFactory<T> imgFactory,
+			@SuppressWarnings("unused") final T type)
 	{
 		final ImgOpener opener = new ImgOpener();
-		return openAll(opener, resolve(source, opener.context()), imgFactory, type);
+		return openAll(opener, resolve(source, opener.context()), imgFactory);
 	}
 
 	/**
-	 * @see ImgOpener#openImgs(Location, ImgFactory)
+	 * @deprecated Use {@link #openAll(Location, ImgFactory)}.
 	 */
+	@Deprecated
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-		openAll(final Location source, final ImgFactory<T> imgFactory, final T type)
+		openAll(final Location source, final ImgFactory<T> imgFactory,
+			@SuppressWarnings("unused") final T type)
 	{
-		return openAll(opener(), source, imgFactory, type);
-	}
-
-	private static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
-	openAll(final ImgOpener opener, final Location source, final ImgFactory<T> imgFactory, final T type)
-	{
-		List<SCIFIOImgPlus<T>> imgPlus = null;
-		try {
-			imgPlus = opener.openImgs(source, imgFactory);
-			register(imgPlus, opener);
-		}
-		catch (final ImgIOException e) {
-			openError(source, e);
-		}
-		return imgPlus;
+		return openAll(opener(), source, imgFactory);
 	}
 
 	/**
@@ -808,7 +796,8 @@ public final class IO {
 	 * Registers the given ImgPlus with the RefManagerService in the provided
 	 * component's Context.
 	 */
-	private static void register(final List<? extends SCIFIOImgPlus> imgPlus,
+	private static void register(
+		@SuppressWarnings("rawtypes") final List<? extends SCIFIOImgPlus> imgPlus,
 		final AbstractImgIOComponent component)
 	{
 		final Context ctx = component.getContext();
