@@ -29,12 +29,10 @@
 package io.scif.writing;
 
 import io.scif.img.ImgOpener;
+import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
-
-import net.imagej.ImgPlus;
-import net.imglib2.type.numeric.integer.IntType;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -62,9 +60,10 @@ public class AVIWriterTest extends AbstractSyntheticWriterTest {
 	@Test
 	public void testWriting_uint8() throws IOException {
 
-		final ImgPlus<IntType> sourceImg = (ImgPlus<IntType>) opener.openImgs(
+		final SCIFIOImgPlus<?> sourceImg = opener.openImgs(
 			new TestImgLocation.Builder().name("8bit-unsigned").pixelType("uint8")
 				.axes("X", "Y", "Channel", "Time").lengths(100, 100, 3, 5).build()).get(0);
 		testWriting(sourceImg);
+		sourceImg.dispose();
 	}
 }

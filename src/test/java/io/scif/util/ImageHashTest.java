@@ -83,5 +83,10 @@ public class ImageHashTest {
 			100, 100, 3, 3, 3).axes("Y", "X", "Z", "Channel", "Time").build()).get(0);
 		assertEquals("3bbd0424c5b53baad73e969aed7b949a102625bb", //
 			ImageHash.hashImg(img4));
+
+		img1.dispose();
+		img2.dispose();
+		img3.dispose();
+		img4.dispose();
 	}
 }

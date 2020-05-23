@@ -121,6 +121,7 @@ public class AbstractFormatTest {
 					.type());
 			}
 			assertEquals(hash, ImageHash.hashImg(img));
+			img.dispose();
 			if (!"".equals(metadataJson)) {
 				final Metadata metadata = init.initializeReader(imgLoc).getMetadata();
 				assertEquals(metadataJson, MetaDataSerializer.metaToJson(metadata));
