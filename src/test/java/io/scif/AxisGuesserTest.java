@@ -96,6 +96,8 @@ public class AxisGuesserTest {
 				Axes.CHANNEL);
 			final boolean certain = reader.getMetadata().get(0).isOrderCertain();
 
+			reader.close();
+
 			assertArrayEquals("Dimension Order", new AxisType[] { Axes.X, Axes.Y },
 				dimOrder);
 			assertFalse(certain);
@@ -184,6 +186,9 @@ public class AxisGuesserTest {
 			assertEquals(Axes.Z, axes[0]);
 
 			assertArrayEquals(dimOrder, newOrder);
+
+			reader.close();
+
 		}
 		context.dispose();
 	}

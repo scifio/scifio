@@ -104,5 +104,7 @@ public class FormatToolsTest {
 			.getPixelType())[0]);
 		assertEquals((long) Math.pow(2, 7) - 1, FormatTools.defaultMinMax(iMeta
 			.getPixelType())[1]);
+
+		reader.close();
 	}
 }

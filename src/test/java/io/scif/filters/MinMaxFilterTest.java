@@ -115,5 +115,7 @@ public class MinMaxFilterTest {
 		assertCloseEnough(0.0, minMax.getAxisGlobalMinimum(0, Axes.CHANNEL, 0));
 		assertCloseEnough(0.0, minMax.getAxisGlobalMinimum(0, Axes.CHANNEL, 1));
 		assertCloseEnough(0.0, minMax.getAxisGlobalMinimum(0, Axes.CHANNEL, 2));
+
+		filter.close();
 	}
 }

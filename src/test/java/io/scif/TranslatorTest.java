@@ -126,6 +126,9 @@ public class TranslatorTest {
 		assertEquals(Axes.X, dest.get(0).getAxis(0).type());
 		assertEquals(Axes.Y, dest.get(0).getAxis(1).type());
 		assertEquals(Axes.CHANNEL, dest.get(0).getAxis(2).type());
+
+		rf.close();
+
 	}
 
 	/**

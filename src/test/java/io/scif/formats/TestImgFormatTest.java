@@ -90,6 +90,7 @@ public class TestImgFormatTest {
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
+		reader.close();
 	}
 
 	/**
@@ -110,6 +111,7 @@ public class TestImgFormatTest {
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
+		reader.close();
 	}
 
 	/**
@@ -133,6 +135,7 @@ public class TestImgFormatTest {
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
 			assertNotNull(reader.openPlane(0, i).getColorTable());
 		}
+		reader.close();
 	}
 
 	/**
@@ -155,6 +158,7 @@ public class TestImgFormatTest {
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
 			assertNotNull(reader.openPlane(0, i).getColorTable());
 		}
+		reader.close();
 	}
 
 	/**

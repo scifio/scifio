@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import io.scif.FormatException;
 import io.scif.Metadata;
+import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.services.InitializeService;
@@ -121,11 +122,13 @@ public class AbstractFormatTest {
 					.type());
 			}
 			assertEquals(hash, ImageHash.hashImg(img));
-			img.dispose();
 			if (!"".equals(metadataJson)) {
-				final Metadata metadata = init.initializeReader(imgLoc).getMetadata();
+				ReaderFilter readerFilter = init.initializeReader(imgLoc);
+				final Metadata metadata = readerFilter.getMetadata();
 				assertEquals(metadataJson, MetaDataSerializer.metaToJson(metadata));
+				readerFilter.close();
 			}
+			img.dispose();
 		}
 		catch (FormatException | IOException exc) {
 			throw new AssertionError("Error during image test", exc);

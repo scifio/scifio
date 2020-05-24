@@ -88,5 +88,7 @@ public class PlaneSeparatorTest {
 		assertEquals(2, filter.getMetadata().get(0).getPlanarAxisCount());
 		assertEquals(0, filter.getMetadata().get(0).getInterleavedAxisCount());
 		assertEquals(2, filter.getMetadata().get(0).getAxesNonPlanar().size());
+
+		filter.close();
 	}
 }
