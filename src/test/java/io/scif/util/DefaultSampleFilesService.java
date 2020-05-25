@@ -182,6 +182,7 @@ public class DefaultSampleFilesService extends AbstractService implements
 				}
 			}
 		}
+		bais.close();
 	}
 
 	private DiskLocationCache sourceCache() {
