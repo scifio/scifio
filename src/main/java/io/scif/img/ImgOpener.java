@@ -29,6 +29,8 @@
 
 package io.scif.img;
 
+import static org.scijava.util.ListUtils.first;
+
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
@@ -46,6 +48,7 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -61,15 +64,18 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.io.location.Location;
+import org.scijava.io.location.LocationService;
 import org.scijava.plugin.Parameter;
 
 /**
- * Reads in an {@link ImgPlus} using SCIFIO.
+ * Reads images from data sources using SCIFIO.
  *
  * @author Curtis Rueden
  * @author Mark Hiner
@@ -87,6 +93,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 	@Parameter
 	private InitializeService initializeService;
 
+	@Parameter
+	private LocationService locationService;
+
 	// -- Constructors --
 
 	public ImgOpener() {
@@ -100,10 +109,100 @@ public class ImgOpener extends AbstractImgIOComponent {
 	// -- ImgOpener methods --
 
 	/**
-	 * Reads in an {@link ImgPlus} from the first image of the given source.
+	 * Reads in images from the given source.
 	 *
-	 * @param source - the location of the dataset to open
-	 * @return - the {@link ImgPlus} or null
+	 * @param source the location of the images to open
+	 * @return the images which were read
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	public List<SCIFIOImgPlus<?>> openImgs(final String source)
+		throws ImgIOException
+	{
+		return openImgs(resolve(source));
+	}
+
+	/**
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the images to open
+	 * @param type The {@link Type} T of the output {@link ImgPlus}es.
+	 * @return the images which were read
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+		openImgs(final String source, final T type) throws ImgIOException
+	{
+		return openImgs(resolve(source), type);
+	}
+
+	/**
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the images to open
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	public List<SCIFIOImgPlus<?>> openImgs(final String source,
+		final SCIFIOConfig config) throws ImgIOException
+	{
+		return openImgs(resolve(source), config);
+	}
+
+	/**
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the images to open
+	 * @param type The {@link Type} T of the output {@link ImgPlus}es.
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+		openImgs(final String source, final T type, final SCIFIOConfig config)
+			throws ImgIOException
+	{
+		return openImgs(resolve(source), type, config);
+	}
+
+	/**
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the dataset to open
+	 * @param imgFactory The {@link ImgFactory} to use for creating the
+	 *          resultant {@link ImgPlus}.
+	 * @return the images which were read
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+		openImgs(final String source, final ImgFactory<T> imgFactory)
+			throws ImgIOException
+	{
+		return openImgs(resolve(source), imgFactory);
+	}
+
+	/**
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the dataset to open
+	 * @param imgFactory The {@link ImgFactory} to use for creating the
+	 *          resultant {@link ImgPlus}.
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+		openImgs(final String source, final ImgFactory<T> imgFactory,
+			final SCIFIOConfig config) throws ImgIOException
+	{
+		return openImgs(resolve(source), imgFactory, config);
+	}
+
+	/**
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the images to open
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public List<SCIFIOImgPlus<?>> openImgs(final Location source)
@@ -113,11 +212,11 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Reads in an {@link ImgPlus} from the first image of the given source.
+	 * Reads in images from the given source.
 	 *
-	 * @param source - the location of the dataset to open
-	 * @param type - The {@link Type} T of the output {@link ImgPlus}.
-	 * @return - the {@link ImgPlus} or null
+	 * @param source the location of the images to open
+	 * @param type The {@link Type} T of the output {@link ImgPlus}es.
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T> List<SCIFIOImgPlus<T>> openImgs(final Location source,
@@ -127,12 +226,11 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Reads in an {@link ImgPlus} from the specified index of the given source.
-	 * Can specify a variety of options via {@link SCIFIOConfig}.
+	 * Reads in images from the given source.
 	 *
-	 * @param source - the location of the dataset to open
-	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
-	 * @return - the {@link ImgPlus} or null
+	 * @param source the location of the images to open
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public List<SCIFIOImgPlus<?>> openImgs(final Location source,
@@ -146,13 +244,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Reads in an {@link ImgPlus} from the specified index of the given source.
-	 * Can specify the Type that should be opened.
+	 * Reads in images from the given source.
 	 *
-	 * @param source - the location of the dataset to open
-	 * @param type - The {@link Type} T of the output {@link ImgPlus}.
-	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
-	 * @return - the {@link ImgPlus} or null
+	 * @param source the location of the images to open
+	 * @param type The {@link Type} T of the output {@link ImgPlus}es.
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T> List<SCIFIOImgPlus<T>> openImgs(final Location source,
@@ -167,10 +264,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * @param source - the location of the dataset to open
-	 * @param imgFactory - The {@link ImgFactory} to use for creating the
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the dataset to open
+	 * @param imgFactory The {@link ImgFactory} to use for creating the
 	 *          resultant {@link ImgPlus}.
-	 * @return - the {@link ImgPlus} or null
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T> List<SCIFIOImgPlus<T>> openImgs(final Location source,
@@ -180,11 +279,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * @param source - the location of the dataset to open
-	 * @param imgFactory - The {@link ImgFactory} to use for creating the
+	 * Reads in images from the given source.
+	 *
+	 * @param source the location of the dataset to open
+	 * @param imgFactory The {@link ImgFactory} to use for creating the
 	 *          resultant {@link ImgPlus}.
-	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
-	 * @return - the {@link ImgPlus} or null
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T> List<SCIFIOImgPlus<T>> openImgs(final Location source,
@@ -198,9 +299,11 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * @param reader - An initialized {@link Reader} to use for reading image
-	 *          data.
-	 * @return - the {@link ImgPlus} or null
+	 * Reads in images using the given {@link Reader}.
+	 *
+	 * @param reader An initialized {@link Reader} to use for reading image
+	 *          data. Must be wrapped by a {@link PlaneSeparator} filter.
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public List<SCIFIOImgPlus<?>> openImgs(final Reader reader)
@@ -210,10 +313,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * @param reader - An initialized {@link Reader} to use for reading image
-	 *          data.
-	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
-	 * @return - the {@link ImgPlus} or null
+	 * Reads in images using the given {@link Reader}.
+	 *
+	 * @param reader An initialized {@link Reader} to use for reading image
+	 *          data. Must be wrapped by a {@link PlaneSeparator} filter.
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -224,12 +329,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * @param reader - An initialized {@link Reader} to use for reading image
-	 *          data.
-	 * @param type - The {@link Type} T of the output {@link ImgPlus}, which must
-	 *          match the typing of the {@link ImgFactory}.
-	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
-	 * @return - the {@link ImgPlus} or null
+	 * Reads in images using the given {@link Reader}.
+	 *
+	 * @param reader An initialized {@link Reader} to use for reading image data.
+	 *          Must be wrapped by a {@link PlaneSeparator} filter.
+	 * @param type The {@link Type} T of the output {@link ImgPlus}es.
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T> List<SCIFIOImgPlus<T>> openImgs(final Reader reader, final T type,
@@ -252,19 +358,14 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Reads in an {@link ImgPlus} from the given initialized {@link Reader},
-	 * using the given {@link ImgFactory} to construct the {@link Img}. The
-	 * {@link Type} T to read is defined by the third parameter.
-	 * <p>
-	 * NB: Any Reader provided must be wrapped by a {@link PlaneSeparator} filter.
-	 * </p>
+	 * Reads in images using the given {@link Reader}.
 	 *
-	 * @param reader - An initialized {@link Reader} to use for reading image
-	 *          data.
-	 * @param imgFactory - The {@link ImgFactory} to use for creating the
+	 * @param reader An initialized {@link Reader} to use for reading image
+	 *          data. Must be wrapped by a {@link PlaneSeparator} filter.
+	 * @param imgFactory The {@link ImgFactory} to use for creating the
 	 *          resultant {@link ImgPlus}.
-	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
-	 * @return - the {@link ImgPlus} or null
+	 * @param config {@link SCIFIOConfig} to use when opening the images
+	 * @return the images which were read
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T> List<SCIFIOImgPlus<T>> openImgs(Reader reader,
@@ -370,11 +471,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 		return heuristic;
 	}
 
-	/**
-	 * @param source - Dataset source to open
-	 * @param config - Options object for opening this dataset
-	 * @return A Reader initialized to open the specified id
-	 */
 	private Reader createReader(final Location source, final SCIFIOConfig config)
 		throws ImgIOException
 	{
@@ -704,4 +800,122 @@ public class ImgOpener extends AbstractImgIOComponent {
 		return (int) l;
 	}
 
+	private Location resolve(final String source) {
+		try {
+			return locationService.resolve(source);
+		}
+		catch (final URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	// -- Deprecated methods --
+
+	/** @deprecated Use {@link #openImgs(String, ImgFactory)}. */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
+		openImgs(final String source, final ImgFactory<T> imgFactory,
+			@SuppressWarnings("unused") T type) throws ImgIOException
+	{
+		return openImgs(source, imgFactory);
+	}
+
+	/** @deprecated Use {@link #openImgs(Reader, ImgFactory, SCIFIOConfig)}. */
+	@Deprecated
+	public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(
+		final Reader reader, @SuppressWarnings("unused") final T type,
+		final ImgFactory<T> imgFactory, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return openImgs(reader, imgFactory, config);
+	}
+
+	/** @deprecated Use {@link #openImgs(String)}. */
+	@Deprecated
+	public SCIFIOImgPlus<?> openImg(final String source) throws ImgIOException {
+		return first(openImgs(source));
+	}
+
+	/** @deprecated Use {@link #openImgs(String, RealType)}. */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final T type) throws ImgIOException
+	{
+		return first(openImgs(source, type));
+	}
+
+	/** @deprecated Use {@link #openImgs(String, SCIFIOConfig)}. */
+	@Deprecated
+	public SCIFIOImgPlus<?> openImg(final String source,
+		final SCIFIOConfig config) throws ImgIOException
+	{
+		return first(openImgs(source, config));
+	}
+
+	/** @deprecated Use {@link #openImgs(String, RealType, SCIFIOConfig)}. */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final T type, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return first(openImgs(source, type, config));
+	}
+
+	/** @deprecated Use {@link #openImgs(String, ImgFactory)}. */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final ImgFactory<T> imgFactory) throws ImgIOException
+	{
+		return first(openImgs(source, imgFactory));
+	}
+
+	/** @deprecated Use {@link #openImgs(String, ImgFactory, SCIFIOConfig)}. */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final ImgFactory<T> imgFactory,
+		final SCIFIOConfig config) throws ImgIOException
+	{
+		return first(openImgs(source, imgFactory, config));
+	}
+
+	/**
+	 * @deprecated Use {@link #openImgs(String, ImgFactory)} or
+	 *             {@link #openImgs(String, RealType)}.
+	 */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final ImgFactory<T> imgFactory, final T type)
+		throws ImgIOException
+	{
+		return first(openImgs(source, imgFactory, type));
+	}
+
+	/** @deprecated Use {@link #openImgs(Reader, SCIFIOConfig)}. */
+	@Deprecated
+	public SCIFIOImgPlus<?> openImg(final Reader reader,
+		final SCIFIOConfig config) throws ImgIOException
+	{
+		return first(openImgs(reader, config));
+	}
+
+	/** @deprecated Use {@link #openImgs(Reader, Object, SCIFIOConfig)}. */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final Reader reader, final T type, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return first(openImgs(reader, type, config));
+	}
+
+	/**
+	 * @deprecated Use {@link #openImgs(Reader, Object, SCIFIOConfig)} or
+	 *             {@link #openImgs(Reader, ImgFactory, SCIFIOConfig)}.
+	 */
+	@Deprecated
+	public <T extends RealType<T>> SCIFIOImgPlus<T> openImg(final Reader reader,
+		final T type, ImgFactory<T> imgFactory, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return first(openImgs(reader, type, imgFactory, config));
+	}
 }
