@@ -31,6 +31,7 @@ package io.scif.writing;
 
 import static org.junit.Assert.assertEquals;
 
+import io.scif.SCIFIOService;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
@@ -46,6 +47,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.io.location.FileLocation;
 
 /**
@@ -75,7 +77,7 @@ public abstract class AbstractSyntheticWriterTest {
 		throws IOException
 	{
 		final FileLocation out = createTempFileLocation(suffix);
-		final Context ctx = new Context();
+		final Context ctx = new Context(SCIFIOService.class, StatusService.class);
 
 		new ImgSaver(ctx).saveImg(out, sourceImg, config);
 		final ImgPlus<?> written = new ImgOpener(ctx).openImgs(out).get(0);
@@ -94,7 +96,7 @@ public abstract class AbstractSyntheticWriterTest {
 		final SCIFIOConfig config, final double delta) throws IOException
 	{
 		final FileLocation out = createTempFileLocation(suffix);
-		final Context ctx = new Context();
+		final Context ctx = new Context(SCIFIOService.class, StatusService.class);
 
 		new ImgSaver(ctx).saveImg(out, sourceImg, config);
 		final ImgPlus<?> written = new ImgOpener(ctx).openImgs(out).get(0);

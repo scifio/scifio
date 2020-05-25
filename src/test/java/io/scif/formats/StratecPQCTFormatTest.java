@@ -37,6 +37,7 @@ import static org.junit.Assert.assertTrue;
 
 import io.scif.ByteArrayPlane;
 import io.scif.ImageMetadata;
+import io.scif.SCIFIOService;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.StratecPQCTFormat.Checker;
 import io.scif.formats.StratecPQCTFormat.Metadata;
@@ -85,7 +86,7 @@ public class StratecPQCTFormatTest {
 
 	@BeforeClass
 	public static void oneTimeSetup() {
-		context = new Context();
+		context = new Context(SCIFIOService.class);
 		format = new StratecPQCTFormat();
 		format.setContext(context);
 		handles = context.getService(

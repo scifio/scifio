@@ -28,6 +28,7 @@
  */
 package io.scif.writing;
 
+import io.scif.SCIFIOService;
 import io.scif.codec.CompressionType;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
@@ -41,6 +42,8 @@ import net.imagej.ImgPlus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.app.StatusService;
 
 public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
@@ -48,7 +51,7 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 	@BeforeClass
 	public static void createOpener() {
-		opener = new ImgOpener();
+		opener = new ImgOpener(new Context(SCIFIOService.class, StatusService.class));
 	}
 
 	@AfterClass

@@ -39,6 +39,7 @@ import io.scif.ByteArrayPlane;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.SCIFIOService;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTestHelpers;
 import io.scif.util.FormatTools;
@@ -75,7 +76,7 @@ public class KontronFormatTest {
 
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
-		context = new Context();
+		context = new Context(SCIFIOService.class);
 		format = new KontronFormat();
 		format.setContext(context);
 		reader = (KontronFormat.Reader) format.createReader();

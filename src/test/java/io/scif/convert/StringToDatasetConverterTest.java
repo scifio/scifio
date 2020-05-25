@@ -33,25 +33,29 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import io.scif.SCIFIOService;
 import net.imagej.Dataset;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.convert.ConvertService;
 import org.scijava.convert.Converter;
 
 public class StringToDatasetConverterTest {
-	private Context c;
+	private static Context c;
 
-	@Before
-	public void setUp() {
-		c = new Context();
+	@BeforeClass
+	public static void setUp() {
+		c = new Context(SCIFIOService.class, StatusService.class);
 	}
 
-	@After
-	public void tearDown() {
+	@AfterClass
+	public static void tearDown() {
 		c.dispose();
 		c = null;
 	}

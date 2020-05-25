@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import io.scif.FormatException;
+import io.scif.SCIFIOService;
 import io.scif.formats.StratecPQCTFormat;
 
 import java.math.BigInteger;
@@ -46,6 +47,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.io.location.FileLocation;
 import org.scijava.thread.ThreadService;
 
@@ -60,7 +62,7 @@ public class FormatServiceTest {
 
 	@BeforeClass
 	public static void setUp() {
-		final Context context = new Context();
+		final Context context = new Context(SCIFIOService.class, StatusService.class);
 		formatService = context.getService(FormatService.class);
 	}
 

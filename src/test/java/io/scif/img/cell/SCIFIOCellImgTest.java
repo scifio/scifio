@@ -32,6 +32,7 @@ package io.scif.img.cell;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import io.scif.SCIFIOService;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
@@ -39,6 +40,8 @@ import io.scif.io.location.TestImgLocation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.app.StatusService;
 
 /**
  * Tests for the {@link SCIFIOCellImg} and related classes.
@@ -51,7 +54,7 @@ public class SCIFIOCellImgTest {
 
 	@BeforeClass
 	public static void createOpener() {
-		opener = new ImgOpener();
+		opener = new ImgOpener(new Context(SCIFIOService.class, StatusService.class));
 	}
 
 	@AfterClass

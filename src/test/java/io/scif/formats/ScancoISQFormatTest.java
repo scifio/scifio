@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 import io.scif.ByteArrayPlane;
 import io.scif.ImageMetadata;
 import io.scif.Reader;
+import io.scif.SCIFIOService;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTestHelpers;
 import io.scif.util.FormatTools;
@@ -73,7 +74,7 @@ public class ScancoISQFormatTest {
 
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
-		context = new Context();
+		context = new Context(SCIFIOService.class);
 		checker = new ScancoISQFormat.Checker();
 		format = new ScancoISQFormat();
 		format.setContext(context);
