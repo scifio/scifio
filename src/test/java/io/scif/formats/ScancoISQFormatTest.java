@@ -40,6 +40,7 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTestHelpers;
 import io.scif.util.FormatTools;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -64,23 +65,26 @@ import org.scijava.io.location.Location;
  */
 public class ScancoISQFormatTest {
 
-	private static final Context context = new Context();
-	private static final ScancoISQFormat.Checker checker =
-		new ScancoISQFormat.Checker();
-	private static final ScancoISQFormat format = new ScancoISQFormat();
+	private static Context context;
+	private static ScancoISQFormat.Checker checker;
+	private static ScancoISQFormat format;
 	private static ScancoISQFormat.Parser parser;
 	private static DataHandleService dataHandleService;
 
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
+		context = new Context();
+		checker = new ScancoISQFormat.Checker();
+		format = new ScancoISQFormat();
 		format.setContext(context);
 		parser = (ScancoISQFormat.Parser) format.createParser();
 		dataHandleService = context.getService(DataHandleService.class);
 	}
 
 	@AfterClass
-	public static void oneTimeTearDown() {
+	public static void oneTimeTearDown() throws IOException {
 		context.dispose();
+		parser.close();
 	}
 
 	@Test
@@ -89,6 +93,7 @@ public class ScancoISQFormatTest {
 			new BytesLocation("CTDATA-HEADER_V".getBytes()));
 
 		assertFalse(checker.isFormat(stream));
+		stream.close();
 	}
 
 	@Test
@@ -97,6 +102,7 @@ public class ScancoISQFormatTest {
 			new BytesLocation("CTDATA-hEADER_V1".getBytes()));
 
 		assertFalse(checker.isFormat(stream));
+		stream.close();
 	}
 
 	@Test
@@ -107,6 +113,7 @@ public class ScancoISQFormatTest {
 			new BytesLocation("CTDATA-HEADER_V1a".getBytes()));
 
 		assertTrue(checker.isFormat(stream));
+		stream.close();
 	}
 
 	@Test
@@ -248,6 +255,8 @@ public class ScancoISQFormatTest {
 		assertEquals(ScancoISQFormat.Metadata.HEADER_BLOCK, metadata
 			.getDataOffset());
 		assertEquals(2 * width * height, metadata.getSliceBytes());
+
+		handle.close();
 	}
 
 	@Test
@@ -279,5 +288,8 @@ public class ScancoISQFormatTest {
 		assertEquals(
 			"Position of stream incorrect: should point to the beginning of the 3rd slice",
 			ScancoISQFormat.Metadata.HEADER_BLOCK + 2 * planeBytes, handle.offset());
+
+		handle.close();
+		reader.close();
 	}
 }

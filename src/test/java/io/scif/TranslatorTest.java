@@ -96,6 +96,9 @@ public class TranslatorTest {
 		final Metadata dest = scifio.format().getFormat(out).createMetadata();
 
 		assertTrue(scifio.translator().translate(source, dest, false));
+
+		source.close();
+		dest.close();
 	}
 
 	/**
@@ -128,7 +131,8 @@ public class TranslatorTest {
 		assertEquals(Axes.CHANNEL, dest.get(0).getAxis(2).type());
 
 		rf.close();
-
+		source.close();
+		dest.close();
 	}
 
 	/**
@@ -143,6 +147,9 @@ public class TranslatorTest {
 
 		// This translation should fail, as there is no "Fake to ICS" translator
 		assertFalse(scifio.translator().translate(source, dest, true));
+
+		source.close();
+		dest.close();
 	}
 
 	/**

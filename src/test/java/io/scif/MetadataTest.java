@@ -110,6 +110,8 @@ public class MetadataTest {
 		assertEquals(m.get(0).getAxisIndex(Axes.TIME), 2);
 		assertEquals(m.get(0).getAxisIndex(Axes.Z), 3);
 		assertEquals(m.get(0).getAxisIndex(Axes.CHANNEL), 4);
+
+		m.close();
 	}
 
 	/**
@@ -118,7 +120,7 @@ public class MetadataTest {
 	 * @throws FormatException
 	 */
 	@Test
-	public void testAddingAxes() throws FormatException {
+	public void testAddingAxes() throws FormatException, IOException {
 		final Metadata m = scifio.format().getFormat(id).createMetadata();
 		m.createImageMetadata(1);
 
@@ -129,6 +131,8 @@ public class MetadataTest {
 		m.get(0).setAxisLength(Axes.X, 100);
 		assertEquals(m.get(0).getAxisLength(Axes.X), 100);
 		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
+
+		m.close();
 	}
 
 	/** Verify conditions when interrogating non-existent axes. */
@@ -147,6 +151,8 @@ public class MetadataTest {
 		final AxisType fooAxis = Axes.get("foo");
 		assertEquals(m.get(0).getAxisLength(fooAxis), 1);
 		assertEquals(m.get(0).getAxisIndex(fooAxis), -1);
+
+		m.close();
 	}
 
 	/**
@@ -163,6 +169,8 @@ public class MetadataTest {
 		assertEquals(10, m.get(0).getAxisLength(Axes.TIME));
 		assertEquals(6, m.get(0).getAxisLength(Axes.CHANNEL));
 		assertEquals(2, m.get(0).getAxisLength(Axes.Z));
+
+		m.close();
 	}
 
 	/**
@@ -181,6 +189,8 @@ public class MetadataTest {
 		pos = new long[] { 0, 0, 3, 3, 7 };
 		assertEquals((3 * 6 * 2) + (3 * 10 * 6 * 2) + (7 * 4 * 10 * 6 * 2),
 			FormatTools.positionToRaster(m.get(0).getAxesLengthsNonPlanar(), pos));
+
+		m.close();
 	}
 
 	/**
@@ -196,6 +206,8 @@ public class MetadataTest {
 		assertEquals(6 * 10 * 4 * 8, m.get(0).getPlaneCount());
 		m.get(0).setPlanarAxisCount(4);
 		assertEquals(10 * 4 * 8, m.get(0).getPlaneCount());
+
+		m.close();
 	}
 
 	/**
@@ -221,6 +233,8 @@ public class MetadataTest {
 		assertEquals(1, m.get(0).getAxisIndex(Axes.X));
 		assertEquals(2, m.get(0).getAxisIndex(Axes.Y));
 		assertTrue(m.get(0).getInterleavedAxisCount() > 0);
+
+		m.close();
 	}
 
 	/**
@@ -240,6 +254,8 @@ public class MetadataTest {
 
 		m.get(0).setPlanarAxisCount(2);
 		assertEquals(2, m.get(0).getAxes().size());
+
+		m.close();
 	}
 
 	/**
@@ -254,6 +270,8 @@ public class MetadataTest {
 		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(4, m.get(0).getAxes().size());
+
+		m.close();
 	}
 
 	/**
@@ -279,5 +297,7 @@ public class MetadataTest {
 		m.get(0).setAxisLength(Axes.TIME, 1);
 
 		assertEquals(2, m.get(0).getAxes().size());
+
+		m.close();
 	}
 }

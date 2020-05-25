@@ -44,6 +44,7 @@ import io.scif.formats.StratecPQCTFormat.Parser;
 import io.scif.formats.StratecPQCTFormat.Reader;
 import io.scif.util.FormatTools;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Paths;
@@ -76,21 +77,27 @@ public class StratecPQCTFormatTest {
 
 	private static final String validName = Paths.get("I1234567.m02").toString();
 	private static final String validDevice = "device.typ";
-	private static final StratecPQCTFormat format = new StratecPQCTFormat();
-	private static final Context context = new Context();
-	private static final DataHandleService handles = context.getService(
-		DataHandleService.class);
-	private static final Checker checker = new Checker();
-	private static final Parser parser = new Parser();
+	private static StratecPQCTFormat format;
+	private static Context context;
+	private static DataHandleService handles;
+	private static Checker checker;
+	private static Parser parser;
 
 	@BeforeClass
 	public static void oneTimeSetup() {
+		context = new Context();
+		format = new StratecPQCTFormat();
 		format.setContext(context);
+		handles = context.getService(
+				DataHandleService.class);
+		checker = new Checker();
+		parser = new Parser();
 	}
 
 	@AfterClass
-	public static void oneTimeTearDown() {
+	public static void oneTimeTearDown() throws IOException {
 		context.dispose();
+		parser.close();
 	}
 
 	@Test
@@ -112,6 +119,7 @@ public class StratecPQCTFormatTest {
 		handle.write(new byte[DEVICE_NAME_INDEX]); // zero-fill the handle
 		handle.write(1);
 		assertFalse(checker.isFormat(handle));
+		handle.close();
 	}
 
 	@Test
@@ -123,6 +131,7 @@ public class StratecPQCTFormatTest {
 		handle.write((byte) validDevice.length());
 		handle.write(validDevice.getBytes());
 		assertFalse(checker.isFormat(handle));
+		handle.close();
 	}
 
 	@Test
@@ -136,6 +145,7 @@ public class StratecPQCTFormatTest {
 		handle.write(device.getBytes());
 
 		assertFalse(checker.isFormat(handle));
+		handle.close();
 	}
 
 	@Test
@@ -148,6 +158,7 @@ public class StratecPQCTFormatTest {
 		handle.write(validDevice.getBytes());
 
 		assertFalse(checker.isFormat(handle));
+		handle.close();
 	}
 
 	@Test
@@ -159,6 +170,7 @@ public class StratecPQCTFormatTest {
 		handle.write((byte) device.length());
 		handle.write(device.getBytes());
 		assertTrue(checker.isFormat(handle));
+		handle.close();
 	}
 
 	@Test
@@ -302,6 +314,7 @@ public class StratecPQCTFormatTest {
 		assertEquals(slices, metadata.getSlices());
 		assertEquals(sliceStart, metadata.getSliceStart(), 1e-12);
 		assertEquals(sliceDistance, metadata.getSliceDistance(), 1e-12);
+		handle.close();
 	}
 
 	private void putShortString(final int position, final ByteBuffer buffer,
@@ -338,6 +351,7 @@ public class StratecPQCTFormatTest {
 		assertEquals(
 			"Position of stream incorrect: should point to the end of the stream",
 			StratecPQCTFormat.HEADER_SIZE + planeBytes, handle.offset());
+		reader.close();
 	}
 
 	private DataHandle<Location> createTestHandle(final int size,
