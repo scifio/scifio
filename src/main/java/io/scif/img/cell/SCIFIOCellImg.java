@@ -38,6 +38,7 @@ import java.io.IOException;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 import net.imglib2.cache.Cache;
+import net.imglib2.cache.IoSync;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.display.ColorTable;
 import net.imglib2.img.cell.Cell;
@@ -64,15 +65,19 @@ public class SCIFIOCellImg<T extends NativeType<T>, A> extends
 
 	private final SCIFIOCellImgFactory<T> factory;
 
+	private final IoSync iosync;
+
 	// -- Constructor --
 
 	public SCIFIOCellImg(final SCIFIOCellImgFactory<T> factory,
 		final CellGrid grid, final Fraction entitiesPerPixel,
-		final Cache<Long, Cell<A>> cache, final A accessType)
+		final Cache<Long, Cell<A>> cache, final A accessType,
+		final IoSync iosync)
 	{
 		super(grid, entitiesPerPixel, cache, accessType);
 		this.factory = factory;
 		reader = factory.reader();
+		this.iosync = iosync;
 	}
 
 	// -- SCIFIOCellImg methods --
@@ -122,6 +127,7 @@ public class SCIFIOCellImg<T extends NativeType<T>, A> extends
 
 	@Override
 	public void dispose() {
+		iosync.shutdown();
 		try {
 			reader.close();
 		}

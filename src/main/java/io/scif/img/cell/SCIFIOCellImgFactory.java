@@ -283,7 +283,7 @@ public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		final A accessType = ArrayDataAccessFactory.get(typeFactory, options
 			.accessFlags());
 		final SCIFIOCellImg<T, ? extends A> img = new SCIFIOCellImg<>(this, grid,
-			entitiesPerPixel, cache, accessType);
+			entitiesPerPixel, cache, accessType, iosync);
 		img.setLinkedType(typeFactory.createLinkedType(img));
 		return img;
 	}
