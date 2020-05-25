@@ -49,7 +49,6 @@ import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 
 import org.scijava.plugin.Parameter;
@@ -276,7 +275,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int planeIndex = (int) FormatTools.positionToRaster(0, reader,
 				npIndices);
 
-			validateBounds(getPlanarAxisLengths(reader.getMetadata()), bounds);
+			validateBounds(reader.getMetadata().get(0).getAxesLengthsPlanar(), bounds);
 
 			if (tmpPlane == null) {
 				tmpPlane = reader.openPlane(index, planeIndex, bounds);
@@ -312,17 +311,6 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 					"is not contained in [0, " + lengths[d] + "]");
 			}
 		}
-	}
-
-	private long[] getPlanarAxisLengths(final Metadata meta) {
-		final ImageMetadata imgMeta = unwrap(meta);
-		return imgMeta.getAxesLengthsPlanar();
-	}
-
-	private ImageMetadata unwrap(final Metadata meta) {
-		if (meta instanceof MetadataWrapper) return unwrap(((MetadataWrapper) meta)
-			.unwrap());
-		return meta.get(0);
 	}
 
 	private boolean[][] loadedTable() {
