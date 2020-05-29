@@ -28,32 +28,42 @@
  */
 package io.scif.writing;
 
+import io.scif.FormatException;
+import io.scif.SCIFIO;
 import io.scif.codec.CompressionType;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
+import io.scif.img.ImgSaver;
+import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
 import io.scif.util.FormatTools;
-
-import java.io.IOException;
-
 import net.imagej.ImgPlus;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 	private static ImgOpener opener;
+	private static ImgSaver saver;
 
 	@BeforeClass
-	public static void createOpener() {
-		opener = new ImgOpener();
+	public static void setUp() {
+		SCIFIO scifio = new SCIFIO();
+		opener = new ImgOpener(scifio.context());
+		saver = new ImgSaver(scifio.context());
 	}
 
 	@AfterClass
-	public static void disposeOpener() {
-		opener.context().dispose();
+	public static void tearDown() {
+		opener.getContext().dispose();
 	}
 
 	public TiffFormatTest() {
@@ -177,6 +187,20 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 		final ImgPlus<?> sourceImg6 = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100).build()).get(0);
 		testWriting(sourceImg6);
+	}
+
+	@Test
+	public void testForValidTIFF() throws FormatException,
+			IOException
+	{
+		final Path tempDir = Files.createTempDirectory("scifio-test");
+		final Location sampleImage = new TestImgLocation.Builder().name(
+				"8bit-unsigned").pixelType("uint8").indexed(false).planarDims(2).lengths(
+				10, 10).axes("X", "Y").build();
+		SCIFIOImgPlus<?> img = opener.openImgs(sampleImage).get(0);
+		FileLocation saveLocation = new FileLocation(new File(tempDir.toFile(), "test.tif"));
+		saver.saveImg(saveLocation, img);
+		opener.openImgs(saveLocation);
 	}
 
 }
