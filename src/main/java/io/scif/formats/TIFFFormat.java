@@ -1440,18 +1440,14 @@ public class TIFFFormat extends AbstractFormat {
 		protected void initialize(final int imageIndex, final long planeIndex,
 			final Interval bounds) throws FormatException, IOException
 		{
+			if(planeIndex > 0) return;
 			// Ensure that no more than one thread manipulated the initialized
 			// array at one time.
 			synchronized (this) {
 				if (!isInitialized(imageIndex, (int) planeIndex)) {
-
-					try (DataHandle<Location> tmp = dataHandleService.create(getHandle()
-						.get()))
 					{
-						if (tmp.length() == 0) {
-							// write TIFF header
-							tiffSaver.writeHeader();
-						}
+						// write TIFF header
+						tiffSaver.writeHeader();
 					}
 				}
 			}

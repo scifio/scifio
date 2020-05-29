@@ -208,7 +208,7 @@ public class TiffSaver extends AbstractContextual {
 	/** Writes the TIFF file header. */
 	public void writeHeader() throws IOException {
 		// write endianness indicator
-		out.seek(0);
+		if(out.length() > 0) out.seek(0);
 		if (isLittleEndian()) {
 			out.writeByte(TiffConstants.LITTLE);
 			out.writeByte(TiffConstants.LITTLE);
