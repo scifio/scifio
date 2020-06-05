@@ -86,8 +86,7 @@ public final class IO {
 	 * @see #open(Location)
 	 */
 	public static SCIFIOImgPlus<?> open(final String source) {
-		final ImgOpener opener = new ImgOpener();
-		return first(openAll(opener, resolve(source, opener.context())));
+		return first(openAll(source));
 	}
 
 	/**
@@ -97,7 +96,7 @@ public final class IO {
 	public static SCIFIOImgPlus<FloatType> openFloat(
 			final Location source)
 	{
-		return openFloat(opener(), source);
+		return first(openAllFloat(source));
 	}
 
 	/**
@@ -114,7 +113,7 @@ public final class IO {
 	public static SCIFIOImgPlus<DoubleType> openDouble(
 			final Location source)
 	{
-		return openDouble(opener(), source);
+		return first(openAllDouble(source));
 	}
 
 	/**
@@ -151,7 +150,7 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
 	open(final Location source, final T type)
 	{
-		return open(opener(), source, type);
+		return first(openAll(source, type));
 	}
 
 	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> open(
@@ -166,8 +165,7 @@ public final class IO {
 	public static SCIFIOImgPlus<?> open(final String source,
 	                                    final SCIFIOConfig config)
 	{
-		final ImgOpener opener = new ImgOpener();
-		return open(opener, resolve(source, opener.context()), config);
+		return first(openAll(source, config));
 	}
 
 	/**
@@ -176,7 +174,7 @@ public final class IO {
 	public static SCIFIOImgPlus<?> open(final Location source,
 	                                    final SCIFIOConfig config)
 	{
-		return open(opener(), source, config);
+		return first(openAll(source, config));
 	}
 
 	/**
@@ -185,7 +183,7 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
 	open(final Location source, final T type, final SCIFIOConfig config)
 	{
-		return open(opener(), source, type, config);
+		return first(openAll(source, type, config));
 	}
 
 	/**
@@ -194,8 +192,7 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
 	open(final String source, final T type, final SCIFIOConfig config)
 	{
-		final ImgOpener opener = new ImgOpener();
-		return open(opener, resolve(source, opener.context()), type, config);
+		return first(openAll(source, type, config));
 	}
 
 	/**
@@ -204,8 +201,7 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
 	open(final String source, final ImgFactory<T> imgFactory)
 	{
-		final ImgOpener opener = new ImgOpener();
-		return open(opener, resolve(source, opener.context()), imgFactory);
+		return first(openAll(source, imgFactory));
 	}
 
 	/**
@@ -214,7 +210,7 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
 	open(final Location source, final ImgFactory<T> imgFactory)
 	{
-		return open(opener(), source, imgFactory);
+		return first(openAll(source, imgFactory));
 	}
 
 	/**
@@ -224,8 +220,7 @@ public final class IO {
 	open(final String source, final ImgFactory<T> imgFactory,
 	     final SCIFIOConfig config)
 	{
-		final ImgOpener opener = new ImgOpener();
-		return open(opener, resolve(source, opener.context()), imgFactory, config);
+		return first(openAll(source, imgFactory, config));
 	}
 
 	/**
@@ -235,7 +230,7 @@ public final class IO {
 	open(final Location source, final ImgFactory<T> imgFactory,
 	     final SCIFIOConfig config)
 	{
-		return open(opener(), source, imgFactory, config);
+		return first(openAll(source, imgFactory, config));
 	}
 
 	/**
