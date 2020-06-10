@@ -1443,16 +1443,12 @@ public class TIFFFormat extends AbstractFormat {
 			// Ensure that no more than one thread manipulated the initialized
 			// array at one time.
 			synchronized (this) {
-				if (!isInitialized(imageIndex, (int) planeIndex)) {
-
-					try (DataHandle<Location> tmp = dataHandleService.create(getHandle()
-						.get()))
-					{
-						if (tmp.length() == 0) {
-							// write TIFF header
-							tiffSaver.writeHeader();
-						}
-					}
+				if (!isInitialized(imageIndex, (int) planeIndex) && (getHandle()
+					.length() == 0 || !getHandle().exists()))
+				{
+					getHandle().ensureWritable(0);
+					// write TIFF header
+					tiffSaver.writeHeader();
 				}
 			}
 		}
