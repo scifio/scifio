@@ -45,6 +45,7 @@ import net.imagej.axis.Axes;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.io.location.FileLocation;
@@ -58,12 +59,17 @@ import org.scijava.plugin.PluginInfo;
  */
 public class FilterTest {
 
-	private final static SCIFIO scifio = makeSCIFIO();
+	private static SCIFIO scifio;
 
 	private final Location id = new TestImgLocation.Builder().name("testImg")
 		.lengths(512, 512).build();
 
 	private Reader readerFilter;
+
+	@BeforeClass
+	public static void setup() {
+		scifio = makeSCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {

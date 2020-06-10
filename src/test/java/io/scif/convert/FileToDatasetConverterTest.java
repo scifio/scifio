@@ -35,27 +35,30 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import io.scif.SCIFIOService;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.convert.ConvertService;
 import org.scijava.convert.Converter;
 
 import net.imagej.Dataset;
 
 public class FileToDatasetConverterTest {
-	private Context c;
+	private static Context c;
 
-	@Before
-	public void setUp() {
-		c = new Context();
+	@BeforeClass
+	public static void setUp() {
+		c = new Context(SCIFIOService.class, StatusService.class);
 	}
 
-	@After
-	public void tearDown() {
+	@AfterClass
+	public static void tearDown() {
 		c.dispose();
-		c = null;
 	}
 
 	@Test

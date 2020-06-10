@@ -28,18 +28,18 @@
  */
 package io.scif.writing;
 
+import io.scif.SCIFIOService;
 import io.scif.img.ImgOpener;
+import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
 
-import net.imagej.ImgPlus;
-import net.imglib2.type.numeric.integer.ByteType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.app.StatusService;
 
 public class APNGWriterTest extends AbstractSyntheticWriterTest {
 
@@ -47,7 +47,7 @@ public class APNGWriterTest extends AbstractSyntheticWriterTest {
 
 	@BeforeClass
 	public static void createOpener() {
-		opener = new ImgOpener();
+		opener = new ImgOpener(new Context(SCIFIOService.class, StatusService.class));
 	}
 
 	@AfterClass
@@ -63,32 +63,37 @@ public class APNGWriterTest extends AbstractSyntheticWriterTest {
 	@Test
 	public void testWriting_uint8() throws IOException {
 
-		final ImgPlus<UnsignedByteType> sourceImg = (ImgPlus<UnsignedByteType>)
+		final SCIFIOImgPlus<?> sourceImg =
 				opener.openImgs(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
 				"uint8").axes("X", "Y", "C").lengths(100, 100, 3).build()).get(0);
 		testWriting(sourceImg);
 
-		final ImgPlus<UnsignedByteType> sourceImg2 = (ImgPlus<UnsignedByteType>)
+		final SCIFIOImgPlus<?> sourceImg2 =
 				opener.openImgs(new TestImgLocation.Builder().name("8bit-unsigned").pixelType(
 				"uint8").axes("X", "Y", "Channel").lengths(100, 100, 3).build()).get(0);
 		testWriting(sourceImg2);
+
+		sourceImg.dispose();
+		sourceImg2.dispose();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testWriting_uint16() throws IOException {
 
-		final ImgPlus<ByteType> sourceImg = (ImgPlus<ByteType>) opener.openImgs(
+		final SCIFIOImgPlus<?> sourceImg = opener.openImgs(
 			new TestImgLocation.Builder().name("16bit-unsigned").pixelType("uint16")
 				.axes("X", "Y", "C").lengths(100, 100, 3).build()).get(0);
 
 		testWriting(sourceImg);
 
-		final ImgPlus<ByteType> sourceImg2 = (ImgPlus<ByteType>) opener.openImgs(
+		final SCIFIOImgPlus<?> sourceImg2 = opener.openImgs(
 			new TestImgLocation.Builder().name("16bit-unsigned").pixelType("uint16")
 				.axes("X", "Y").lengths(100, 100).build()).get(0);
 
 		testWriting(sourceImg2);
+
+		sourceImg.dispose();
 	}
 
 }

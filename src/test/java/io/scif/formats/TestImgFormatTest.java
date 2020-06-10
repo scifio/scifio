@@ -44,6 +44,7 @@ import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.io.location.Location;
 
@@ -59,7 +60,12 @@ public class TestImgFormatTest {
 
 	// -- Fields --
 
-	private static final SCIFIO scifio = new SCIFIO();
+	private static SCIFIO scifio;
+
+	@BeforeClass
+	public static void setup() {
+		scifio = new SCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {
@@ -84,6 +90,7 @@ public class TestImgFormatTest {
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
+		reader.close();
 	}
 
 	/**
@@ -104,6 +111,7 @@ public class TestImgFormatTest {
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
+		reader.close();
 	}
 
 	/**
@@ -127,6 +135,7 @@ public class TestImgFormatTest {
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
 			assertNotNull(reader.openPlane(0, i).getColorTable());
 		}
+		reader.close();
 	}
 
 	/**
@@ -149,6 +158,7 @@ public class TestImgFormatTest {
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
 			assertNotNull(reader.openPlane(0, i).getColorTable());
 		}
+		reader.close();
 	}
 
 	/**

@@ -34,6 +34,8 @@ import static org.junit.Assert.assertTrue;
 
 import io.scif.FormatException;
 import io.scif.Metadata;
+import io.scif.SCIFIOService;
+import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.services.InitializeService;
@@ -49,6 +51,7 @@ import net.imagej.axis.AxisType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.io.handle.DataHandleService;
 import org.scijava.io.location.FileLocation;
 import org.scijava.io.location.Location;
@@ -68,7 +71,7 @@ public class AbstractFormatTest {
 
 	@BeforeClass
 	public static void setup() {
-		ctx = new Context();
+		ctx = new Context(SCIFIOService.class, SampleFileService.class, StatusService.class);
 		init = ctx.getService(
 				InitializeService.class);
 	}
@@ -122,9 +125,12 @@ public class AbstractFormatTest {
 			}
 			assertEquals(hash, ImageHash.hashImg(img));
 			if (!"".equals(metadataJson)) {
-				final Metadata metadata = init.initializeReader(imgLoc).getMetadata();
+				ReaderFilter readerFilter = init.initializeReader(imgLoc);
+				final Metadata metadata = readerFilter.getMetadata();
 				assertEquals(metadataJson, MetaDataSerializer.metaToJson(metadata));
+				readerFilter.close();
 			}
+			img.dispose();
 		}
 		catch (FormatException | IOException exc) {
 			throw new AssertionError("Error during image test", exc);

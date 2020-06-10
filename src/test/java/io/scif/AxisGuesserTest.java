@@ -41,6 +41,9 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.io.handle.DataHandleService;
@@ -65,14 +68,24 @@ public class AxisGuesserTest {
 	/** Axis type for series. */
 	public static final int S_AXIS = 4;
 
+	private static SCIFIO scifio;
+
+	@BeforeClass
+	public static void setup() {
+		scifio = new SCIFIO(new Context(SCIFIOService.class));
+	}
+
+	@AfterClass
+	public static void dispose() {
+		scifio.context().dispose();
+	}
+
 	/** Method for testing pattern guessing logic. */
 
 	@Test
 	public void testAxisguessing() throws FormatException, IOException {
-		final Context context = new Context();
-		final SCIFIO scifio = new SCIFIO(context);
 		final LogService log = scifio.log();
-		final DataHandleService dataHandleService = context.getService(
+		final DataHandleService dataHandleService = scifio.context().getService(
 			DataHandleService.class);
 		final URL resource = this.getClass().getResource(
 			"img/axisguesser/test_stack/img_000000000_Cy3_000.tif");
@@ -95,6 +108,8 @@ public class AxisGuesserTest {
 			final long sizeC = reader.getMetadata().get(0).getAxisLength(
 				Axes.CHANNEL);
 			final boolean certain = reader.getMetadata().get(0).isOrderCertain();
+
+			reader.close();
 
 			assertArrayEquals("Dimension Order", new AxisType[] { Axes.X, Axes.Y },
 				dimOrder);
@@ -126,15 +141,12 @@ public class AxisGuesserTest {
 
 			assertArrayEquals(dimOrder, newOrder);
 		}
-		context.dispose();
 	}
 
 	@Test
 	public void testAxisguessing2() throws FormatException, IOException {
-		final Context context = new Context();
-		final SCIFIO scifio = new SCIFIO(context);
 		final LogService log = scifio.log();
-		final DataHandleService dataHandleService = context.getService(
+		final DataHandleService dataHandleService = scifio.context().getService(
 			DataHandleService.class);
 		final URL resource = this.getClass().getResource(
 			"img/axisguesser/leica_stack/leica_stack_Series014_z000_ch00.tif");
@@ -184,8 +196,10 @@ public class AxisGuesserTest {
 			assertEquals(Axes.Z, axes[0]);
 
 			assertArrayEquals(dimOrder, newOrder);
+
+			reader.close();
+
 		}
-		context.dispose();
 	}
 
 }

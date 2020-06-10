@@ -29,6 +29,7 @@
 
 package io.scif.img;
 
+import io.scif.SCIFIOService;
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
 
@@ -59,7 +60,7 @@ public class ConvertImg {
 	}
 
 	private static void convertImg(final File file) throws Exception {
-		final Context c = new Context();
+		final Context c = new Context(SCIFIOService.class);
 		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
 			ImgMode.ARRAY);
 		final ImgPlus<?> img = new ImgOpener(c).openImgs(new FileLocation(file

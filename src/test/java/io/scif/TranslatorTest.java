@@ -50,6 +50,7 @@ import net.imagej.axis.Axes;
 
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.io.location.FileLocation;
 import org.scijava.io.location.Location;
@@ -61,9 +62,14 @@ import org.scijava.io.location.Location;
  */
 public class TranslatorTest {
 
-	private final static SCIFIO scifio = new SCIFIO();
+	private static SCIFIO scifio;
 	private Location in;
 	private FileLocation out;
+
+	@BeforeClass
+	public static void setupSCIFIO() {
+		scifio = new SCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {
@@ -90,6 +96,9 @@ public class TranslatorTest {
 		final Metadata dest = scifio.format().getFormat(out).createMetadata();
 
 		assertTrue(scifio.translator().translate(source, dest, false));
+
+		source.close();
+		dest.close();
 	}
 
 	/**
@@ -120,6 +129,10 @@ public class TranslatorTest {
 		assertEquals(Axes.X, dest.get(0).getAxis(0).type());
 		assertEquals(Axes.Y, dest.get(0).getAxis(1).type());
 		assertEquals(Axes.CHANNEL, dest.get(0).getAxis(2).type());
+
+		rf.close();
+		source.close();
+		dest.close();
 	}
 
 	/**
@@ -134,6 +147,9 @@ public class TranslatorTest {
 
 		// This translation should fail, as there is no "Fake to ICS" translator
 		assertFalse(scifio.translator().translate(source, dest, true));
+
+		source.close();
+		dest.close();
 	}
 
 	/**

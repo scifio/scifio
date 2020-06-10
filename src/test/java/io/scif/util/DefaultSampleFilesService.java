@@ -98,8 +98,13 @@ public class DefaultSampleFilesService extends AbstractService implements
 			final File basefolder = new File(sourceCache().getBaseDirectory(),
 				localFolderName);
 			try {
-				if (zipSources.length == 1) { // extract directly into basedir
-					downloadAndUnpackResource(zipSources[0], basefolder);
+				if (zipSources.length == 1) {
+					// check if zip source was already downloaded in the past
+					Location source = zipSources[0];
+					if(!basefolder.exists()) {
+						// extract directly into basedir
+						downloadAndUnpackResource(source, basefolder);
+					}
 				}
 				else {
 
@@ -177,6 +182,7 @@ public class DefaultSampleFilesService extends AbstractService implements
 				}
 			}
 		}
+		bais.close();
 	}
 
 	private DiskLocationCache sourceCache() {

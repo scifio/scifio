@@ -39,6 +39,7 @@ import io.scif.ByteArrayPlane;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.SCIFIOService;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTestHelpers;
 import io.scif.util.FormatTools;
@@ -56,6 +57,8 @@ import org.scijava.io.handle.DataHandleService;
 import org.scijava.io.location.BytesLocation;
 import org.scijava.io.location.Location;
 
+import java.io.IOException;
+
 /**
  * Tests {@link KontronFormat} and its subclasses
  *
@@ -63,8 +66,8 @@ import org.scijava.io.location.Location;
  */
 public class KontronFormatTest {
 
-	private static final Context context = new Context();
-	private static final KontronFormat format = new KontronFormat();
+	private static Context context;
+	private static KontronFormat format;
 	private static KontronFormat.Reader reader;
 	private static KontronFormat.Parser parser;
 	private static DataHandleService dataHandleService;
@@ -73,6 +76,8 @@ public class KontronFormatTest {
 
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
+		context = new Context(SCIFIOService.class);
+		format = new KontronFormat();
 		format.setContext(context);
 		reader = (KontronFormat.Reader) format.createReader();
 		parser = (KontronFormat.Parser) format.createParser();
@@ -83,7 +88,9 @@ public class KontronFormatTest {
 	public void setUp() throws Exception {}
 
 	@AfterClass
-	public static void oneTimeTearDown() {
+	public static void oneTimeTearDown() throws IOException {
+		reader.close();
+		parser.close();
 		context.dispose();
 	}
 
@@ -97,6 +104,7 @@ public class KontronFormatTest {
 			new BytesLocation(new byte[] { 0x1, 0x0, 0x47 }));
 
 		assertFalse(checker.isFormat(stream));
+		stream.close();
 	}
 
 	@Test
@@ -107,6 +115,7 @@ public class KontronFormatTest {
 				(byte) 0xA0 }));
 
 		assertFalse(checker.isFormat(stream));
+		stream.close();
 	}
 
 	@Test
@@ -118,6 +127,7 @@ public class KontronFormatTest {
 				0x13 }));
 
 		assertTrue(checker.isFormat(stream));
+		stream.close();
 	}
 
 	@Test
@@ -159,6 +169,8 @@ public class KontronFormatTest {
 		// VERIFY
 		assertEquals(width, kontronMeta.getWidth());
 		assertEquals(height, kontronMeta.getHeight());
+
+		stream.close();
 	}
 
 	@Test
@@ -191,6 +203,9 @@ public class KontronFormatTest {
 		assertEquals(
 			"Position of stream incorrect: should point to the end of the file",
 			handle.length(), handle.offset());
+
+		r.close();
+		handle.close();
 	}
 
 }

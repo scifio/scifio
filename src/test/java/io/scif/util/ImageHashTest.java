@@ -31,6 +31,7 @@ package io.scif.util;
 
 import static org.junit.Assert.assertEquals;
 
+import io.scif.SCIFIOService;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
@@ -38,6 +39,8 @@ import io.scif.io.location.TestImgLocation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.app.StatusService;
 
 /**
  * Test for {@link ImageHash}
@@ -50,7 +53,7 @@ public class ImageHashTest {
 
 	@BeforeClass
 	public static void createOpener() {
-		opener = new ImgOpener();
+		opener = new ImgOpener(new Context(SCIFIOService.class, StatusService.class));
 	}
 
 	@AfterClass
@@ -83,5 +86,10 @@ public class ImageHashTest {
 			100, 100, 3, 3, 3).axes("Y", "X", "Z", "Channel", "Time").build()).get(0);
 		assertEquals("3bbd0424c5b53baad73e969aed7b949a102625bb", //
 			ImageHash.hashImg(img4));
+
+		img1.dispose();
+		img2.dispose();
+		img3.dispose();
+		img4.dispose();
 	}
 }

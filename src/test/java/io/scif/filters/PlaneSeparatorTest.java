@@ -39,6 +39,7 @@ import io.scif.io.location.TestImgLocation;
 import java.io.IOException;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.InstantiableException;
 import org.scijava.io.location.Location;
@@ -50,10 +51,15 @@ import org.scijava.io.location.Location;
  */
 public class PlaneSeparatorTest {
 
-	private static final SCIFIO scifio = new SCIFIO();
+	private static SCIFIO scifio;
 
 	private final Location id = TestImgLocation.builder().lengths(3, 4, 512, 512)
 		.axes("Channel", "Time", "X", "Y").build();
+
+	@BeforeClass
+	public static void setup() {
+		scifio = new SCIFIO();
+	}
 
 	@AfterClass
 	public static void dispose() {
@@ -82,5 +88,7 @@ public class PlaneSeparatorTest {
 		assertEquals(2, filter.getMetadata().get(0).getPlanarAxisCount());
 		assertEquals(0, filter.getMetadata().get(0).getInterleavedAxisCount());
 		assertEquals(2, filter.getMetadata().get(0).getAxesNonPlanar().size());
+
+		filter.close();
 	}
 }
