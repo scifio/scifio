@@ -26,34 +26,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package io.scif.writing;
 
+import io.scif.SCIFIO;
 import io.scif.codec.CompressionType;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
+import io.scif.img.ImgSaver;
+import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.location.TestImgLocation;
 import io.scif.util.FormatTools;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import net.imagej.ImgPlus;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
 
 public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 	private static ImgOpener opener;
+	private static ImgSaver saver;
 
 	@BeforeClass
-	public static void createOpener() {
-		opener = new ImgOpener();
+	public static void setUp() {
+		SCIFIO scifio = new SCIFIO();
+		opener = new ImgOpener(scifio.context());
+		saver = new ImgSaver(scifio.context());
 	}
 
 	@AfterClass
-	public static void disposeOpener() {
-		opener.context().dispose();
+	public static void tearDown() {
+		opener.getContext().dispose();
 	}
 
 	public TiffFormatTest() {
@@ -68,9 +80,9 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 		config.writerSetCompression(CompressionType.JPEG.toString());
 		for (final int f : formats) {
 			final String formatString = FormatTools.getPixelTypeString(f);
-			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-				"testimg").pixelType(formatString).axes("X", "Y", "C").lengths(100, 100,
-					3).build()).get(0);
+			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType(formatString).axes("X", "Y", "C").lengths(
+					100, 100, 3).build()).get(0);
 			testWriting(sourceImg, config);
 		}
 	}
@@ -86,9 +98,9 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 		for (final int f : formats) {
 			final String formatString = FormatTools.getPixelTypeString(f);
-			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-				"testimg").pixelType(formatString).axes("X", "Y", "C").lengths(100, 100,
-					3).build()).get(0);
+			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType(formatString).axes("X", "Y", "C").lengths(
+					100, 100, 3).build()).get(0);
 			testWriting(sourceImg, config);
 		}
 	}
@@ -104,9 +116,9 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 		for (final int f : formats) {
 			final String formatString = FormatTools.getPixelTypeString(f);
-			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-				"testimg").pixelType(formatString).axes("X", "Y", "C").lengths(100, 100,
-					3).build()).get(0);
+			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType(formatString).axes("X", "Y", "C").lengths(
+					100, 100, 3).build()).get(0);
 			testWriting(sourceImg, config);
 		}
 	}
@@ -122,9 +134,9 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 		for (final int f : formats) {
 			final String formatString = FormatTools.getPixelTypeString(f);
-			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-				"testimg").pixelType(formatString).axes("X", "Y", "C").lengths(100, 100,
-					3).build()).get(0);
+			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType(formatString).axes("X", "Y", "C").lengths(
+					100, 100, 3).build()).get(0);
 			testWriting(sourceImg, config);
 		}
 	}
@@ -140,43 +152,62 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 		for (final int f : formats) {
 			final String formatString = FormatTools.getPixelTypeString(f);
-			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-				"testimg").pixelType(formatString).axes("X", "Y", "C").lengths(100, 100,
-					3).build()).get(0);
+			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType(formatString).axes("X", "Y", "C").lengths(
+					100, 100, 3).build()).get(0);
 			testWriting(sourceImg, config);
 		}
 	}
 
 	@Test
 	public void testWriting_uint8_funkyDims() throws IOException {
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 
-		final ImgPlus<?> sourceImg2 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "C", "Time").lengths(100,
-				100, 3, 3).build()).get(0);
+		final ImgPlus<?> sourceImg2 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "C", "Time").lengths(
+				100, 100, 3, 3).build()).get(0);
 		testWriting(sourceImg2);
 
-		final ImgPlus<?> sourceImg3 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "Channel", "Z", "Time")
+		final ImgPlus<?> sourceImg3 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "Channel", "Z", "Time")
 			.lengths(100, 100, 3, 10, 13).build()).get(0);
 		testWriting(sourceImg3);
 
-		final ImgPlus<?> sourceImg4 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "C", "Z", "T").lengths(100,
-				100, 3, 3, 3).build()).get(0);
+		final ImgPlus<?> sourceImg4 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "C", "Z", "T").lengths(
+				100, 100, 3, 3, 3).build()).get(0);
 		testWriting(sourceImg4);
 
-		final ImgPlus<?> sourceImg5 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "Z", "Custom").lengths(100,
-				100, 3, 3).build()).get(0);
+		final ImgPlus<?> sourceImg5 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "Z", "Custom").lengths(
+				100, 100, 3, 3).build()).get(0);
 		testWriting(sourceImg5);
 
-		final ImgPlus<?> sourceImg6 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100).build()).get(0);
+		final ImgPlus<?> sourceImg6 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100)
+			.build()).get(0);
 		testWriting(sourceImg6);
+	}
+
+	/**
+	 * Ensure a valid TIFF is written (i.e. the header is written) when the
+	 * destination file doesn't exist (vs. when using
+	 * {@link #createTempFileLocation(String)} an empty file is created).
+	 */
+	@Test
+	public void testWriteToNewLocation() throws IOException {
+		final Path tempDir = Files.createTempDirectory("scifio-test");
+		final Location sampleImage = new TestImgLocation.Builder().name(
+			"8bit-unsigned").pixelType("uint8").indexed(false).planarDims(2).lengths(
+				10, 10).axes("X", "Y").build();
+		SCIFIOImgPlus<?> img = opener.openImgs(sampleImage).get(0);
+		FileLocation saveLocation = new FileLocation(new File(tempDir.toFile(),
+			"test.tif"));
+		saver.saveImg(saveLocation, img);
+		opener.openImgs(saveLocation);
 	}
 
 }
