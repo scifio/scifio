@@ -34,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
+import io.scif.io.location.TestImgLocation;
 import io.scif.util.ImageHash;
 
 import java.io.IOException;
@@ -121,6 +122,40 @@ public abstract class AbstractSyntheticWriterTest {
 			totalDelta += Math.abs(source - read);
 		}
 		assertEquals(delta, totalDelta, 0.000_0001);
+	}
+
+	/**
+	 * @see #testOverwritingBehavior(SCIFIOConfig)
+	 */
+	public FileLocation testOverwritingBehavior()
+		throws IOException
+	{
+		return testOverwritingBehavior(new SCIFIOConfig());
+	}
+
+	/**
+	 * @param configuration Configuration to use for saving
+	 * @return The {@link FileLocation} saeved to.
+	 */
+	public FileLocation testOverwritingBehavior(SCIFIOConfig configuration)
+		throws IOException
+	{
+		Context ctx = new Context();
+		try {
+			final FileLocation saveLocation = createTempFileLocation("test" + suffix);
+			ImgSaver saver = new ImgSaver(ctx);
+			ImgOpener opener = new ImgOpener(ctx);
+			ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100)
+				.build()).get(0);
+
+			saver.saveImg(saveLocation, sourceImg, configuration);
+			saver.saveImg(saveLocation, sourceImg, configuration);
+			return saveLocation;
+		}
+		finally {
+			ctx.dispose();
+		}
 	}
 
 	private class NormalizerUtil {

@@ -28,14 +28,19 @@
  */
 package io.scif.writing;
 
+import io.scif.config.SCIFIOConfig;
+import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
+
 import java.io.IOException;
 
 import net.imagej.ImgPlus;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
 
 public class ICSFormatTest extends AbstractSyntheticWriterTest {
 
@@ -137,5 +142,16 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 			"testimg").pixelType("float").axes("X", "Y", "C").lengths(100, 100, 3)
 			.build()).get(0);
 		testWriting(sourceImg);
+	}
+
+	/**
+	 * NB: the ICS writer does not create a valid ICS file when overwriting
+	 */
+	@Test(expected = ImgIOException.class)
+	public void testSuccessfulOverwrite() throws IOException {
+		final SCIFIOConfig config = new SCIFIOConfig().writerSetFailIfOverwriting(
+			false);
+		FileLocation overwritten = testOverwritingBehavior(config);
+		opener.openImgs(overwritten);
 	}
 }

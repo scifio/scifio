@@ -28,6 +28,7 @@
  */
 package io.scif.writing;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
 
@@ -39,6 +40,7 @@ import net.imglib2.type.numeric.integer.IntType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
 
 public class AVIWriterTest extends AbstractSyntheticWriterTest {
 
@@ -66,5 +68,13 @@ public class AVIWriterTest extends AbstractSyntheticWriterTest {
 			new TestImgLocation.Builder().name("8bit-unsigned").pixelType("uint8")
 				.axes("X", "Y", "Channel", "Time").lengths(100, 100, 3, 5).build()).get(0);
 		testWriting(sourceImg);
+	}
+
+	@Test
+	public void testSuccessfulOverwrite() throws IOException {
+		final SCIFIOConfig config = new SCIFIOConfig().writerSetFailIfOverwriting(
+			false);
+		FileLocation overwritten = testOverwritingBehavior(config);
+		opener.openImgs(overwritten);
 	}
 }

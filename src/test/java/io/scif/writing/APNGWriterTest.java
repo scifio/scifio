@@ -28,6 +28,8 @@
  */
 package io.scif.writing;
 
+import io.scif.config.SCIFIOConfig;
+import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
 
@@ -40,6 +42,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
 
 public class APNGWriterTest extends AbstractSyntheticWriterTest {
 
@@ -91,4 +94,14 @@ public class APNGWriterTest extends AbstractSyntheticWriterTest {
 		testWriting(sourceImg2);
 	}
 
+	/**
+	 * NB: the PNG writer does not create an appropriate header when overwriting.
+	 */
+	@Test(expected = ImgIOException.class)
+	public void testSuccessfulOverwrite() throws IOException {
+		final SCIFIOConfig config = new SCIFIOConfig().writerSetFailIfOverwriting(
+			false);
+		FileLocation overwritten = testOverwritingBehavior(config);
+		opener.openImgs(overwritten);
+	}
 }

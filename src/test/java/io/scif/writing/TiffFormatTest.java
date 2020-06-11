@@ -32,6 +32,7 @@ package io.scif.writing;
 import io.scif.SCIFIO;
 import io.scif.codec.CompressionType;
 import io.scif.config.SCIFIOConfig;
+import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
 import io.scif.img.SCIFIOImgPlus;
@@ -210,4 +211,26 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 		opener.openImgs(saveLocation);
 	}
 
+	/**
+	 * Verify we get an {@link ImgIOException} when writing to a destination that
+	 * already exists.
+	 */
+	@Test(expected = io.scif.img.ImgIOException.class)
+	public void testFailIfOverwriting() throws IOException {
+		testOverwritingBehavior();
+	}
+
+	/**
+	 * Verify we can overwrite an existing file with {@link SCIFIOConfig}.
+	 * <p>
+	 * NB: for TIFF this technically appends the image
+	 * </p>
+	 */
+	@Test
+	public void testSuccessfulOverwrite() throws IOException {
+		final SCIFIOConfig config = new SCIFIOConfig().writerSetFailIfOverwriting(
+			false);
+		FileLocation overwritten = testOverwritingBehavior(config);
+		opener.openImgs(overwritten);
+	}
 }
