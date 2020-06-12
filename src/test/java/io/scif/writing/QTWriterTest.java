@@ -28,6 +28,8 @@
  */
 package io.scif.writing;
 
+import io.scif.config.SCIFIOConfig;
+import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
 
@@ -39,6 +41,7 @@ import net.imglib2.type.numeric.integer.IntType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
 
 public class QTWriterTest extends AbstractSyntheticWriterTest {
 
@@ -68,4 +71,14 @@ public class QTWriterTest extends AbstractSyntheticWriterTest {
 		testWriting(sourceImg);
 	}
 
+	/**
+	 * NB: the QT writer does not create a valid QT image when overwriting.
+	 */
+	@Test(expected = ImgIOException.class)
+	public void testSuccessfulOverwrite() throws IOException {
+		final SCIFIOConfig config = new SCIFIOConfig().writerSetFailIfOverwriting(
+			false);
+		FileLocation overwritten = testOverwritingBehavior(config);
+		opener.openImgs(overwritten);
+	}
 }

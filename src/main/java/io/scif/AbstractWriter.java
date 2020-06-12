@@ -101,6 +101,23 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	// -- AbstractWriter API Methods --
 
 	/**
+	 * Validate that the given output is consistent with the given configuration.
+	 * 
+	 * @throws FormatException If the output does not meet the requirements of the
+	 *           configuration
+	 */
+	protected void checkLocation(DataHandle<Location> out, SCIFIOConfig config)
+		throws FormatException, IOException
+	{
+		if (config.writerGetFailIfOverwriting() && out.exists() && out
+			.length() > 0)
+		{
+			throw new FormatException(
+				"Attemptint to write to output that already exists. Please rename the output, remove the existing conflict, or adjust configuration.");
+		}
+	}
+
+	/**
 	 * Ensure that the arguments that are being passed to saveBytes(...) are
 	 * valid.
 	 *
@@ -253,6 +270,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	public void setDest(final DataHandle<Location> out, final int imageIndex,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
+		checkLocation(out, config);
 		setDestinationMeta(imageIndex, config);
 		getMetadata().setDatasetName(out.get().getName());
 		this.out = out;

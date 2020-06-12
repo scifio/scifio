@@ -28,14 +28,18 @@
  */
 package io.scif.writing;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
 import io.scif.io.location.TestImgLocation;
+
 import java.io.IOException;
 
 import net.imagej.ImgPlus;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
 
 public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 
@@ -107,4 +111,11 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 		testWritingApprox(sourceImg, 0.00036388822);
 	}
 
+	@Test
+	public void testSuccessfulOverwrite() throws IOException {
+		final SCIFIOConfig config = new SCIFIOConfig().writerSetFailIfOverwriting(
+			false);
+		FileLocation overwritten = testOverwritingBehavior(config);
+		opener.openImgs(overwritten);
+	}
 }

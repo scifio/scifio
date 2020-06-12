@@ -78,7 +78,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	// Checker
 	private boolean openDataset = true;
-	
+
 	private boolean bufferedReading = true;
 
 	// Parser
@@ -90,6 +90,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	// Writer
 	private boolean writeSequential = false;
+
+	private boolean failIfOverwriting = true;
 
 	private ColorModel model = null;
 
@@ -166,6 +168,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 		filterMetadata = config.filterMetadata;
 		saveOriginalMetadata = config.saveOriginalMetadata;
 		writeSequential = config.writeSequential;
+		failIfOverwriting = config.failIfOverwriting;
 		model = config.model;
 		fps = config.fps;
 		compression = config.compression;
@@ -182,16 +185,15 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	}
 
 	// -- Checker Methods --
-	
+
 	public SCIFIOConfig enableBufferedReading(final boolean enabled) {
 		bufferedReading = enabled;
 		return this;
 	}
-	
+
 	public boolean bufferedReadingEnabled() {
 		return bufferedReading;
 	}
-	
 
 	public SCIFIOConfig checkerSetOpen(final boolean open) {
 		openDataset = open;
@@ -255,6 +257,29 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	}
 
 	// -- Writer methods --
+
+	/**
+	 * <b>Warning:</b> "overwriting" behavior is format-specific and not
+	 * guaranteed to result in a valid image.
+	 * 
+	 * @param failIfOverwriting Whether or not an exception should be raised if
+	 *          the writer's destination already exists. Default: true
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig writerSetFailIfOverwriting(
+		final boolean failIfOverwriting)
+	{
+		this.failIfOverwriting = failIfOverwriting;
+		return this;
+	}
+
+	/**
+	 * @return Whether or not an exception should be raised if the writer's
+	 *         destination already exists.
+	 */
+	public boolean writerGetFailIfOverwriting() {
+		return failIfOverwriting;
+	}
 
 	/**
 	 * Sets whether or not we know that planes will be written sequentially. If
