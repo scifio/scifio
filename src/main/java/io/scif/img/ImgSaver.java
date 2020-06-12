@@ -32,8 +32,6 @@ package io.scif.img;
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultImageMetadata;
 import io.scif.DefaultMetadata;
-import io.scif.DefaultWriter;
-import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
@@ -46,6 +44,7 @@ import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,6 +77,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.io.location.Location;
+import org.scijava.io.location.LocationService;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.Bytes;
 
@@ -98,6 +98,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 	@Parameter
 	private TranslatorService translatorService;
 
+	@Parameter
+	private LocationService locationService;
+
 	// -- Constructors --
 
 	public ImgSaver() {
@@ -109,6 +112,71 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	// -- ImgSaver methods --
+
+	/**
+	 * Entry point for saving an {@link ImgPlus}. The goal is to get to a
+	 * {@link Writer} and {@link ImgPlus} which are then passed to
+	 * {@link #writePlanes}. These saveImg signatures facilitate multiple pathways
+	 * to that goal. This method is called when a Location id and {@link Img} are
+	 * provided.
+	 *
+	 * @param destination
+	 * @param img
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public Metadata saveImg(final String destination, final Img<?> img)
+			throws ImgIOException, IncompatibleTypeException
+	{
+		return saveImg(resolve(destination), img);
+	}
+
+	/**
+	 * Location id provided. {@link ImgPlus} provided, or wrapped {@link Img} in
+	 * previous saveImg.
+	 *
+	 * @param destination
+	 * @param img
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public Metadata saveImg(final String destination, final SCIFIOImgPlus<?> img,
+	                        final int imageIndex) throws ImgIOException, IncompatibleTypeException
+	{
+		return saveImg(resolve(destination), img, imageIndex);
+	}
+
+	/**
+	 * As {@link #saveImg(Location, Img)} with configuration options.
+	 *
+	 * @param destination
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public Metadata saveImg(final String destination, final Img<?> img,
+	                        final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
+	{
+		return saveImg(resolve(destination), img, config);
+	}
+
+	/**
+	 * As {@link #saveImg(Location, SCIFIOImgPlus, int)} with configuration
+	 * options.
+	 *
+	 * @param destination
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public Metadata saveImg(final String destination, final SCIFIOImgPlus<?> img,
+	                        final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
+			IncompatibleTypeException
+	{
+		return saveImg(resolve(destination), img, imageIndex, config);
+	}
 
 	/**
 	 * Entry point for saving an {@link ImgPlus}. The goal is to get to a
@@ -173,6 +241,67 @@ public class ImgSaver extends AbstractImgIOComponent {
 		IncompatibleTypeException
 	{
 		return writeImg(id, null, img, imageIndex, config);
+	}
+
+	/**
+	 * {@link Writer} and {@link Img} provided
+	 *
+	 * @param w
+	 * @param img
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final Writer w, final Img<?> img) throws ImgIOException,
+	IncompatibleTypeException
+	{
+		saveImg(w, img, null);
+	}
+
+	/**
+	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped provided
+	 * {@link Img}.
+	 *
+	 * @param w
+	 * @param img
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final Writer w, final SCIFIOImgPlus<?> img,
+		final int imageIndex) throws ImgIOException, IncompatibleTypeException
+	{
+		saveImg(w, img, imageIndex, null);
+	}
+
+	/**
+	 * As {@link #saveImg(Writer, Img)}, with configuration options.
+	 *
+	 * @param w
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final Writer w, final Img<?> img,
+		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
+	{
+		saveImg(w, utils().makeSCIFIOImgPlus(img), 0, config);
+	}
+
+	/**
+	 * As {@link #saveImg(Writer, SCIFIOImgPlus, int)}, with configuration
+	 * options.
+	 *
+	 * @param w
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final Writer w, final SCIFIOImgPlus<?> img,
+		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
+	IncompatibleTypeException
+	{
+		writeImg(img.getMetadata().getSourceLocation(), w, img, imageIndex, config);
 	}
 
 	// -- Utility methods --
@@ -363,6 +492,15 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	// -- Helper methods --
+
+	private Location resolve(final String dest) {
+		try {
+			return locationService.resolve(dest);
+		}
+		catch (final URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
 
 	/**
 	 * Entry {@link #writeImg} method. Gathers necessary metadata, creates default
