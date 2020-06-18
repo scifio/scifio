@@ -100,6 +100,11 @@ public class ICSFormat extends AbstractFormat {
 
 		private static final String MICRO_TIME = "micro-time";
 
+		private static final String DEFAULT_LENGTH_UNIT = "um";
+		private static final String DEFAULT_TIME_UNIT = "s";
+		private static final String DEFAULT_UNKNOWN_UNIT = "unkown";
+	
+		private static final Double DEFAULT_AXIS_SCALE = 1.0;
 		// -- Fields --
 
 		/**
@@ -147,116 +152,106 @@ public class ICSFormat extends AbstractFormat {
 
 			// find axis sizes
 
-			final double[] axesSizes = getAxesSizes();
+			final int[] axisSizes = getAxesSizes();
 			final String[] axes = getAxes();
 
 			// Reset the existing axes
 			imageMeta.setAxes(new CalibratedAxis[0], new long[0]);
 
-			AxisType xAxis = Axes.X, yAxis = Axes.Y, zAxis = Axes.Z;
-			Double[] pixelSizes = getPixelSizes();
-			if (pixelSizes == null) pixelSizes = new Double[] { 1.0, 1.0, 1.0, 1.0 };
+			final String[] parameterLabels = getParamLabels();
+			final Double[] parameterScales = getParameterScales();
+			final String[] parameterUnits = getParameterUnits();
 
-			final String[] paramLabels = getParamLabels();
+			final Double[] historyExtents = getHistoryExtents();
+			final String[] historyLabels = getHistoryLabels();
 
-			// HACK - support for Gray Institute at Oxford's ICS lifetime data
-			// DEPRECATED - future ICS data will use "parameter labels" with a
-			// value
-			// of "micro-time" for the lifetime axis.
-			// NB: If parameter labels are found, skip the hack.
 			final boolean lifetime = getLifetime();
-			final String label = getLabels();
-			if (noMicroTime(paramLabels) && lifetime && label != null) {
-				if (label.equalsIgnoreCase("t x y")) {
-					// NB: The axes are actually (Lifetime, X, Y) not (X, Y, Z)!
-					xAxis = SCIFIOAxes.LIFETIME;
-					yAxis = Axes.X;
-					zAxis = Axes.Y;
-				}
-				else if (label.equalsIgnoreCase("x y t")) {
-					// NB: The Z axis is actually Lifetime!
-					zAxis = SCIFIOAxes.LIFETIME;
-				}
-				else {
-					log().debug("Lifetime data, unexpected 'history labels' " + label);
-				}
-			}
-
+			
 			int bitsPerPixel = 0;
-			final String[] units = getUnits();
+			int nVirtualAxis = 0;
 
 			// interpret axis information
 			for (int n = 0; n < axes.length; n++) {
 				final String axis = axes[n].toLowerCase();
-				if (axis.equals("x")) {
-					imageMeta.addAxis(xAxis, (int) axesSizes[n]);
-					FormatTools.calibrate(imageMeta.getAxis(xAxis), pixelSizes[n], 0,
-						units == null ? "um" : units[n]);
-				}
-				else if (axis.equals("y")) {
-					imageMeta.addAxis(yAxis, (int) axesSizes[n]);
-					FormatTools.calibrate(imageMeta.getAxis(yAxis), pixelSizes[n], 0,
-						units == null ? "um" : units[n]);
-				}
-				else if (axis.equals("z") && axesSizes[n] > 1) {
-					imageMeta.addAxis(zAxis, (int) axesSizes[n]);
-					FormatTools.calibrate(imageMeta.getAxis(zAxis), pixelSizes[n], 0,
-						units == null ? "um" : units[n]);
-				}
-				else if (axis.equals("t") && axesSizes[n] > 1) {
-					final int tIndex = imageMeta.getAxisIndex(Axes.TIME);
 
-					if (tIndex == -1) {
-						imageMeta.addAxis(Axes.TIME, (int) axesSizes[n]);
-					}
-					else {
-						final long timeLength = imageMeta.getAxisLength(Axes.TIME) *
-							(int) axesSizes[n];
-						imageMeta.setAxisLength(Axes.TIME, timeLength);
-					}
-					imageMeta.getAxis(Axes.TIME).setUnit(units == null ? "seconds"
-						: units[n]);
-				}
-				else if (axis.equals("bits")) {
-					bitsPerPixel = (int) axesSizes[n];
-					while (bitsPerPixel % 8 != 0)
-						bitsPerPixel++;
-					if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
-				}
-				else {
-					if (imageMeta.getAxisIndex(Axes.X) == -1) {
-						setStoredRGB(true);
-					}
+				// determine axis type
+				AxisType axisType;
+				String defaultUnit;
+				switch (axis) {
+					case "bits":
+						bitsPerPixel = axisSizes[n];
+						while (bitsPerPixel % 8 != 0)
+							bitsPerPixel++;
+						if (bitsPerPixel == 24 || bitsPerPixel == 48)
+							bitsPerPixel /= 3;
+						nVirtualAxis++;
+						continue;
 
-					AxisType type = null;
+					case "x":
+					case "y":
+					case "z":
+						String actualAxis = historyLabels == null ? axis : historyLabels[n - nVirtualAxis];
+						if (!actualAxis.equals("t")) {
+							axisType = Axes.get(actualAxis.toUpperCase());
+							defaultUnit = DEFAULT_LENGTH_UNIT;
+						} else {
+							axisType = Axes.TIME;
+							defaultUnit = DEFAULT_TIME_UNIT;
+						}
+						break;
 
-					if (axis.startsWith("c")) {
-						type = Axes.CHANNEL;
-					}
-					else if (axis.startsWith("p")) {
-						type = SCIFIOAxes.PHASE;
-					}
-					else if (axis.startsWith("f")) {
-						type = SCIFIOAxes.FREQUENCY;
-					}
-					else {
-						type = Axes.unknown();
-					}
+					case "t":
+						axisType = Axes.TIME;
+						defaultUnit = DEFAULT_TIME_UNIT;
+						break;
 
-					CalibratedAxis newAxis = FormatTools.createAxis(type);
-					if (units == null || n >= units.length) {
-						newAxis.setUnit("unknown");
-					}
-					else {
-						newAxis.setUnit(units[n]);
-					}
-
-					imageMeta.addAxis(newAxis, (long) axesSizes[n]);
+					default:
+						if (axis.startsWith("c"))
+							axisType = Axes.CHANNEL;
+						else if (axis.startsWith("p"))
+							axisType = SCIFIOAxes.PHASE;
+						else if (axis.startsWith("f"))
+							axisType = SCIFIOAxes.FREQUENCY;
+						else
+							axisType = Axes.unknown();
+						defaultUnit = DEFAULT_UNKNOWN_UNIT;
+						break;
 				}
-				if (paramLabels[n] != null && paramLabels[n].equals(MICRO_TIME)) {
-					imageMeta.setAxisType(imageMeta.getAxes().size() - 1,
-						SCIFIOAxes.LIFETIME);
+				// turn into lifetime axis if is lifetime dataset
+				// HACK - support for Gray Institute at Oxford's ICS lifetime data
+				// DEPRECATED - future ICS data will use "parameter labels" with a
+				// value
+				// of "micro-time" for the lifetime axis.
+				if (axisType.equals(Axes.TIME) && (MICRO_TIME.equals(parameterLabels[n]) || lifetime))
+					axisType = SCIFIOAxes.LIFETIME;
+
+				// determine scale and unit
+				String unit = null;
+				Double scale = null;
+				String paramUnit = parameterUnits == null || n >= parameterUnits.length ?
+						null : parameterUnits[n].toLowerCase();
+				// tier 1: parameter unit + parameter scale
+				if (paramUnit != null && !paramUnit.equals("undefined")) {
+					unit = paramUnit;
+					scale = parameterScales == null ? null : parameterScales[n];
 				}
+				// tier 2: default unit + history extent
+				if (unit == null || scale == null) {
+					unit = defaultUnit;
+					if (historyExtents != null && historyExtents[n - nVirtualAxis] != null)
+						scale = historyExtents[n - nVirtualAxis] / axisSizes[n];
+				}
+				// tier 3" default unit + default scale
+				if (unit == null || scale == null) {
+					unit = defaultUnit;
+					scale = DEFAULT_AXIS_SCALE;
+				}
+
+				// size: the number of "ticks" of the axis
+				// scale: the physical size of one increment along the axis
+				CalibratedAxis newAxis = FormatTools.createAxis(axisType);
+				FormatTools.calibrate(newAxis, scale, 0, unit);
+				imageMeta.addAxis(newAxis, axisSizes[n]);
 			}
 
 			if (getBitsPerPixel() != null) bitsPerPixel = getBitsPerPixel();
@@ -627,20 +622,21 @@ public class ICSFormat extends AbstractFormat {
 			return pLabels.split(" ");
 		}
 
-		public String getLabels() {
-			return findStringValueForKey("history labels");
+		public String[] getHistoryLabels() {
+			final String[] kv = findValueForKey("history labels");
+			return kv == null ? null : kv[1].split("\\s+");
 		}
 
 		public String getExperimentType() {
 			return findStringValueForKey("history type");
 		}
 
-		public Double[] getPixelSizes() {
+		public Double[] getParameterScales() {
 			final String[] kv = findValueForKey("parameter scale");
 			return kv == null ? null : splitDoubles(kv[1]);
 		}
 
-		public String[] getUnits() {
+		public String[] getParameterUnits() {
 			final String[] kv = findValueForKey("parameter units");
 			return kv == null ? null : kv[1].split("\\s+");
 		}
@@ -658,15 +654,15 @@ public class ICSFormat extends AbstractFormat {
 			return axes;
 		}
 
-		public double[] getAxesSizes() {
+		public int[] getAxesSizes() {
 			final String[] kv = findValueForKey("layout sizes");
-			double[] sizes = null;
+			int[] sizes = null;
 			if (kv != null) {
 				final String[] lengths = kv[1].split(" ");
-				sizes = new double[lengths.length];
+				sizes = new int[lengths.length];
 				for (int n = 0; n < sizes.length; n++) {
 					try {
-						sizes[n] = Double.parseDouble(lengths[n].trim());
+						sizes[n] = Integer.parseInt(lengths[n].trim());
 					}
 					catch (final NumberFormatException e) {
 						log().debug("Could not parse axis length", e);
@@ -676,22 +672,9 @@ public class ICSFormat extends AbstractFormat {
 			return sizes;
 		}
 
-		public double[] getPhysicalPixelSizes() {
+		public Double[] getHistoryExtents() {
 			final String[] kv = findValueForKey("history extents");
-			double[] sizes = null;
-			if (kv != null) {
-				final String[] lengths = kv[1].split(" ");
-				sizes = new double[lengths.length];
-				for (int n = 0; n < sizes.length; n++) {
-					try {
-						sizes[n] = Double.parseDouble(lengths[n].trim());
-					}
-					catch (final NumberFormatException e) {
-						log().debug("Could not parse pixel sizes", e);
-					}
-				}
-			}
-			return sizes;
+			return kv == null ? null : splitDoubles(kv[1]);
 		}
 
 		public Double[] getTimestamps() {
