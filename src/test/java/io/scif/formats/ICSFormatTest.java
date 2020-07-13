@@ -70,7 +70,7 @@ public class ICSFormatTest extends AbstractFormatTest {
 		testImg(baseFolder().child("test-ics.zip").child(
 			"benchmark_v1_2018_x64y64z5c2s1t1.ics"),
 			"8519bc6a422f69a9d112afa34b164b29df68f1fe", meta, new int[] { 64, 64, 5,
-				1, 2, }, Axes.X, Axes.Y, Axes.Z, Axes.unknown(), Axes.CHANNEL);
+				1, 2, }, Axes.X, Axes.Y, Axes.Z, Axes.TIME, Axes.CHANNEL);
 
 	}
 
@@ -90,7 +90,7 @@ public class ICSFormatTest extends AbstractFormatTest {
 		testImg(baseFolder().child("test-ics.zip").child(
 			"benchmark_v1_2018_x64y64z5c2s1t11_5b7fee6e758d1_hrm.ics"),
 			"9cb8c14508b513b7b34ca82d15a56c153ac6561b", meta, new int[] { 64, 64, 5,
-				1, 2 }, Axes.X, Axes.Y, Axes.Z, Axes.unknown(), Axes.CHANNEL);
+				1, 2 }, Axes.X, Axes.Y, Axes.Z, Axes.TIME, Axes.CHANNEL);
 	}
 
 	@Test
