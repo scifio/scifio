@@ -1898,7 +1898,7 @@ public class ICSFormat extends AbstractFormat {
 		// -- Constants --
 
 		/** Newline terminator sequences. */
-		private static final String[] NL = { "\n", "\r\n" };
+		private static final String[] NL = { "\n", "\r\n", "\r" };
 
 		public static final String LEAF = "VALID_LEAF";
 
