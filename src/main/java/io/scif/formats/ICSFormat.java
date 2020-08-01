@@ -164,6 +164,7 @@ public class ICSFormat extends AbstractFormat {
 
 			final Double[] historyExtents = getHistoryExtents();
 			final String[] historyLabels = getHistoryLabels();
+			final String[] historyUnits = getHistoryUnits();
 
 			final boolean lifetime = getLifetime();
 			
@@ -235,13 +236,20 @@ public class ICSFormat extends AbstractFormat {
 					unit = paramUnit;
 					scale = parameterScales == null ? null : parameterScales[n];
 				}
-				// tier 2: default unit + history extent
+				// tier 2: history units + history extent
+				if (unit == null || scale == null) {
+					if (historyUnits != null && historyUnits[n - nVirtualAxis] != null)
+						unit = historyUnits[n - nVirtualAxis].toLowerCase();
+					if (historyExtents != null && historyExtents[n - nVirtualAxis] != null)
+						scale = historyExtents[n - nVirtualAxis] / axisSizes[n];
+				}
+				// tier 3: default unit + history extent
 				if (unit == null || scale == null) {
 					unit = defaultUnit;
 					if (historyExtents != null && historyExtents[n - nVirtualAxis] != null)
 						scale = historyExtents[n - nVirtualAxis] / axisSizes[n];
 				}
-				// tier 3" default unit + default scale
+				// tier 4" default unit + default scale
 				if (unit == null || scale == null) {
 					unit = defaultUnit;
 					scale = DEFAULT_AXIS_SCALE;
@@ -675,6 +683,11 @@ public class ICSFormat extends AbstractFormat {
 		public Double[] getHistoryExtents() {
 			final String[] kv = findValueForKey("history extents");
 			return kv == null ? null : splitDoubles(kv[1]);
+		}
+
+		public String[] getHistoryUnits() {
+			final String[] kv = findValueForKey("history units");
+			return kv == null ? null : kv[1].split("\\s+");
 		}
 
 		public Double[] getTimestamps() {
@@ -1946,6 +1959,7 @@ public class ICSFormat extends AbstractFormat {
 			addKey(root, "history", "experimenter");
 			addKey(root, "history", "exposure");
 			addKey(root, "history", "extents");
+			addKey(root, "history", "units");
 			addKey(root, "history", "filterset");
 			addKey(root, "history", "filterset", "dichroic", "name");
 			addKey(root, "history", "filterset", "emm", "name");
