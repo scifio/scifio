@@ -42,6 +42,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.freedesktop.BaseDirectory;
 import org.scijava.download.DiskLocationCache;
 import org.scijava.download.DownloadService;
 import org.scijava.io.location.BytesLocation;
@@ -187,9 +188,16 @@ public class DefaultSampleFilesService extends AbstractService implements
 	private void initSourceCache() {
 		final DiskLocationCache cache = new DiskLocationCache();
 
-		// Cache the models into $IMAGEJ_DIR/models.
-		final File baseDir = new File(System.getProperty("user.home"));
-		final File cacheBase = new File(baseDir, ".scifio-sample-cache");
+		// Follow XDG base directory specification:
+		// https://specifications.freedesktop.org/basedir-spec/latest/
+		//
+		// By default, this resolves to:
+		//
+		// * %LOCALAPPDATA% on Windows
+		// * $HOME/Library/Caches/scifio/ on macOS
+		// * $HOME/.cache/scifio/ on other platforms
+		final File cacheBase =
+			new File(BaseDirectory.get(BaseDirectory.XDG_CACHE_HOME), "scifio");
 		if (!cacheBase.exists()) cacheBase.mkdirs();
 		cache.setBaseDirectory(cacheBase);
 

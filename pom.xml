@@ -121,6 +121,8 @@
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+
+		<xdg-java.version>0.1.1</xdg-java.version>
 	</properties>
 
 	<dependencies>
@@ -166,6 +168,12 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.kothar</groupId>
+			<artifactId>xdg-java</artifactId>
+			<version>${xdg-java.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
