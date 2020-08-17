@@ -813,10 +813,18 @@ public class MicromanagerFormat extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
 				bounds);
-
-			if (setupReader(imageIndex)) {
+			
+			final Location file =
+					meta.getPositions().get(imageIndex).getLocation(meta, imageIndex,
+						planeIndex);
+			
+			if (file != null && dataHandleService.supports(file) &&
+					dataHandleService.exists(file)) {
+				tiffReader.setSource(file, config);
 				return tiffReader.openPlane(imageIndex, 0, plane, bounds);
 			}
+			log().warn("File for image #" + imageIndex + " (" + file +
+					") is missing or cannot be opened.");
 			return plane;
 		}
 
