@@ -235,6 +235,7 @@ public class DefaultDatasetIOService extends AbstractService implements
 		return save(dataset, destination, new SCIFIOConfig());
 	}
 
+	@Override
 	public Metadata save(final Dataset dataset, final String destination,
 		final SCIFIOConfig config) throws IOException
 	{
