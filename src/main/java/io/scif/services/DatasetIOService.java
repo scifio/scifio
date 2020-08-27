@@ -145,6 +145,18 @@ public interface DatasetIOService extends SCIFIOService {
 	 * @param dataset The dataset to save.
 	 * @param destination Where the dataset should be saved (e.g., a file path on
 	 *          disk).
+	 * @param config The {@code io.scif.config.SCIFIOConfig} describing how the
+	 *          data should be saved.
+	 */
+	Metadata save(Dataset dataset, String destination, SCIFIOConfig config)
+			throws IOException;
+
+	/**
+	 * Saves a dataset to a destination (such as a file on disk).
+	 *
+	 * @param dataset The dataset to save.
+	 * @param destination Where the dataset should be saved (e.g., a file path on
+	 *          disk).
 	 */
 	Metadata save(Dataset dataset, String destination) throws IOException;
 
