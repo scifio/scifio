@@ -30,10 +30,13 @@ package io.scif.convert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+
+import net.imagej.Dataset;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,8 +44,6 @@ import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
 import org.scijava.convert.Converter;
-
-import net.imagej.Dataset;
 
 public class FileToDatasetConverterTest {
 	private Context c;
@@ -62,17 +63,22 @@ public class FileToDatasetConverterTest {
 	public void testFileToDatasetConverter() {
 		final ConvertService convertService = c.service(ConvertService.class);
 		File imageFile = new File("image&pixelType=uint8&axes=X,Y,Z&lengths=256,128,32.fake");
-		
+		File nonexistentFile = new File("non-existent.file");
+
 		Converter<?, ?> handler = convertService.getHandler(imageFile, Dataset.class);
+		Converter<?, ?> nonExistentFileHandler = convertService.getHandler(nonexistentFile, Dataset.class);
 		// Make sure we got the right converter back
 		assertSame(FileToDatasetConverter.class, handler.getClass());
-		
+		assertNull(nonExistentFileHandler);
+
 		// Test handler capabilities
 		assertTrue(handler.canConvert(imageFile, Dataset.class));
-		assertFalse(handler.canConvert(null, Dataset.class));
+		assertFalse(handler.canConvert((Object) null, Dataset.class));
+		assertFalse(handler.canConvert(nonexistentFile, Dataset.class));
 
 		// Make sure we can convert with ConvertService
 		assertTrue(convertService.supports(imageFile, Dataset.class));
+		assertFalse(convertService.supports(nonexistentFile, Dataset.class));
 
 		// Convert and check dimensions
 		Dataset dataset = convertService.convert(imageFile, Dataset.class);

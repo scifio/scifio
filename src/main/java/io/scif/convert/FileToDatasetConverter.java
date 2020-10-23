@@ -33,6 +33,7 @@ import io.scif.services.DatasetIOService;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import net.imagej.Dataset;
 
@@ -48,14 +49,35 @@ import org.scijava.plugin.Plugin;
  *
  * @author Jan Eglinger
  */
-@Plugin(type = Converter.class, priority = Priority.NORMAL + 1)
+@Plugin(type = Converter.class, priority = Priority.LOW)
 public class FileToDatasetConverter extends AbstractConverter<File, Dataset> {
 
-	@Parameter
+	@Parameter(required = false)
 	private DatasetIOService io;
 
 	@Parameter
 	private LogService log;
+
+	@Override
+	public boolean canConvert(Class<?> src, Class<?> dest) {
+		return io != null && super.canConvert(src, dest);
+	}
+
+	@Override
+	public boolean canConvert(Object src, Class<?> dest) {
+		return io != null &&
+				src != null &&
+				super.canConvert(src, dest) &&
+				io.canOpen(((File) src).getAbsolutePath()); // and/or ((File) src).exists()
+	}
+
+	@Override
+	public boolean canConvert(Object src, Type dest) {
+		return io != null &&
+				src != null &&
+				super.canConvert(src, dest) &&
+				io.canOpen(((File) src).getAbsolutePath()); // and/or ((File) src).exists()
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
