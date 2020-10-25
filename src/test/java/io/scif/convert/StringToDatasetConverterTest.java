@@ -30,6 +30,7 @@ package io.scif.convert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -60,17 +61,22 @@ public class StringToDatasetConverterTest {
 	public void testFileToDatasetConverter() {
 		final ConvertService convertService = c.service(ConvertService.class);
 		String imagePath = "image&pixelType=uint8&axes=X,Y,Z&lengths=256,128,32.fake";
-		
+		String nonexistentPath = "non-existent.file";
+
 		Converter<?, ?> handler = convertService.getHandler(imagePath, Dataset.class);
+		Converter<?, ?> nonExistentFileHandler = convertService.getHandler(nonexistentPath, Dataset.class);
 		// Make sure we got the right converter back
 		assertSame(StringToDatasetConverter.class, handler.getClass());
-		
+		assertNull(nonExistentFileHandler);
+
 		// Test handler capabilities
 		assertTrue(handler.canConvert(imagePath, Dataset.class));
-		assertFalse(handler.canConvert(null, Dataset.class));
+		assertFalse(handler.canConvert((Object) null, Dataset.class));
+		assertFalse(handler.canConvert(nonexistentPath, Dataset.class));
 
 		// Make sure we can convert with ConvertService
 		assertTrue(convertService.supports(imagePath, Dataset.class));
+		assertFalse(convertService.supports(nonexistentPath, Dataset.class));
 
 		// Convert and check dimensions
 		Dataset dataset = convertService.convert(imagePath, Dataset.class);

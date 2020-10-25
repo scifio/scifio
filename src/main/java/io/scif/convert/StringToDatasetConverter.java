@@ -30,11 +30,15 @@
 package io.scif.convert;
 
 import java.io.File;
+import java.lang.reflect.Type;
 
 import net.imagej.Dataset;
 
+import org.scijava.Priority;
 import org.scijava.convert.AbstractDelegateConverter;
+import org.scijava.convert.ConvertService;
 import org.scijava.convert.Converter;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -42,10 +46,29 @@ import org.scijava.plugin.Plugin;
  *
  * @author Jan Eglinger
  */
-@Plugin(type = Converter.class)
+@Plugin(type = Converter.class, priority = Priority.LOW)
 public class StringToDatasetConverter extends
 	AbstractDelegateConverter<String, File, Dataset>
 {
+	@Parameter
+	private ConvertService convertService;
+
+	@Override
+	public boolean canConvert(Object src, Class<?> dest) {
+		if (!super.canConvert(src, dest)) return false;
+		return srcFileSupported((String) src);
+	}
+
+	@Override
+	public boolean canConvert(Object src, Type dest) {
+		if (!super.canConvert(src, dest)) return false;
+		return srcFileSupported((String) src);
+	}
+
+	private boolean srcFileSupported(String src) {
+		File srcFile = convertService.convert(src, getDelegateType());
+		return convertService.supports(srcFile, getOutputType());
+	}
 
 	@Override
 	public Class<Dataset> getOutputType() {
