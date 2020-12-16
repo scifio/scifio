@@ -219,14 +219,44 @@ public class PGMFormat extends AbstractFormat {
 			meta.setRawBits(magic.equals("P4") || magic.equals("P5") || magic.equals(
 				"P6"));
 
-			iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic.equals(
-				"P6")) ? 3 : 1);
+			if (!isBlackAndWhite) {
+				if (max > 255) iMeta.setPixelType(FormatTools.UINT16);
+				else iMeta.setPixelType(FormatTools.UINT8);
+			}
+
+			//Only P3 and P6 are color formats and they have 3 channels.
+			//All other variants only have 1 channel.
+			int numChannels = (magic.equals("P3") || magic.equals("P6")) ? 3 : 1;
 
 			if (!isBlackAndWhite) {
 				if (max > 255) iMeta.setPixelType(FormatTools.UINT16);
 				else iMeta.setPixelType(FormatTools.UINT8);
 			}
 
+			//Currently, only support for multiple frames in binary PGM files
+			if (meta.isRawBits())
+			{
+				long numFrames; // number of frames in the file
+				int bytesPerColorComponent = 1;	
+				if (iMeta.getPixelType() != FormatTools.UINT8)
+				{
+					bytesPerColorComponent = 2;
+				}
+				long bytePerPixel = bytesPerColorComponent * numChannels;
+				long frameSize = bytePerPixel *width * height;	//in bytes
+				long payloadSize = stream.length()- stream.offset();	//in bytes
+				numFrames = (long)(payloadSize/frameSize);	
+				if (numFrames*frameSize < payloadSize )
+				{
+					//Here should be a warning to the user
+					//throw new FormatException("File does not contain an integer 
+					//	multiple of frames. Discarding extra data."); 
+				}
+				iMeta.addAxis(Axes.TIME, numFrames);	// if this called
+				//after the setAxisLength() for CHANNEL, it will lead to a crash
+			}
+			iMeta.setAxisLength(Axes.CHANNEL, numChannels);
+			
 			meta.setOffset(stream.offset());
 
 			meta.getTable().put("Black and white", isBlackAndWhite);
@@ -259,6 +289,9 @@ public class PGMFormat extends AbstractFormat {
 
 			getHandle().seek(meta.getOffset());
 			if (meta.isRawBits()) {
+				//for multi-frame PGMs, we seek to the start of the data for this plane (i.e. frame).
+				getHandle().seek(meta.getOffset() + buf.length * planeIndex);
+				
 				readPlane(getHandle(), imageIndex, bounds, plane);
 			}
 			else {
