@@ -71,8 +71,17 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 	}
 
 	@Override
+	public boolean supportsOpen(final Location source) {
+		return datasetIOService.canOpen(source);
+	}
+
+	@Override
 	public boolean supportsSave(final String destination) {
 		return datasetIOService.canSave(resolve(destination, "destination"));
+	}
+	@Override
+	public boolean supportsSave(final Location destination) {
+		return datasetIOService.canSave(destination);
 	}
 
 	@Override
@@ -81,10 +90,22 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 	}
 
 	@Override
+	public Dataset open(final Location source) throws IOException {
+		return datasetIOService.open(source);
+	}
+
+	@Override
 	public void save(final Dataset dataset, final String destination)
-		throws IOException
+			throws IOException
 	{
 		datasetIOService.save(dataset, resolve(destination, "destination"));
+	}
+
+	@Override
+	public void save(final Dataset dataset, final Location destination)
+			throws IOException
+	{
+		datasetIOService.save(dataset, destination);
 	}
 
 	// -- Helper methods --
