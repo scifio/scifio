@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
 
 public class TestDatasetIOPlugin {
 
@@ -51,25 +50,27 @@ public class TestDatasetIOPlugin {
     }
 
     /**
-     * Opening an image by directly calling {@link DatasetIOPlugin} using a {@link Location}
-     * throws an UnsupportedOperationException exception.
+     * Opening an image by directly calling {@link DatasetIOPlugin} using a {@link Location}.
      *
      * @throws URISyntaxException
      * @throws IOException
      */
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testDatasetIOPluginOpenLocation() throws URISyntaxException, IOException {
         Location loc = locationService.resolve(this.getClass().getResource("test_img.tif").toURI());
 
         DatasetIOPlugin datasetIOPlugin = scifio.io().getInstance(DatasetIOPlugin.class);
 
-        assertFalse(datasetIOPlugin.supportsOpen(loc));
+        assertTrue(datasetIOPlugin.supportsOpen(loc));
 
         Img img = (Img) datasetIOPlugin.open(loc);
+
+        assertNotNull(img);
+        assertEquals(32, img.dimension(0));
     }
 
     /**
-     * Opening an image using {@link IOService} with a String fails.
+     * Opening an image using {@link IOService} with a String path.
      *
      * @throws URISyntaxException
      * @throws IOException
@@ -80,15 +81,16 @@ public class TestDatasetIOPlugin {
 
         IOPlugin plugin = scifio.io().getOpener(path.toAbsolutePath().toString());
 
-        assertNull(plugin);
+        assertNotNull(plugin);
 
         Img img = (Img) scifio.io().open(path.toAbsolutePath().toString());
 
-        assertNull(img);
+        assertNotNull(img);
+        assertEquals(32, img.dimension(0));
     }
 
     /**
-     * Opening an image using {@link IOService} with a Location fails.
+     * Opening an image using {@link IOService} with a Location.
      *
      * @throws URISyntaxException
      * @throws IOException
@@ -99,10 +101,11 @@ public class TestDatasetIOPlugin {
 
         IOPlugin plugin = scifio.io().getOpener(loc);
 
-        assertNull(plugin);
+        assertNotNull(plugin);
 
         Img img = (Img) scifio.io().open(loc);
 
-        assertNull(img);
+        assertNotNull(img);
+        assertEquals(32, img.dimension(0));
     }
 }
