@@ -113,7 +113,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 			.length() > 0)
 		{
 			throw new FormatException(
-				"Attemptint to write to output that already exists. Please rename the output, remove the existing conflict, or adjust configuration.");
+				"Attempting to write to output that already exists. Please rename the output, remove the existing conflict, or adjust configuration.");
 		}
 	}
 
