@@ -11,7 +11,7 @@
 
 	<groupId>io.scif</groupId>
 	<artifactId>scifio</artifactId>
-	<version>0.41.3-SNAPSHOT</version>
+	<version>0.42.1-SNAPSHOT</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a library for scientific N-dimensional image I/O.</description>
