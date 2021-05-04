@@ -127,6 +127,24 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 	}
 
 	@Test
+	public void testZLIBCompression() throws IOException {
+		final int[] formats = new int[] { FormatTools.INT8, FormatTools.UINT8,
+			FormatTools.INT16, FormatTools.UINT16, FormatTools.INT32,
+			FormatTools.UINT32, FormatTools.FLOAT, FormatTools.DOUBLE };
+
+		final SCIFIOConfig config = new SCIFIOConfig();
+		config.writerSetCompression(CompressionType.ZLIB.getCompression());
+
+		for (final int f : formats) {
+			final String formatString = FormatTools.getPixelTypeString(f);
+			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType(formatString).axes("X", "Y", "C").lengths(
+					100, 100, 3).build()).get(0);
+			testWriting(sourceImg, config);
+		}
+	}
+
+	@Test
 	@Ignore
 	public void testJ2kLossyCompression() throws IOException {
 		final int[] formats = new int[] { FormatTools.INT8, FormatTools.UINT8,
