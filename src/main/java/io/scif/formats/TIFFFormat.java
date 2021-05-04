@@ -1353,11 +1353,14 @@ public class TIFFFormat extends AbstractFormat {
 		public static final String COMPRESSION_LZW = //
 			CompressionType.LZW.getCompression();
 
+		public static final String COMPRESSION_ZLIB = //
+			CompressionType.ZLIB.getCompression();
+
 		public static final String COMPRESSION_J2K = //
 			CompressionType.J2K.getCompression();
 
-		public static final String COMPRESSION_J2K_LOSSY = CompressionType.J2K_LOSSY
-			.getCompression();
+		public static final String COMPRESSION_J2K_LOSSY = //
+			CompressionType.J2K_LOSSY.getCompression();
 
 		public static final String COMPRESSION_JPEG = //
 			CompressionType.JPEG.getCompression();
@@ -1383,7 +1386,8 @@ public class TIFFFormat extends AbstractFormat {
 		@Override
 		protected String[] makeCompressionTypes() {
 			return new String[] { COMPRESSION_UNCOMPRESSED, COMPRESSION_LZW,
-				COMPRESSION_J2K, COMPRESSION_J2K_LOSSY, COMPRESSION_JPEG };
+					COMPRESSION_ZLIB, COMPRESSION_J2K, COMPRESSION_J2K_LOSSY,
+					COMPRESSION_JPEG };
 		}
 
 		// -- TIFFWriter API Methods --
@@ -1558,6 +1562,9 @@ public class TIFFFormat extends AbstractFormat {
 			if (getCompression() != null) {
 				if (getCompression().equals(COMPRESSION_LZW)) {
 					compressType = TiffCompression.LZW;
+				}
+				else if (getCompression().equals(COMPRESSION_ZLIB)) {
+					compressType = TiffCompression.DEFLATE;
 				}
 				else if (getCompression().equals(COMPRESSION_J2K)) {
 					compressType = TiffCompression.JPEG_2000;
