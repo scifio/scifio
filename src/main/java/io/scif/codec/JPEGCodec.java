@@ -103,12 +103,17 @@ public class JPEGCodec extends AbstractCodec {
 		throws FormatException, IOException
 	{
 		BufferedImage b;
+		int nextByte;
 		final long offset = in.offset();
 		try {
 			try {
-				while (in.read() != (byte) 0xff || in.read() != (byte) 0xd8) {
-					/* Read to data. */
-				}
+				do {
+					nextByte = in.read();
+					if (nextByte == -1)
+					{
+						throw new EOFException();
+					}
+				} while(nextByte != (byte) 0xff || nextByte != (byte) 0xd8);
 				in.seek(in.offset() - 2);
 			}
 			catch (final EOFException e) {
