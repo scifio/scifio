@@ -1,7 +1,7 @@
 [SCIFIO](https://scif.io/)
 ======
 
-[![](https://travis-ci.org/scifio/scifio.svg?branch=master)](https://travis-ci.org/scifio/scifio)
+[![](https://github.com/scifio/scifio/actions/workflows/build-main.yml/badge.svg)](https://github.com/scifio/scifio/actions/workflows/build-main.yml)
 [![Join the chat at https://gitter.im/scifio/scifio](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/scifio/scifio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 SCIFIO (SCientific Image Format Input & Output) is an extensible Java framework

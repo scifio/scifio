@@ -108,8 +108,8 @@
 		<url>https://github.com/scifio/scifio/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.org/scifio/scifio</url>
+		<system>GitHub Actions</system>
+		<url>https://github.com/scifio/scifio/actions</url>
 	</ciManagement>
 
 	<properties>
@@ -120,7 +120,7 @@
 		<license.projectName>SCIFIO library for reading and converting scientific file formats.</license.projectName>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
-		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 		<xdg-java.version>0.1.1</xdg-java.version>
 	</properties>
 
