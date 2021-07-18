@@ -35,6 +35,7 @@ import io.scif.MetadataLevel;
 import io.scif.Parser;
 import io.scif.Writer;
 import io.scif.codec.CodecOptions;
+import io.scif.codec.CompressionType;
 import io.scif.img.ImageRegion;
 import io.scif.img.ImgFactoryHeuristic;
 import io.scif.img.ImgOpener;
@@ -114,14 +115,13 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * <li>{@link ImgMode#AUTO} allows the program to decide, e.g. based on
 	 * available memory.</li>
 	 * <li>{@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
-	 * <li>{@link ImgMode#PLANAR} will attempt to use
-	 * {@link PlanarImgFactory}</li>
+	 * <li>{@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}</li>
 	 * </ul>
 	 *
 	 * @author Mark Hiner
 	 */
 	public static enum ImgMode {
-			ARRAY, AUTO, CELL, PLANAR;
+		ARRAY, AUTO, CELL, PLANAR;
 	}
 
 	// If true, planarEnabled returns true. If false, cellEnabled returns true.
@@ -154,7 +154,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	/**
 	 * Zero-param constructor. Creates an empty configuration.
 	 */
-	public SCIFIOConfig() { /* no-op, empty configuration */}
+	public SCIFIOConfig() {
+		/* no-op, empty configuration */}
 
 	/**
 	 * Copying constructor. Returns a copy of the given SCIFIOConfig.
@@ -249,9 +250,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param saveOriginalMetadata Desired metadata saving behavior for parsing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig parserSetSaveOriginalMetadata(
-		final boolean saveOriginalMetadata)
-	{
+	public SCIFIOConfig parserSetSaveOriginalMetadata(final boolean saveOriginalMetadata) {
 		this.saveOriginalMetadata = saveOriginalMetadata;
 		return this;
 	}
@@ -259,16 +258,14 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	// -- Writer methods --
 
 	/**
-	 * <b>Warning:</b> "overwriting" behavior is format-specific and not
-	 * guaranteed to result in a valid image.
+	 * <b>Warning:</b> "overwriting" behavior is format-specific and not guaranteed
+	 * to result in a valid image.
 	 * 
-	 * @param failIfOverwriting Whether or not an exception should be raised if
-	 *          the writer's destination already exists. Default: true
+	 * @param failIfOverwriting Whether or not an exception should be raised if the
+	 *                          writer's destination already exists. Default: true
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig writerSetFailIfOverwriting(
-		final boolean failIfOverwriting)
-	{
+	public SCIFIOConfig writerSetFailIfOverwriting(final boolean failIfOverwriting) {
 		this.failIfOverwriting = failIfOverwriting;
 		return this;
 	}
@@ -338,8 +335,24 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @return This SCIFIOConfig for method chaining.
 	 */
 	public SCIFIOConfig writerSetCompression(final String compress) {
-		compression = compress;
-		return this;
+		// Check if compress is one of the known values
+		for (CompressionType ct : CompressionType.values()) {
+			if (ct.getCompression().equals(compress)) {
+				compression = compress;
+				return this;
+			}
+		}
+
+		// TODO: Emit warning
+		return null;
+	}
+
+	/**
+	 * @param compressType
+	 * @return
+	 */
+	public SCIFIOConfig writerSetCompression(final CompressionType compressType) {
+		return writerSetCompression(compressType.getCompression());
 	}
 
 	/**
@@ -369,7 +382,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	/**
 	 * @param groupFiles Desired behavior for grouping potential multi-file
-	 *          datasets. If true, these will be grouped into one single dataset.
+	 *                   datasets. If true, these will be grouped into one single
+	 *                   dataset.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
 	public SCIFIOConfig groupableSetGroupFiles(final boolean groupFiles) {
@@ -396,9 +410,9 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	}
 
 	/**
-	 * @param imgModes A list of ImgMode access types. How these are interpreted
-	 *          is up to the ImgFactoryHeuristic, but it is reasonable to expect
-	 *          modes listed earlier to be preferred.
+	 * @param imgModes A list of ImgMode access types. How these are interpreted is
+	 *                 up to the ImgFactoryHeuristic, but it is reasonable to expect
+	 *                 modes listed earlier to be preferred.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
 	public SCIFIOConfig imgOpenerSetImgModes(final ImgMode... imgModes) {
@@ -416,7 +430,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	/**
 	 * @param computeMinMax Whether or not images should be scaled to min/max
-	 *          intensities.
+	 *                      intensities.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
 	public SCIFIOConfig imgOpenerSetComputeMinMax(final boolean computeMinMax) {
@@ -453,19 +467,17 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	/**
 	 * @param planeConverter Sets a PlaneConverter to use when opening datasets.
-	 *          This is useful when using a custom Img type.
+	 *                       This is useful when using a custom Img type.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig imgOpenerSetPlaneConverter(
-		final PlaneConverter planeConverter)
-	{
+	public SCIFIOConfig imgOpenerSetPlaneConverter(final PlaneConverter planeConverter) {
 		this.planeConverter = planeConverter;
 		return this;
 	}
 
 	/**
-	 * @return The ImgFactoryHeuristic to use when selecting an ImgFactory.
-	 *         Default: {@code null}
+	 * @return The ImgFactoryHeuristic to use when selecting an ImgFactory. Default:
+	 *         {@code null}
 	 */
 	public ImgFactoryHeuristic imgOpenerGetImgFactoryHeuristic() {
 		return imgFactoryHeuristic;
@@ -473,12 +485,11 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	/**
 	 * @param imgFactoryHeuristic Heuristic to use when selecting an ImgFactory.
-	 *          Will not be used if an ImgFactory is provided to the ImgOpener.
+	 *                            Will not be used if an ImgFactory is provided to
+	 *                            the ImgOpener.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig imgOpenerSetImgFactoryHeuristic(
-		final ImgFactoryHeuristic imgFactoryHeuristic)
-	{
+	public SCIFIOConfig imgOpenerSetImgFactoryHeuristic(final ImgFactoryHeuristic imgFactoryHeuristic) {
 		this.imgFactoryHeuristic = imgFactoryHeuristic;
 		return this;
 	}
@@ -492,8 +503,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	}
 
 	/**
-	 * @param openAll Whether or not all available images should be opened.
-	 *          Default: false.
+	 * @param openAll Whether or not all available images should be opened. Default:
+	 *                false.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
 	public SCIFIOConfig imgOpenerSetOpenAllImages(final boolean openAll) {
@@ -519,8 +530,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	/**
 	 * @param range Range of image indices to open.
 	 * @return This SCIFIOConfig for method chaining.
-	 * @throws IllegalArgumentException If a valid {@link Range} can not be
-	 *           parsed.
+	 * @throws IllegalArgumentException If a valid {@link Range} can not be parsed.
 	 */
 	public SCIFIOConfig imgOpenerSetRange(final String range) {
 		return imgOpenerSetRange(new Range(range));
@@ -547,7 +557,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	/**
 	 * @param rgb Whether or not the ImgSaver should composite channels when
-	 *          writing.
+	 *            writing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
 	public SCIFIOConfig imgSaverSetWriteRGB(final boolean rgb) {
