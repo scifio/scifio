@@ -150,7 +150,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	// ImgSaver
 	private boolean writeRGB = true;
-	
+
 	// Logger parameter
 	@Parameter
 	private LogService logService;
@@ -162,6 +162,15 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 */
 	public SCIFIOConfig() {
 		/* no-op, empty configuration */}
+
+	/**
+	 * Context-injecting constructor. Injects context into the given SCIFIOConfig.
+	 * 
+	 * @param context Context to inject
+	 */
+	public SCIFIOConfig(Context context) {
+		context.inject(this);
+	}
 
 	/**
 	 * Copying constructor. Returns a copy of the given SCIFIOConfig.
