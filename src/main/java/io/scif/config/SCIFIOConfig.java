@@ -51,6 +51,8 @@ import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 
 import org.scijava.Context;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Configuration class for all SCIFIO components. Similar to a {@link Context},
@@ -148,6 +150,10 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	// ImgSaver
 	private boolean writeRGB = true;
+	
+	// Logger parameter
+	@Parameter
+	private LogService logService;
 
 	// -- Constructors --
 
