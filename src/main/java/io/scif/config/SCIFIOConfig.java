@@ -198,6 +198,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 		imgFactoryHeuristic = config.imgFactoryHeuristic;
 		writeRGB = config.writeRGB;
 		bufferedReading = config.bufferedReading;
+		logService = config.logService;
 	}
 
 	// -- Checker Methods --
