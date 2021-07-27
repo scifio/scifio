@@ -223,14 +223,14 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	public void setDest(final Location loc, final int imageIndex)
 		throws FormatException, IOException
 	{
-		setDest(loc, imageIndex, new SCIFIOConfig());
+		setDest(loc, imageIndex, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public void setDest(final DataHandle<Location> out, final int imageIndex)
 		throws FormatException, IOException
 	{
-		setDest(out, imageIndex, new SCIFIOConfig());
+		setDest(out, imageIndex, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
