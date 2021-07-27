@@ -405,7 +405,7 @@ public class NRRDFormat extends AbstractFormat {
 					config);
 				final io.scif.Parser p = helperFormat.createParser();
 				final io.scif.Reader helper = helperFormat.createReader();
-				helper.setMetadata(p.parse(meta.getDataFile(), new SCIFIOConfig()
+				helper.setMetadata(p.parse(meta.getDataFile(), new SCIFIOConfig(getContext())
 					.parserSetLevel(MetadataLevel.MINIMUM)));
 				helper.setSource(meta.getDataFile(), config);
 				meta.setHelper(helper);
