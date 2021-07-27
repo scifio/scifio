@@ -306,7 +306,7 @@ public class DefaultFormatService extends AbstractService implements
 
 	@Override
 	public Format getFormat(final Location id) throws FormatException {
-		return getFormat(id, new SCIFIOConfig().checkerSetOpen(false));
+		return getFormat(id, new SCIFIOConfig(getContext()).checkerSetOpen(false));
 	}
 
 	@Override
@@ -333,7 +333,7 @@ public class DefaultFormatService extends AbstractService implements
 
 	@Override
 	public List<Format> getFormatList(final Location id) throws FormatException {
-		return getFormatList(id, new SCIFIOConfig().checkerSetOpen(false), false);
+		return getFormatList(id, new SCIFIOConfig(getContext()).checkerSetOpen(false), false);
 	}
 
 	@Override
@@ -360,7 +360,7 @@ public class DefaultFormatService extends AbstractService implements
 	public Format getFormat(final DataHandle<Location> source)
 		throws FormatException
 	{
-		return getFormat(source, new SCIFIOConfig().checkerSetOpen(true));
+		return getFormat(source, new SCIFIOConfig(getContext()).checkerSetOpen(true));
 	}
 
 	@Override
@@ -375,7 +375,7 @@ public class DefaultFormatService extends AbstractService implements
 	public List<Format> getFormatList(final DataHandle<Location> source)
 		throws FormatException
 	{
-		return getFormatList(source, new SCIFIOConfig().checkerSetOpen(true),
+		return getFormatList(source, new SCIFIOConfig(getContext()).checkerSetOpen(true),
 			false);
 	}
 
