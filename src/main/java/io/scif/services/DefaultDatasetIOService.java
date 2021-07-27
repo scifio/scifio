@@ -84,7 +84,7 @@ public class DefaultDatasetIOService extends AbstractService implements
 	@Override
 	public boolean canOpen(final Location source) {
 		try {
-			return formatService.getFormat(source, new SCIFIOConfig().checkerSetOpen(
+			return formatService.getFormat(source, new SCIFIOConfig(getContext()).checkerSetOpen(
 				true)) != null;
 		}
 		catch (final FormatException exc) {
@@ -124,7 +124,7 @@ public class DefaultDatasetIOService extends AbstractService implements
 
 	@Override
 	public Dataset open(final Location source) throws IOException {
-		final SCIFIOConfig config = new SCIFIOConfig();
+		final SCIFIOConfig config = new SCIFIOConfig(getContext());
 		config.imgOpenerSetIndex(0);
 		// skip min/max computation
 		config.imgOpenerSetComputeMinMax(false);
@@ -175,7 +175,7 @@ public class DefaultDatasetIOService extends AbstractService implements
 	public List<net.imagej.Dataset> openAll(final Location source)
 		throws IOException
 	{
-		final SCIFIOConfig config = new SCIFIOConfig();
+		final SCIFIOConfig config = new SCIFIOConfig(getContext());
 		config.imgOpenerSetImgModes(ImgMode.PLANAR);
 		return openAll(source, config);
 	}
@@ -225,14 +225,14 @@ public class DefaultDatasetIOService extends AbstractService implements
 	public Metadata save(final Dataset dataset, final String destination)
 		throws IOException
 	{
-		return save(dataset, resolve(destination), new SCIFIOConfig());
+		return save(dataset, resolve(destination), new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public Metadata save(final Dataset dataset, final Location destination)
 		throws IOException
 	{
-		return save(dataset, destination, new SCIFIOConfig());
+		return save(dataset, destination, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
