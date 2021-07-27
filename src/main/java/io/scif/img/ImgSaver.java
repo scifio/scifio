@@ -513,7 +513,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	{
 		// Create the SCIFIOConfig if needed
 		if (config == null) {
-			config = new SCIFIOConfig();
+			config = new SCIFIOConfig(getContext());
 		}
 
 		final int sliceCount = countSlices(img);
