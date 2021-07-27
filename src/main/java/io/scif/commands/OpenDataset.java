@@ -114,7 +114,7 @@ public class OpenDataset extends ContextCommand {
 
 	@Override
 	public void run() {
-		final SCIFIOConfig config = new SCIFIOConfig();
+		final SCIFIOConfig config = new SCIFIOConfig(getContext());
 
 		// Set the image index range if desired
 		if (range != null && !range.isEmpty()) {
