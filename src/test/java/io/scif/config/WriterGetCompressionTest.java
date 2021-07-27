@@ -7,7 +7,7 @@ import io.scif.codec.CompressionType;
 
 import org.junit.Test;
 
-public class SCIFIOConfigTest {
+public class WriterGetCompressionTest {
 
 	@Test
 	public void testWriterGetCompression() {

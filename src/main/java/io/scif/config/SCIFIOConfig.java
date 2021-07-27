@@ -361,12 +361,11 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 		// Emit warning
 		if (logService == null) {
-//			logService.setLevel(LogLevel.WARN);
-			logService.warn("Compression option specified (" + compress + ") is invalid"); // TODO: Check warning msg
+			logService.warn("Compression option specified (" + compress + ") is invalid");
 		} else {
 			System.err.println("Compression option specified (" + compress + ") is invalid");
 		}
-		return null; // TODO: Should I return null after emitting warning?
+		return null;
 	}
 
 	/**
