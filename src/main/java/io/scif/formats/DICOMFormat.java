@@ -459,7 +459,7 @@ public class DICOMFormat extends AbstractFormat {
 					try {
 						final Parser p = (Parser) getFormat().createParser();
 						final Metadata m = p.parse(fileList.get(keys[i]).get(0),
-							new SCIFIOConfig().groupableSetGroupFiles(false));
+							new SCIFIOConfig(getContext()).groupableSetGroupFiles(false));
 						add(m.get(0));
 						sizeZ *= fileList.get(keys[i]).size();
 					}
@@ -1414,7 +1414,7 @@ public class DICOMFormat extends AbstractFormat {
 				planeIndex = planeIndex % meta.getImagesPerFile();
 				final Location file = fileList.get(keys[imageIndex]).get(fileNumber);
 				final io.scif.Reader r = initializeService.initializeReader(file,
-					new SCIFIOConfig().checkerSetOpen(true));
+					new SCIFIOConfig(getContext()).checkerSetOpen(true));
 				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
 					bounds, config);
 			}
