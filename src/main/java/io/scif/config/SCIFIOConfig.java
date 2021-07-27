@@ -365,7 +365,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 		} else {
 			System.err.println("Compression option specified (" + compress + ") is invalid");
 		}
-		return null;
+		return this;
 	}
 
 	/**
