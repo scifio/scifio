@@ -66,28 +66,28 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	@Override
 	public M parse(final Location fileName) throws IOException, FormatException {
-		return parse(fileName, new SCIFIOConfig());
+		return parse(fileName, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public M parse(final DataHandle<Location> stream) throws IOException,
 		FormatException
 	{
-		return parse(stream, new SCIFIOConfig());
+		return parse(stream, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public M parse(final Location loc, final Metadata meta) throws IOException,
 		FormatException
 	{
-		return parse(loc, meta, new SCIFIOConfig());
+		return parse(loc, meta, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public M parse(final DataHandle<Location> handle, final Metadata meta)
 		throws IOException, FormatException
 	{
-		return parse(handle, meta, new SCIFIOConfig());
+		return parse(handle, meta, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	public M parse(final DataHandle<Location> handle, final M meta)
 		throws IOException, FormatException
 	{
-		return parse(handle, meta, new SCIFIOConfig());
+		return parse(handle, meta, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
