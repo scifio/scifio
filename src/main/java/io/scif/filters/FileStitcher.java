@@ -376,7 +376,7 @@ public class FileStitcher extends AbstractReaderFilter {
 	{
 		// If no stitching, delegate to parent
 		if (noStitch) return getParent().openPlane(imageIndex, planeIndex, plane,
-			bounds, new SCIFIOConfig().groupableSetGroupFiles(false));
+			bounds, new SCIFIOConfig(getContext()).groupableSetGroupFiles(false));
 
 		if (plane == null) {
 			throw new IllegalArgumentException("Provided plane was null!");
