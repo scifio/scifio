@@ -172,7 +172,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 			wrappedMeta = r.getMetadata();
 		}
 		try {
-			setSourceHelper(r.getCurrentLocation(), new SCIFIOConfig());
+			setSourceHelper(r.getCurrentLocation(), new SCIFIOConfig(getContext()));
 		}
 		catch (final IOException exc) {
 			log().error("Failed to create MetadataWrapper of type: " + metaClass,
@@ -191,21 +191,21 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Interval bounds) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		final Plane plane, final Interval bounds) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
@@ -315,13 +315,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	@Override
 	public void setSource(final Location loc) throws IOException {
 		getParent().setSource(loc);
-		setSourceHelper(loc, new SCIFIOConfig());
+		setSourceHelper(loc, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public void setSource(final DataHandle<Location> handle) throws IOException {
 		getParent().setSource(handle);
-		setSourceHelper(handle.get(), new SCIFIOConfig());
+		setSourceHelper(handle.get(), new SCIFIOConfig(getContext()));
 	}
 
 	@Override
