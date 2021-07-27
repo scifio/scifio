@@ -237,7 +237,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		SCIFIOConfig config) throws ImgIOException
 	{
 		if (config == null) {
-			config = new SCIFIOConfig();
+			config = new SCIFIOConfig(getContext());
 		}
 		final Reader r = createReader(source, config);
 		return openImgs(r, config);
@@ -256,7 +256,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final T type, SCIFIOConfig config) throws ImgIOException
 	{
 		if (config == null) {
-			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+			config = new SCIFIOConfig(getContext()).imgOpenerSetComputeMinMax(true);
 		}
 		final Reader r = createReader(source, config);
 
@@ -292,7 +292,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final ImgFactory<T> imgFactory, SCIFIOConfig config) throws ImgIOException
 	{
 		if (config == null) {
-			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+			config = new SCIFIOConfig(getContext()).imgOpenerSetComputeMinMax(true);
 		}
 		final Reader r = createReader(source, config);
 		return openImgs(r, imgFactory, config);
@@ -342,7 +342,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		SCIFIOConfig config) throws ImgIOException
 	{
 		if (config == null) {
-			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+			config = new SCIFIOConfig(getContext()).imgOpenerSetComputeMinMax(true);
 		}
 		final ImgFactoryHeuristic heuristic = getHeuristic(config);
 		final ImgFactory<T> imgFactory;
@@ -379,7 +379,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		Range imageRange = null;
 
 		if (config == null) {
-			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+			config = new SCIFIOConfig(getContext()).imgOpenerSetComputeMinMax(true);
 		}
 
 		if (config.imgOpenerIsOpenAllImages()) {
