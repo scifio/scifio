@@ -366,8 +366,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 		// Emit warning
 		String msg = "Compression option specified (" + compress +
-			") is invalid. Compression is still null.";
-		if (logService == null) {
+			") is invalid. Compression is still " + compression + ".";
+		if (logService != null) {
 			logService.warn(msg);
 		}
 		else {

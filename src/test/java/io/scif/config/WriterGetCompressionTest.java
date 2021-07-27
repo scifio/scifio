@@ -5,27 +5,45 @@ import static org.junit.Assert.fail;
 
 import io.scif.codec.CompressionType;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.scijava.Context;
 
 public class WriterGetCompressionTest {
 
+	private Context context;
+	
+	@Before
+	public void init() {
+		context = new Context();
+	}
+	
 	@Test
 	public void testWriterGetCompression() {
-		SCIFIOConfig scifioConfig = new SCIFIOConfig();
-		// use a invalid string
-		if (scifioConfig.writerSetCompression("Invalid") != null) {
+		SCIFIOConfig scifioConfig = new SCIFIOConfig(context);
+
+		// test invalid compression
+		scifioConfig.writerSetCompression("Invalid");
+		if (scifioConfig.writerGetCompression() != null) {
 			fail(
-				"Null expected when using invlalid compressiong value, but not returned");
+				"Compression is expected to be null when using invlalid compressiong value, but is set to " +
+					scifioConfig.writerGetCompression());
 		}
-		
+
+		// test valid compression
 		for (CompressionType ct : CompressionType.values()) {
-			if (scifioConfig.writerSetCompression(ct.getCompression()) == null) {
-				fail("An instance of CompressionType is expected, but returned null.");
-			}
+			scifioConfig.writerSetCompression(ct.getCompression());
 			if (!scifioConfig.writerGetCompression().equals(ct.getCompression())) {
-				fail("Method did not set scifioConfig's non-static field.");
+				fail("Method did not set scifioConfig's non-static field to " + ct
+					.getCompression() + ".");
 			}
 		}
+	}
+	
+	@After
+	public void tearDown() {
+		context.dispose();
 	}
 
 }
