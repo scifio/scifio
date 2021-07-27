@@ -148,21 +148,21 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Interval bounds) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		final Plane plane, final Interval bounds) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
