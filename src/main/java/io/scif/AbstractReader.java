@@ -95,14 +95,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	public P openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public P openPlane(final int imageIndex, final long planeIndex,
 		final Interval bounds) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
@@ -232,12 +232,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public void setSource(final Location loc) throws IOException {
-		setSource(loc, new SCIFIOConfig());
+		setSource(loc, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
 	public void setSource(final DataHandle<Location> stream) throws IOException {
-		setSource(stream, new SCIFIOConfig());
+		setSource(stream, new SCIFIOConfig(getContext()));
 	}
 
 	@SuppressWarnings("resource")
@@ -346,7 +346,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	public P openPlane(final int imageIndex, final long planeIndex, final P plane)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
@@ -361,7 +361,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		final Interval bounds) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, plane.getBounds(),
-			new SCIFIOConfig());
+			new SCIFIOConfig(getContext()));
 	}
 
 	@Override
