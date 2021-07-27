@@ -68,7 +68,7 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 
 	@Override
 	public boolean isFormat(final Location loc) {
-		return isFormat(loc, new SCIFIOConfig());
+		return isFormat(loc, new SCIFIOConfig(getContext()));
 	}
 
 	@Override
