@@ -309,7 +309,7 @@ public final class FormatTools {
 		final CalibratedAxis axis = imageMeta.getAxis(axisType);
 		if (axis == null) return 1.0;
 		final long axisLength = imageMeta.getAxisLength(axis);
-		return axis.averageScale(0, axisLength - 1);
+		return axis.averageScale(0, axisLength);
 	}
 
 	/**
