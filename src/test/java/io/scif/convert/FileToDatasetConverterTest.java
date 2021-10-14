@@ -35,6 +35,8 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import net.imagej.Dataset;
 
@@ -47,23 +49,25 @@ import org.scijava.convert.Converter;
 
 public class FileToDatasetConverterTest {
 	private Context c;
+	private File nonexistentFile;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws IOException {
 		c = new Context();
+		nonexistentFile = Files.createTempFile("non-existent", ".file").toFile();
 	}
 
 	@After
 	public void tearDown() {
 		c.dispose();
 		c = null;
+		nonexistentFile.delete();
 	}
 
 	@Test
 	public void testFileToDatasetConverter() {
 		final ConvertService convertService = c.service(ConvertService.class);
 		File imageFile = new File("image&pixelType=uint8&axes=X,Y,Z&lengths=256,128,32.fake");
-		File nonexistentFile = new File("non-existent.file");
 
 		Converter<?, ?> handler = convertService.getHandler(imageFile, Dataset.class);
 		Converter<?, ?> nonExistentFileHandler = convertService.getHandler(nonexistentFile, Dataset.class);
