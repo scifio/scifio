@@ -96,7 +96,7 @@ public class UnsignedIntColorModel extends ColorModel {
 
 	@Override
 	public int getAlpha(final int pixel) {
-		return (int) (Math.pow(2, 32) - 1);
+		return getComponent(pixel);
 	}
 
 	@Override
@@ -116,46 +116,42 @@ public class UnsignedIntColorModel extends ColorModel {
 
 	@Override
 	public int getAlpha(final Object data) {
-		final int max = (int) Math.pow(2, 32) - 1;
-		if (data instanceof int[]) {
-			final int[] i = (int[]) data;
+		final int[] i;
+		if (data instanceof int[] && (i = (int[])data).length == 4) {
 			if (i.length == 1) return getAlpha(i[0]);
-			return getAlpha(i.length == 4 ? i[0] : max);
+			return getAlpha(i[0]);
 		}
-		return max;
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
 	public int getRed(final Object data) {
-		final int max = (int) Math.pow(2, 32) - 1;
 		if (data instanceof int[]) {
 			final int[] i = (int[]) data;
 			if (i.length == 1) return getRed(i[0]);
 			return getRed(i.length != 4 ? i[0] : i[1]);
 		}
-		return max;
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
 	public int getGreen(final Object data) {
-		final int max = (int) Math.pow(2, 32) - 1;
 		if (data instanceof int[]) {
 			final int[] i = (int[]) data;
 			if (i.length == 1) return getGreen(i[0]);
 			return getGreen(i.length != 4 ? i[1] : i[2]);
 		}
-		return max;
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
 	public int getBlue(final Object data) {
-		final int max = (int) Math.pow(2, 32) - 1;
 		if (data instanceof int[]) {
 			final int[] i = (int[]) data;
 			if (i.length == 1) return getBlue(i[0]);
 			return getBlue(i[i.length - 1]);
 		}
-		return max;
+		return Integer.MAX_VALUE;
 	}
 
 	// -- Helper methods --
