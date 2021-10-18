@@ -103,7 +103,7 @@ public class ICSFormat extends AbstractFormat {
 		private static final String DEFAULT_LENGTH_UNIT = "um";
 		private static final String DEFAULT_TIME_UNIT = "s";
 		private static final String DEFAULT_UNKNOWN_UNIT = "unkown";
-	
+
 		private static final Double DEFAULT_AXIS_SCALE = 1.0;
 		// -- Fields --
 
@@ -167,7 +167,7 @@ public class ICSFormat extends AbstractFormat {
 			final String[] historyUnits = getHistoryUnits();
 
 			final boolean lifetime = getLifetime();
-			
+
 			int bitsPerPixel = 0;
 			int nVirtualAxis = 0;
 
@@ -183,19 +183,20 @@ public class ICSFormat extends AbstractFormat {
 						bitsPerPixel = axisSizes[n];
 						while (bitsPerPixel % 8 != 0)
 							bitsPerPixel++;
-						if (bitsPerPixel == 24 || bitsPerPixel == 48)
-							bitsPerPixel /= 3;
+						if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
 						nVirtualAxis++;
 						continue;
 
 					case "x":
 					case "y":
 					case "z":
-						String actualAxis = historyLabels == null ? axis : historyLabels[n - nVirtualAxis];
+						String actualAxis = historyLabels == null ? axis : historyLabels[n -
+							nVirtualAxis];
 						if (!actualAxis.equals("t")) {
 							axisType = Axes.get(actualAxis.toUpperCase());
 							defaultUnit = DEFAULT_LENGTH_UNIT;
-						} else {
+						}
+						else {
 							axisType = Axes.TIME;
 							defaultUnit = DEFAULT_TIME_UNIT;
 						}
@@ -207,14 +208,10 @@ public class ICSFormat extends AbstractFormat {
 						break;
 
 					default:
-						if (axis.startsWith("c"))
-							axisType = Axes.CHANNEL;
-						else if (axis.startsWith("p"))
-							axisType = SCIFIOAxes.PHASE;
-						else if (axis.startsWith("f"))
-							axisType = SCIFIOAxes.FREQUENCY;
-						else
-							axisType = Axes.unknown();
+						if (axis.startsWith("c")) axisType = Axes.CHANNEL;
+						else if (axis.startsWith("p")) axisType = SCIFIOAxes.PHASE;
+						else if (axis.startsWith("f")) axisType = SCIFIOAxes.FREQUENCY;
+						else axisType = Axes.unknown();
 						defaultUnit = DEFAULT_UNKNOWN_UNIT;
 						break;
 				}
@@ -223,14 +220,14 @@ public class ICSFormat extends AbstractFormat {
 				// DEPRECATED - future ICS data will use "parameter labels" with a
 				// value
 				// of "micro-time" for the lifetime axis.
-				if (axisType.equals(Axes.TIME) && (MICRO_TIME.equals(parameterLabels[n]) || lifetime))
-					axisType = SCIFIOAxes.LIFETIME;
+				if (axisType.equals(Axes.TIME) && (MICRO_TIME.equals(
+					parameterLabels[n]) || lifetime)) axisType = SCIFIOAxes.LIFETIME;
 
 				// determine scale and unit
 				String unit = null;
 				Double scale = null;
-				String paramUnit = parameterUnits == null || n >= parameterUnits.length ?
-						null : parameterUnits[n].toLowerCase();
+				String paramUnit = parameterUnits == null || n >= parameterUnits.length
+					? null : parameterUnits[n].toLowerCase();
 				// tier 1: parameter unit + parameter scale
 				if (paramUnit != null && !paramUnit.equals("undefined")) {
 					unit = paramUnit;
@@ -240,14 +237,16 @@ public class ICSFormat extends AbstractFormat {
 				if (unit == null || scale == null) {
 					if (historyUnits != null && historyUnits[n - nVirtualAxis] != null)
 						unit = historyUnits[n - nVirtualAxis].toLowerCase();
-					if (historyExtents != null && historyExtents[n - nVirtualAxis] != null)
-						scale = historyExtents[n - nVirtualAxis] / axisSizes[n];
+					if (historyExtents != null && historyExtents[n -
+						nVirtualAxis] != null) scale = historyExtents[n - nVirtualAxis] /
+							axisSizes[n];
 				}
 				// tier 3: default unit + history extent
 				if (unit == null || scale == null) {
 					unit = defaultUnit;
-					if (historyExtents != null && historyExtents[n - nVirtualAxis] != null)
-						scale = historyExtents[n - nVirtualAxis] / axisSizes[n];
+					if (historyExtents != null && historyExtents[n -
+						nVirtualAxis] != null) scale = historyExtents[n - nVirtualAxis] /
+							axisSizes[n];
 				}
 				// tier 4" default unit + default scale
 				if (unit == null || scale == null) {
@@ -1269,7 +1268,7 @@ public class ICSFormat extends AbstractFormat {
 			final Object icsVersion = meta.getTable().get("ics_version");
 			if (icsVersion == null) {
 				parseHandle.close();
-			throw new FormatException("Cannot discern ICS version");
+				throw new FormatException("Cannot discern ICS version");
 			}
 			else if ("1.0".equals(icsVersion)) {
 				// split file format: ICS for metadata, IDS for pixel data
