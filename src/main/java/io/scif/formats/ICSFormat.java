@@ -158,7 +158,7 @@ public class ICSFormat extends AbstractFormat {
 			// Reset the existing axes
 			imageMeta.setAxes(new CalibratedAxis[0], new long[0]);
 
-			final String[] parameterLabels = getParamLabels();
+			final String[] parameterLabels = getParameterLabels();
 			final Double[] parameterScales = getParameterScales();
 			final String[] parameterUnits = getParameterUnits();
 
@@ -624,7 +624,7 @@ public class ICSFormat extends AbstractFormat {
 			return lifetime;
 		}
 
-		public String[] getParamLabels() {
+		public String[] getParameterLabels() {
 			final String pLabels = findStringValueForKey("parameter labels");
 			if (pLabels == null) return new String[getAxes().length];
 			return pLabels.split(" ");
