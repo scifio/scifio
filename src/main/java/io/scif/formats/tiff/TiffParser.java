@@ -108,8 +108,9 @@ public class TiffParser extends AbstractContextual {
 		doCaching = true;
 		try {
 			final long fp = in.offset();
-			checkHeader();
-			in.seek(fp);
+			if (checkHeader() != null) {
+				in.seek(fp);
+			}
 		}
 		catch (final IOException e) {}
 	}
