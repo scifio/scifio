@@ -1213,7 +1213,7 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			parseHandle.seek(0);
-			String line = ""; 
+			String line = parseHandle.findString(ICSUtils.NL);
 			// Extracts the key, value pairs from each line and
 			// inserts them into the ICSMetadata object
 			while (line != null && !line.trim().equals("end") && parseHandle
