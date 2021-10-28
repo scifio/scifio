@@ -144,10 +144,7 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 		testWriting(sourceImg);
 	}
 
-	/**
-	 * NB: the ICS writer does not create a valid ICS file when overwriting
-	 */
-	@Test(expected = ImgIOException.class)
+	@Test
 	public void testSuccessfulOverwrite() throws IOException {
 		final SCIFIOConfig config = new SCIFIOConfig().writerSetFailIfOverwriting(
 			false);
