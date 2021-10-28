@@ -81,7 +81,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int16").axes("X", "Y", "C").lengths(100, 100, 3)
 			.build()).get(0);
-		testWritingApprox(sourceImg, 21889.002059970047);
+		testWritingApprox(sourceImg, 29400.448615243662);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint16").axes("X", "Y", "C").lengths(100, 100, 3)
 			.build()).get(0);
-		testWritingApprox(sourceImg, 17.26710917830161);
+		testWritingApprox(sourceImg, 0.00915541313801782);
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("int32").axes("X", "Y", "C").lengths(100, 100, 3)
 			.build()).get(0);
-		testWritingApprox(sourceImg, 14699.999640880153);
+		testWritingApprox(sourceImg, 14699.999654369429);
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class JPEG2000FormatTest extends AbstractSyntheticWriterTest {
 		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
 			"testimg").pixelType("uint32").axes("X", "Y", "C").lengths(100, 100, 3)
 			.build()).get(0);
-		testWritingApprox(sourceImg, 0.00036388822);
+		testWritingApprox(sourceImg, 0.00034952256828546524);
 	}
 
 	@Test
