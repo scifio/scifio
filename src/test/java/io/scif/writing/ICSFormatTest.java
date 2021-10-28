@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package io.scif.writing;
 
 import io.scif.config.SCIFIOConfig;
@@ -62,85 +63,86 @@ public class ICSFormatTest extends AbstractSyntheticWriterTest {
 
 	@Test
 	public void testWriting_uint8() throws IOException {
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 
-		final ImgPlus<?> sourceImg2 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "C", "Time").lengths(100,
-				100, 3, 3).build()).get(0);
+		final ImgPlus<?> sourceImg2 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "C", "Time").lengths(
+				100, 100, 3, 3).build()).get(0);
 		testWriting(sourceImg2);
 
-		final ImgPlus<?> sourceImg3 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "Channel", "Z", "Time")
+		final ImgPlus<?> sourceImg3 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "Channel", "Z", "Time")
 			.lengths(100, 100, 3, 10, 13).build()).get(0);
 		testWriting(sourceImg3);
 
-		final ImgPlus<?> sourceImg4 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "C", "Z", "T").lengths(100,
-				100, 3, 3, 3).build()).get(0);
+		final ImgPlus<?> sourceImg4 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "C", "Z", "T").lengths(
+				100, 100, 3, 3, 3).build()).get(0);
 		testWriting(sourceImg4);
 
-		final ImgPlus<?> sourceImg5 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y", "Z", "Custom").lengths(100,
-				100, 3, 3).build()).get(0);
+		final ImgPlus<?> sourceImg5 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y", "Z", "Custom").lengths(
+				100, 100, 3, 3).build()).get(0);
 		testWriting(sourceImg5);
 
-		final ImgPlus<?> sourceImg6 = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100).build()).get(0);
+		final ImgPlus<?> sourceImg6 = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint8").axes("X", "Y").lengths(100, 100)
+			.build()).get(0);
 		testWriting(sourceImg6);
 	}
 
 	@Test
 	public void testWriting_int8() throws IOException {
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("int8").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("int8").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 	}
 
 	@Test
 	public void testWriting_int16() throws IOException {
 
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("int16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("int16").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 	}
 
 	@Test
 	public void testWriting_uint16() throws IOException {
 
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint16").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint16").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 	}
 
 	@Test
 	public void testWriting_int32() throws IOException {
 
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("int32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("int32").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 	}
 
 	@Test
 	public void testWriting_uint32() throws IOException {
 
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("uint32").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("uint32").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 	}
 
 	@Test
 	public void testWriting_float() throws IOException {
-		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder().name(
-			"testimg").pixelType("float").axes("X", "Y", "C").lengths(100, 100, 3)
-			.build()).get(0);
+		final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+			.name("testimg").pixelType("float").axes("X", "Y", "C").lengths(100, 100,
+				3).build()).get(0);
 		testWriting(sourceImg);
 	}
 
