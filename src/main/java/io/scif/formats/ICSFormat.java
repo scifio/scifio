@@ -1213,7 +1213,7 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			parseHandle.seek(0);
-			String line = parseHandle.findString(ICSUtils.NL);
+			String line = ""; 
 			// Extracts the key, value pairs from each line and
 			// inserts them into the ICSMetadata object
 			while (line != null && !line.trim().equals("end") && parseHandle
@@ -1549,7 +1549,6 @@ public class ICSFormat extends AbstractFormat {
 				gzip = false;
 				invertY = false;
 				prevPlane = 0;
-				// TODO hasInstrumentData = false;
 				if (gzipStream != null) {
 					gzipStream.close();
 				}
@@ -1712,11 +1711,6 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void close(final int imageIndex) throws IOException {
-			if (lastPlane != getMetadata().get(imageIndex).getPlaneCount() - 1 &&
-				getHandle() != null)
-			{
-				overwriteDimensions(getMetadata(), imageIndex);
-			}
 
 			super.close();
 			pixelOffset = 0;
@@ -1733,12 +1727,17 @@ public class ICSFormat extends AbstractFormat {
 		public void setDest(final DataHandle<Location> out, final int imageIndex,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
-			final String currentId = getMetadata().idsId != null ? getMetadata().idsId
-				: getMetadata().icsId;
+			final String currentId = out.get().getName();
+			if (FormatTools.checkSuffix(currentId, "ics")) {
+				getMetadata().setIcsLocation(out.get());
+			}
+			else {
+				getMetadata().setIdsLocation(out.get());
+			}
 
 			super.setDest(out, imageIndex, config);
 
-			if (out.length() == 0) {
+			if (out.length() <= 0) {
 				out.writeBytes("\t\n");
 				if (FormatTools.checkSuffix(currentId, "ids")) {
 					out.writeBytes("ics_version\t1.0\n");
