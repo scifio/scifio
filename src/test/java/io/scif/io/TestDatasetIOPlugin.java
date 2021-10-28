@@ -64,7 +64,7 @@ public class TestDatasetIOPlugin {
      */
     @Test
     public void testDatasetIOPluginOpenString() throws URISyntaxException, IOException {
-        Path path = Paths.get(this.getClass().getResource("test_img.tif").toURI());
+        Path path = Paths.get(this.getClass().getResource("mitosis.ics").toURI());
         String str_path = path.toAbsolutePath().toString();
 
         DatasetIOPlugin datasetIOPlugin = scifio.io().getInstance(DatasetIOPlugin.class);
@@ -74,7 +74,7 @@ public class TestDatasetIOPlugin {
         Img img = (Img) datasetIOPlugin.open(str_path);
 
         assertNotNull(img);
-        assertEquals(32, img.dimension(0));
+        assertEquals(171, img.dimension(0));
     }
 
     /**
