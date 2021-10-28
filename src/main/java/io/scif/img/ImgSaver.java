@@ -718,8 +718,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 						// copying for small array lengths (~24 elements or
 						// less).
 						// See: http://stackoverflow.com/a/12366983
-						for (int i = 0; i < sourcePlane.length / bpp; i += bpp) {
-							System.arraycopy(sourcePlane, i, destPlane.getData(), ((i *
+						for (int i = 0; i < sourcePlane.length / bpp; i++) {
+							System.arraycopy(sourcePlane, i * bpp, destPlane.getData(), ((i *
 								rgbChannelCount) + cIndex) * bpp, bpp);
 						}
 					}
