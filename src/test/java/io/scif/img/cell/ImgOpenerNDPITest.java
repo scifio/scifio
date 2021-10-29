@@ -79,10 +79,12 @@ public class ImgOpenerNDPITest {
 			"https://downloads.openmicroscopy.org/images/Hamamatsu-NDPI/manuel/test3-DAPI%202%20(387)%20.ndpi");
 		ReadableByteChannel readableByteChannel = Channels.newChannel(url
 			.openStream());
-		FileOutputStream fileOutputStream = new FileOutputStream(testImageFile
-			.toFile());
-		fileOutputStream.getChannel().transferFrom(readableByteChannel, 0,
-			Long.MAX_VALUE);
+		try (FileOutputStream fileOutputStream = new FileOutputStream(testImageFile
+			.toFile()))
+		{
+			fileOutputStream.getChannel().transferFrom(readableByteChannel, 0,
+				Long.MAX_VALUE);
+		}
 	}
 
 	@After
@@ -126,6 +128,7 @@ public class ImgOpenerNDPITest {
 
 		FloatType y = x.firstElement(); // IllegalArgumentException here
 		assertEquals(0f, y.get(), 0.1f);
+		img.get(0).dispose();
 	}
 
 	/**
