@@ -97,7 +97,7 @@ public class ImgOpenerNDPITest {
 	 * 10 seconds Hangs for scifio version 0.40.0 and 0.41.0 (so timeout should be
 	 * hit) fails (with IllegalArgumentException v0.37.3 - and perhaps 0.39.2)
 	 */
-	@Test(timeout = 10000, expected = IllegalArgumentException.class)
+	@Test(timeout = 10000)
 	public void testNDPICompositeChannelLoadTimeout() {
 		SCIFIOConfig config = new SCIFIOConfig();
 		config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL);
