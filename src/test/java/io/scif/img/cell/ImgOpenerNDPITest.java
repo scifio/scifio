@@ -57,81 +57,84 @@ import static org.junit.Assert.assertEquals;
  * @author Jon Fuller
  */
 public class ImgOpenerNDPITest {
-    private static ImgOpener opener;
-    private static Path testImageFile;
 
-    @BeforeClass
-    public static void createOpener() {
-        opener = new ImgOpener();
-    }
+	private static ImgOpener opener;
+	private static Path testImageFile;
 
-    @AfterClass
-    public static void disposeOpener() {
-        opener.context().dispose();
-    }
+	@BeforeClass
+	public static void createOpener() {
+		opener = new ImgOpener();
+	}
 
-    @Before
-    public void downloadTempFile() throws IOException {
-        testImageFile = Files.createTempFile("test3-DAPI%202%20(387)%20", ".ndpi");
+	@AfterClass
+	public static void disposeOpener() {
+		opener.context().dispose();
+	}
 
-        URL url = new URL("https://downloads.openmicroscopy.org/images/Hamamatsu-NDPI/manuel/test3-DAPI%202%20(387)%20.ndpi");
-        ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-        FileOutputStream fileOutputStream = new FileOutputStream(testImageFile.toFile());
-        fileOutputStream.getChannel()
-                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-    }
+	@Before
+	public void downloadTempFile() throws IOException {
+		testImageFile = Files.createTempFile("test3-DAPI%202%20(387)%20", ".ndpi");
 
-    @After
-    public void removeTempFile() throws IOException {
-        Files.delete(testImageFile);
-    }
+		URL url = new URL(
+			"https://downloads.openmicroscopy.org/images/Hamamatsu-NDPI/manuel/test3-DAPI%202%20(387)%20.ndpi");
+		ReadableByteChannel readableByteChannel = Channels.newChannel(url
+			.openStream());
+		FileOutputStream fileOutputStream = new FileOutputStream(testImageFile
+			.toFile());
+		fileOutputStream.getChannel().transferFrom(readableByteChannel, 0,
+			Long.MAX_VALUE);
+	}
 
-    /**
-     * Test for https://github.com/scifio/scifio/issues/399
-     * Test will fail after 10 seconds
-     * Hangs for scifio version 0.40.0 and 0.41.0 (so timeout should be hit)
-     * fails (with IllegalArgumentException v0.37.3 - and perhaps 0.39.2)
-     */
-    @Test(timeout=10000, expected=IllegalArgumentException.class)
-    public void testNDPICompositeChannelLoadTimeout() {
-        SCIFIOConfig config = new SCIFIOConfig();
-        config.imgOpenerSetImgModes( SCIFIOConfig.ImgMode.CELL );
+	@After
+	public void removeTempFile() throws IOException {
+		Files.delete(testImageFile);
+	}
 
-        loadImage(config);
-    }
+	/**
+	 * Test for https://github.com/scifio/scifio/issues/399 Test will fail after
+	 * 10 seconds Hangs for scifio version 0.40.0 and 0.41.0 (so timeout should be
+	 * hit) fails (with IllegalArgumentException v0.37.3 - and perhaps 0.39.2)
+	 */
+	@Test(timeout = 10000, expected = IllegalArgumentException.class)
+	public void testNDPICompositeChannelLoadTimeout() {
+		SCIFIOConfig config = new SCIFIOConfig();
+		config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL);
 
-    /**
-     * Test for https://github.com/scifio/scifio/issues/399
-     * (v0.37.3) - fails (heapspace)
-     * (v0.39.2) - fails (heapspace)
-     */
-    @Test(timeout=10000)
-    public void testNDPICompositeChannelLoad() {
-        SCIFIOConfig config = new SCIFIOConfig();
+		loadImage(config);
+	}
 
-        loadImage(config);
-    }
+	/**
+	 * Test for https://github.com/scifio/scifio/issues/399 (v0.37.3) - fails
+	 * (heapspace) (v0.39.2) - fails (heapspace)
+	 */
+	@Test(timeout = 10000)
+	public void testNDPICompositeChannelLoad() {
+		SCIFIOConfig config = new SCIFIOConfig();
 
-    private void loadImage(SCIFIOConfig config) {
+		loadImage(config);
+	}
 
-        List<SCIFIOImgPlus<FloatType>> img;
-        System.out.println(testImageFile.toFile().getAbsolutePath());
-        img = new ImgOpener().openImgs(testImageFile.toFile().getAbsolutePath(), new FloatType(), config);
+	private void loadImage(SCIFIOConfig config) {
 
-        SCIFIOImgPlus<FloatType> x = img.get(0);
-        assertEquals(x.getCompositeChannelCount(), 3);
+		List<SCIFIOImgPlus<FloatType>> img;
+		System.out.println(testImageFile.toFile().getAbsolutePath());
+		img = new ImgOpener().openImgs(testImageFile.toFile().getAbsolutePath(),
+			new FloatType(), config);
 
-        FloatType y = x.firstElement();    // IllegalArgumentException here
-        assertEquals(0f, y.get(), 0.1f);
-    }
+		SCIFIOImgPlus<FloatType> x = img.get(0);
+		assertEquals(x.getCompositeChannelCount(), 3);
 
-    /**
-     * Test for https://github.com/scifio/scifio/issues/399
-     * with a fake image (not currently possible to reproduce this way.
-     */
-    @Test
-    public void testFakeImage() {
-        // Make an id that will trigger cell creation
+		FloatType y = x.firstElement(); // IllegalArgumentException here
+		assertEquals(0f, y.get(), 0.1f);
+	}
+
+	/**
+	 * Test for https://github.com/scifio/scifio/issues/399 with a fake image (not
+	 * currently possible to reproduce this way.
+	 */
+	@Test
+	public void testFakeImage() {
+		// Make an id that will trigger cell creation
 //        TestImgLocation loc = TestImgLocation.builder()
 //                .name("test")
 //                .axes(
@@ -162,5 +165,5 @@ public class ImgOpenerNDPITest {
 //        System.out.println("y: "+y);
 //        System.out.println(y.get());
 
-    }
+	}
 }
