@@ -29,10 +29,11 @@
 
 package io.scif.img.cell;
 
+import static org.junit.Assert.assertEquals;
+
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
-import net.imglib2.type.numeric.real.FloatType;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,15 +42,14 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
-import org.junit.BeforeClass;
+import net.imglib2.type.numeric.real.FloatType;
+
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for the {@link SCIFIOCellImg} and related classes.
@@ -60,6 +60,7 @@ public class ImgOpenerNDPITest {
 
 	private static ImgOpener opener;
 	private static Path testImageFile;
+	private SCIFIOImgPlus<FloatType> img;
 
 	@BeforeClass
 	public static void createOpener() {
@@ -72,7 +73,7 @@ public class ImgOpenerNDPITest {
 	}
 
 	@Before
-	public void downloadTempFile() throws IOException {
+	public void createSCIFIOCellImg() throws IOException {
 		testImageFile = Files.createTempFile("test3-DAPI%202%20(387)%20", ".ndpi");
 
 		URL url = new URL(
@@ -85,10 +86,16 @@ public class ImgOpenerNDPITest {
 			fileOutputStream.getChannel().transferFrom(readableByteChannel, 0,
 				Long.MAX_VALUE);
 		}
+
+		SCIFIOConfig config = new SCIFIOConfig();
+		config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL);
+		img = opener.openImgs(testImageFile.toFile().getAbsolutePath(),
+			new FloatType(), config).get(0);
 	}
 
 	@After
 	public void removeTempFile() throws IOException {
+		img.dispose();
 		Files.delete(testImageFile);
 	}
 
@@ -97,25 +104,11 @@ public class ImgOpenerNDPITest {
 	 * 10 seconds Hangs for scifio version 0.40.0 and 0.41.0 (so timeout should be
 	 * hit) fails (with IllegalArgumentException v0.37.3 - and perhaps 0.39.2)
 	 */
-	@Test(timeout = 10000)
+	@Test
 	public void testNDPICompositeChannelLoad() {
-		SCIFIOConfig config = new SCIFIOConfig();
-		config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL);
+		assertEquals(img.getCompositeChannelCount(), 3);
 
-		loadImage(config);
-	}
-
-	private void loadImage(SCIFIOConfig config) {
-
-		List<SCIFIOImgPlus<FloatType>> img;
-		img = new ImgOpener().openImgs(testImageFile.toFile().getAbsolutePath(),
-			new FloatType(), config);
-
-		SCIFIOImgPlus<FloatType> x = img.get(0);
-		assertEquals(x.getCompositeChannelCount(), 3);
-
-		FloatType y = x.firstElement(); // IllegalArgumentException here
+		FloatType y = img.firstElement();
 		assertEquals(0f, y.get(), 0.1f);
-		img.get(0).dispose();
 	}
 }
