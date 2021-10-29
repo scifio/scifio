@@ -130,43 +130,4 @@ public class ImgOpenerNDPITest {
 		assertEquals(0f, y.get(), 0.1f);
 		img.get(0).dispose();
 	}
-
-	/**
-	 * Test for https://github.com/scifio/scifio/issues/399 with a fake image (not
-	 * currently possible to reproduce this way.
-	 */
-	@Test
-	public void testFakeImage() {
-		// Make an id that will trigger cell creation
-//        TestImgLocation loc = TestImgLocation.builder()
-//                .name("test")
-//                .axes(
-//                    String.valueOf(Axes.X),
-//                    String.valueOf(Axes.Y),
-//                    String.valueOf(Axes.CHANNEL))
-//                .lengths(3968, 4864, 3)
-//                .units(null,null,null)
-//                .pixelType(FormatTools.getPixelTypeString(
-//                        FormatTools.UINT8))
-//                .falseColor(true)
-//                .orderCertain(false)
-//                .build();
-//
-//        SCIFIOConfig config = new SCIFIOConfig();
-//        config.imgOpenerSetImgModes( SCIFIOConfig.ImgMode.CELL );
-//
-//        DiskCachedCellImgOptions options = new DiskCachedCellImgOptions();
-//        options = options.cellDimensions(512,512,3);
-//
-////        final List<SCIFIOImgPlus<FloatType>> img = opener.openImgs(loc, new FloatType(), config );
-//        final List<SCIFIOImgPlus<FloatType>> img = new ImgOpener().openImgs(loc, new SCIFIOCellImgFactory<>( new FloatType(), options ) );
-//        img.get(0).setCompositeChannelCount(3);
-//
-//        SCIFIOImgPlus<FloatType> x = img.get(0);
-//        System.out.println("x: "+x);
-//        FloatType y = x.firstElement();
-//        System.out.println("y: "+y);
-//        System.out.println(y.get());
-
-	}
 }
