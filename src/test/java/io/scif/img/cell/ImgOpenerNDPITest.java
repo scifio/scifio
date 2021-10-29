@@ -98,20 +98,9 @@ public class ImgOpenerNDPITest {
 	 * hit) fails (with IllegalArgumentException v0.37.3 - and perhaps 0.39.2)
 	 */
 	@Test(timeout = 10000)
-	public void testNDPICompositeChannelLoadTimeout() {
-		SCIFIOConfig config = new SCIFIOConfig();
-		config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL);
-
-		loadImage(config);
-	}
-
-	/**
-	 * Test for https://github.com/scifio/scifio/issues/399 (v0.37.3) - fails
-	 * (heapspace) (v0.39.2) - fails (heapspace)
-	 */
-	@Test(timeout = 10000)
 	public void testNDPICompositeChannelLoad() {
 		SCIFIOConfig config = new SCIFIOConfig();
+		config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL);
 
 		loadImage(config);
 	}
@@ -119,7 +108,6 @@ public class ImgOpenerNDPITest {
 	private void loadImage(SCIFIOConfig config) {
 
 		List<SCIFIOImgPlus<FloatType>> img;
-		System.out.println(testImageFile.toFile().getAbsolutePath());
 		img = new ImgOpener().openImgs(testImageFile.toFile().getAbsolutePath(),
 			new FloatType(), config);
 
