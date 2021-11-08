@@ -98,7 +98,7 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/scifio/scifio</connection>
+		<connection>scm:git:https://github.com/scifio/scifio</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/scifio/scifio</url>
