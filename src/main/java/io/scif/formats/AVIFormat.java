@@ -1285,7 +1285,7 @@ public class AVIFormat extends AbstractFormat {
 			final Metadata meta = getMetadata();
 
 			// FIXME is this correct behavior?
-			if (out.length() > 0) {
+			if (out.length() <= 0) {
 				final DataHandle<Location> in = dataHandleService.create(out.get());
 				in.setOrder(ByteOrder.LITTLE_ENDIAN);
 				in.seek(FRAME_OFFSET);
