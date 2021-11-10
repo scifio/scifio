@@ -121,6 +121,7 @@
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
+
 		<xdg-java.version>0.1.1</xdg-java.version>
 	</properties>
 
