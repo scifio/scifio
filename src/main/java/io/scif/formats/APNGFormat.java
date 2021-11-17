@@ -762,7 +762,7 @@ public class APNGFormat extends AbstractFormat {
 			final SCIFIOConfig config) throws IOException, FormatException
 		{
 			super.setDest(out, imageIndex, config);
-			if (out.length() == 0) {
+			if (out.length() <= 0) {
 				final ImageMetadata imageMetadata = getMetadata().get(imageIndex);
 				final int width = (int) imageMetadata.getAxisLength(Axes.X);
 				final int height = (int) imageMetadata.getAxisLength(Axes.Y);
