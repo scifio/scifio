@@ -123,6 +123,8 @@
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
 		<xdg-java.version>0.1.1</xdg-java.version>
+
+		<jitk-tps.version>3.0.2</jitk-tps.version>
 	</properties>
 
 	<dependencies>
