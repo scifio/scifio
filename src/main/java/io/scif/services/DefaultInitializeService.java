@@ -165,6 +165,7 @@ public class DefaultInitializeService extends AbstractService implements
 		throws FormatException, IOException
 	{
 		final Format format = formatService.getFormat(id, config);
+		// System.out.println(SCIFIOConfig.checkerIsOpen());
 		return format.createParser().parse(id, config);
 	}
 
