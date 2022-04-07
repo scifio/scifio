@@ -37,7 +37,6 @@ The SCIFIO core includes support for:
 * MNG
 * Micro-Manager
 * NRRD
-* OBF
 * PCX
 * PGM
 * QuickTime
