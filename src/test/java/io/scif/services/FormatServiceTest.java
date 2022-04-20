@@ -77,7 +77,7 @@ public class FormatServiceTest {
 		final String[] formatSuffixes = { "avi", "bmp", "btf", "dcm", "dic",
 			"dicom", "eps", "epsi", "fits", "fts", "gif", "ics", "ids", "ima", "img",
 			"isq", "j2k", "j2ki", "j2kr", "jp2", "jpe", "jpeg", "jpf", "jpg", "mng",
-			"mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm", "pict", "png",
+			"mov", "nhdr", "nrrd", "pct", "pcx", "pgm", "pict", "png",
 			"ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml", "scifiotestimg" };
 
 		final Set<String> expectedSuffixes = new HashSet<>();
