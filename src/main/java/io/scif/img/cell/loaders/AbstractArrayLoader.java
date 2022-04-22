@@ -140,29 +140,17 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 					int length = subRegion.getRange(axis.type()).size();
 
-					// Constrain on passed dims
 					if (index < bounds.numDimensions()) {
+						long offset = subRegion.getRange(axis.type()).get(0);
+						planarMin[axisIndex] = bounds.min(index) + offset;
+						planarMax[axisIndex] = bounds.max(index) + offset;
 						
-						// the planarMin should equal to the lower limit of subRegion (how
-						// could I access that?)
-						planarMin[axisIndex] = bounds.min(index) + subRegion.getRange(axis
-							.type()).get(0);
-						
-						// check is the upper limit of subRegion is smaller than the
-						// bounds.max()
-						if (subRegion.getRange(axis.type()).get(length - 1) < bounds.max(
-							index))
+						if (subRegion.getRange(axis.type()).get(length -
+							1) < planarMax[axisIndex])
 						{
-
-							// if yes, planarMax = the upper limit of subRegion
 							planarMax[axisIndex] = subRegion.getRange(axis.type()).get(
 								length - 1);
 
-						}
-						else {
-
-							// if no, planarMin = bounds.max()
-							planarMax[axisIndex] = bounds.max(index);
 						}
 
 						entities *= bounds.dimension(index);
@@ -233,7 +221,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	{
 		if (depth < npRanges.length) {
 			// We need to invert the depth index to get the current non-planar
-			// axis index, to ensure axes are iteratead in fastest to slowest
+			// axis index, to ensure axes are iterated in fastest to slowest
 			// order
 			final int npPosition = npRanges.length - 1 - depth;
 			for (int i = 0; i < npRanges[npPosition].size(); i++) {
