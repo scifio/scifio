@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,9 +33,13 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.scijava.Context;
 import org.scijava.io.handle.DataHandle;
 import org.scijava.io.handle.DataHandleService;
 import org.scijava.io.location.Location;
@@ -210,8 +214,30 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 			if (handle == null) {
 				// no handle found for this location, expected for
 				// "Location-only" formats
-				meta.populateImageMetadata();
-				return meta;
+				InvocationHandler handler = new InvocationHandler() {
+
+					@Override
+					public Object invoke(final Object proxy, final Method method,
+						final Object[] args) throws Throwable
+					{
+						if (method.getName() == "get" && method.getParameterCount() == 0) {
+							return loc;
+						}
+						if (method.getName() == "close" && method
+							.getParameterCount() == 0)
+						{
+							// no-op
+							return null;
+						}
+						throw new UnsupportedOperationException(
+							"Trying to use methods of Location-only handle");
+					}
+				};
+				@SuppressWarnings("unchecked")
+				final DataHandle<Location> dummyHandle = (DataHandle<Location>) Proxy
+					.newProxyInstance(Context.getClassLoader(), new Class[] {
+						DataHandle.class }, handler);
+				handle = dummyHandle;
 			}
 		}
 		return parse(handle, meta, config);
@@ -331,7 +357,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	/**
 	 * Allows implementations of this class that override
 	 * {@link #parse(Location, Metadata, SCIFIOConfig)} to set the metadata.
-	 * 
+	 *
 	 * @param meta the metadata object for this parser
 	 */
 	protected void setMetaData(final Metadata meta) {
