@@ -89,7 +89,6 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 		final List<ImageMetadata> sourceImgMeta, final N typedDest)
 	{
 		// Boilerplate for common Metadata fields
-		typedDest.setSource(typedSource.getSource());
 		typedDest.setFiltered(typedSource.isFiltered());
 		typedDest.setDatasetName(typedSource.getDatasetName());
 
