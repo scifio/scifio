@@ -245,15 +245,6 @@ public class TestImgFormat extends AbstractFormat {
 		 */
 		@Override
 		public void populateImageMetadata() {
-			final MetadataService metadataService = getContext().getService(
-				MetadataService.class);
-
-			// parse key/value pairs from fake filename
-			final Map<String, Object> fakeMap =
-				((TestImgLocation) getSourceLocation()).getMetadataMap();
-
-			metadataService.populate(this, fakeMap);
-
 			if (axes.length != lengths.length) {
 				throw new IllegalStateException("FakeFormat id: " + getDatasetName() +
 					" is not valid. Can not have a differing number of axis types and axis lengths.");
@@ -393,6 +384,8 @@ public class TestImgFormat extends AbstractFormat {
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Parser API Methods --
+		@Parameter
+		private MetadataService metadataService;
 
 		/* @See Parser#Parse(DataHandle<Location>, M) */
 		@Override
@@ -400,10 +393,11 @@ public class TestImgFormat extends AbstractFormat {
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			// No operation. All work is done in the populateImageMetadata
-			// method
-			// of the metadata itself (the format-specific metadata is implied
-			// purely by the file name).
+			// parse key/value pairs from fake filename
+			final Map<String, Object> fakeMap =
+				((TestImgLocation) getSourceLocation()).getMetadataMap();
+
+			metadataService.populate(meta, fakeMap);
 		}
 	}
 
