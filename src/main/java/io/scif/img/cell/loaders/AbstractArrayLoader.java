@@ -261,7 +261,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	{
 		if (depth < npRanges.length) {
 			// We need to invert the depth index to get the current non-planar
-			// axis index, to ensure axes are iteratead in fastest to slowest
+			// axis index, to ensure axes are iterated in fastest to slowest
 			// order
 			final int npPosition = npRanges.length - 1 - depth;
 			for (int i = 0; i < npRanges[npPosition].size(); i++) {
