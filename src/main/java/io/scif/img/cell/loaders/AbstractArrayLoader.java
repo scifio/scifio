@@ -275,7 +275,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int planeIndex = (int) FormatTools.positionToRaster(0, reader,
 				npIndices);
 
-			validateBounds(reader.getMetadata().get(0).getAxesLengthsPlanar(), bounds);
+			validateBounds(reader.getMetadata().get(0).getAxesLengthsPlanar(),
+				bounds);
 
 			if (tmpPlane == null) {
 				tmpPlane = reader.openPlane(index, planeIndex, bounds);
