@@ -159,6 +159,9 @@ public class DefaultSampleFilesService extends AbstractService implements
 				if (entry == null) break; // All done!
 				final String name = entry.getName();
 				final File outFile = new File(targetFolder, name);
+				if (!outFile.toPath().normalize().startsWith(targetFolder.toPath().normalize())) {
+					throw new RuntimeException("Bad zip entry");
+				}
 				if (entry.isDirectory()) {
 					outFile.mkdirs();
 				}
