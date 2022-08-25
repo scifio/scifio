@@ -49,28 +49,29 @@ import org.scijava.convert.Converter;
 
 public class FileToDatasetConverterTest {
 	private Context c;
-	private File nonexistentFile;
+	private File unsupportedFile;
 
 	@Before
 	public void setUp() throws IOException {
 		c = new Context();
-		nonexistentFile = Files.createTempFile("non-existent", ".file").toFile();
+		unsupportedFile = Files.createTempFile("non-existent", ".file").toFile();
 	}
 
 	@After
 	public void tearDown() {
 		c.dispose();
 		c = null;
-		nonexistentFile.delete();
+		unsupportedFile.delete();
 	}
 
 	@Test
 	public void testFileToDatasetConverter() {
 		final ConvertService convertService = c.service(ConvertService.class);
 		File imageFile = new File("image&pixelType=uint8&axes=X,Y,Z&lengths=256,128,32.fake");
+		File nonExistingGifFile = new File("nonexistent/path/blobs.gif");
 
 		Converter<?, ?> handler = convertService.getHandler(imageFile, Dataset.class);
-		Converter<?, ?> nonExistentFileHandler = convertService.getHandler(nonexistentFile, Dataset.class);
+		Converter<?, ?> nonExistentFileHandler = convertService.getHandler(unsupportedFile, Dataset.class);
 		// Make sure we got the right converter back
 		assertSame(FileToDatasetConverter.class, handler.getClass());
 		assertNull(nonExistentFileHandler);
@@ -78,11 +79,12 @@ public class FileToDatasetConverterTest {
 		// Test handler capabilities
 		assertTrue(handler.canConvert(imageFile, Dataset.class));
 		assertFalse(handler.canConvert((Object) null, Dataset.class));
-		assertFalse(handler.canConvert(nonexistentFile, Dataset.class));
+		assertFalse(handler.canConvert(unsupportedFile, Dataset.class));
 
 		// Make sure we can convert with ConvertService
 		assertTrue(convertService.supports(imageFile, Dataset.class));
-		assertFalse(convertService.supports(nonexistentFile, Dataset.class));
+		assertFalse(convertService.supports(unsupportedFile, Dataset.class));
+		assertFalse(convertService.supports(nonExistingGifFile, Dataset.class));
 
 		// Convert and check dimensions
 		Dataset dataset = convertService.convert(imageFile, Dataset.class);

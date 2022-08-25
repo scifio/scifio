@@ -68,7 +68,8 @@ public class FileToDatasetConverter extends AbstractConverter<File, Dataset> {
 		return io != null &&
 				src != null &&
 				super.canConvert(src, dest) &&
-				io.canOpen(((File) src).getAbsolutePath()); // and/or ((File) src).exists()
+				(((File) src).getName().endsWith(".fake") || ((File) src).exists()) &&
+				io.canOpen(((File) src).getAbsolutePath());
 	}
 
 	@Override
@@ -76,7 +77,8 @@ public class FileToDatasetConverter extends AbstractConverter<File, Dataset> {
 		return io != null &&
 				src != null &&
 				super.canConvert(src, dest) &&
-				io.canOpen(((File) src).getAbsolutePath()); // and/or ((File) src).exists()
+				(((File) src).getName().endsWith(".fake") || ((File) src).exists()) &&
+				io.canOpen(((File) src).getAbsolutePath());
 	}
 
 	@SuppressWarnings("unchecked")
