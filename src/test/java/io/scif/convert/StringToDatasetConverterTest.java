@@ -49,19 +49,19 @@ import org.scijava.convert.Converter;
 
 public class StringToDatasetConverterTest {
 	private Context c;
-	private String nonexistentPath;
+	private String unsupportedPath;
 
 	@Before
 	public void setUp() throws IOException {
 		c = new Context();
-		nonexistentPath = Files.createTempFile("non-existent", ".file").toString();
+		unsupportedPath = Files.createTempFile("non-existent", ".file").toString();
 	}
 
 	@After
 	public void tearDown() {
 		c.dispose();
 		c = null;
-		new File(nonexistentPath).delete();
+		new File(unsupportedPath).delete();
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class StringToDatasetConverterTest {
 		String imagePath = "image&pixelType=uint8&axes=X,Y,Z&lengths=256,128,32.fake";
 
 		Converter<?, ?> handler = convertService.getHandler(imagePath, Dataset.class);
-		Converter<?, ?> nonExistentFileHandler = convertService.getHandler(nonexistentPath, Dataset.class);
+		Converter<?, ?> nonExistentFileHandler = convertService.getHandler(unsupportedPath, Dataset.class);
 		// Make sure we got the right converter back
 		assertSame(StringToDatasetConverter.class, handler.getClass());
 		assertNull(nonExistentFileHandler);
@@ -78,11 +78,11 @@ public class StringToDatasetConverterTest {
 		// Test handler capabilities
 		assertTrue(handler.canConvert(imagePath, Dataset.class));
 		assertFalse(handler.canConvert((Object) null, Dataset.class));
-		assertFalse(handler.canConvert(nonexistentPath, Dataset.class));
+		assertFalse(handler.canConvert(unsupportedPath, Dataset.class));
 
 		// Make sure we can convert with ConvertService
 		assertTrue(convertService.supports(imagePath, Dataset.class));
-		assertFalse(convertService.supports(nonexistentPath, Dataset.class));
+		assertFalse(convertService.supports(unsupportedPath, Dataset.class));
 
 		// Convert and check dimensions
 		Dataset dataset = convertService.convert(imagePath, Dataset.class);
