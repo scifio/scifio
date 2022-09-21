@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>32.0.0-beta-4</version>
+		<version>33.2.0</version>
 		<relativePath />
 	</parent>
 
@@ -123,8 +123,6 @@
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
 		<xdg-java.version>0.1.1</xdg-java.version>
-
-		<jitk-tps.version>3.0.2</jitk-tps.version>
 	</properties>
 
 	<dependencies>
