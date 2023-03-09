@@ -15,11 +15,11 @@
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a library for scientific N-dimensional image I/O.</description>
-	<url>http://scif.io/</url>
+	<url>https://scif.io/</url>
 	<inceptionYear>2011</inceptionYear>
 	<organization>
 		<name>SCIFIO</name>
-		<url>http://scif.io/</url>
+		<url>https://scif.io/</url>
 	</organization>
 	<licenses>
 		<license>
@@ -32,7 +32,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>https://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/people/ctrueden</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -47,13 +47,13 @@
 	<contributors>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>https://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/people/hinerm</url>
 			<roles><role>founder</role></roles>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>https://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/people/dscho</url>
 			<properties><id>dscho</id></properties>
 		</contributor>
 		<contributor>
@@ -62,12 +62,12 @@
 		</contributor>
 		<contributor>
 			<name>Gabriel Einsdorf</name>
-			<url>https://imagej.net/User:Gab1one</url>
+			<url>https://imagej.net/people/gab1one</url>
 			<properties><id>gab1one</id></properties>
 		</contributor>
 		<contributor>
 			<name>Henry Pinkard</name>
-			<url>https://imagej.net/User:HPinkard</url>
+			<url>https://imagej.net/people/henrypinkard</url>
 			<properties><id>henrypinkard</id></properties>
 		</contributor>
 		<contributor>
@@ -80,12 +80,12 @@
 		</contributor>
 		<contributor>
 			<name>Richard Domander</name>
-			<url>https://imagej.net/User:Rdom</url>
+			<url>https://imagej.net/people/rimadoma</url>
 			<properties><id>rimadoma</id></properties>
 		</contributor>
 		<contributor>
 			<name>Jan Eglinger</name>
-			<url>https://imagej.net/User:Eglinger</url>
+			<url>https://imagej.net/people/imagejan</url>
 			<properties><id>imagejan</id></properties>
 		</contributor>
 	</contributors>
