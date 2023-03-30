@@ -193,7 +193,9 @@ public class DefaultFormatService extends AbstractService implements
 		checkerMap().put(format.getCheckerClass(), format);
 		parserMap().put(format.getParserClass(), format);
 		readerMap().put(format.getReaderClass(), format);
-		writerMap().put(format.getWriterClass(), format);
+		if (format.getWriterClass() != DefaultWriter.class) {
+			writerMap().put(format.getWriterClass(), format);
+		}
 		metadataMap().put(format.getMetadataClass(), format);
 	}
 
