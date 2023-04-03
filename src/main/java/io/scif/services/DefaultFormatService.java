@@ -43,6 +43,7 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -193,7 +194,9 @@ public class DefaultFormatService extends AbstractService implements
 		checkerMap().put(format.getCheckerClass(), format);
 		parserMap().put(format.getParserClass(), format);
 		readerMap().put(format.getReaderClass(), format);
-		writerMap().put(format.getWriterClass(), format);
+		if (format.getWriterClass() != DefaultWriter.class) {
+			writerMap().put(format.getWriterClass(), format);
+		}
 		metadataMap().put(format.getMetadataClass(), format);
 	}
 
@@ -277,8 +280,12 @@ public class DefaultFormatService extends AbstractService implements
 		}
 
 		if (w == null) {
-			throw new FormatException(
-				"No compatible output format found for extension: " + fileId);
+		    Set<String> suffixes = new TreeSet<>();
+		    for (Format f : getOutputFormats()) {
+		        suffixes.addAll(Arrays.asList(f.getSuffixes()));
+		    }
+		    throw new FormatException("No compatible output format found for extension: " + fileId + "\n"  +
+		     "Available output formats: " + suffixes);
 		}
 		return w;
 	}
