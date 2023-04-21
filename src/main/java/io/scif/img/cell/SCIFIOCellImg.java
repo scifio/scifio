@@ -41,6 +41,7 @@ import net.imglib2.cache.Cache;
 import net.imglib2.cache.IoSync;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.display.ColorTable;
+import net.imglib2.img.basictypeaccess.DataAccess;
 import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.type.NativeType;
@@ -54,7 +55,7 @@ import org.scijava.Disposable;
  * @author Mark Hiner
  * @author Tobias Pietzsch
  */
-public class SCIFIOCellImg<T extends NativeType<T>, A> extends
+public class SCIFIOCellImg<T extends NativeType<T>, A extends DataAccess> extends
 	CachedCellImg<T, A> implements Disposable
 {
 	// -- Fields --
