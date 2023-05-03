@@ -69,9 +69,9 @@ public class DefaultRefManagerService extends AbstractService implements
 
 	/**
 	 * Flag passed by reference to {@link RefCleaner} instances to indicate when
-	 * this service has been disposed.
+	 * this service has stopped running.
 	 */
-	private final boolean[] disposed = new boolean[1];
+	private final boolean[] running = {true};
 
 	/**
 	 * Maps managed objects to the reference types which refer to them, ensuring
@@ -123,7 +123,7 @@ public class DefaultRefManagerService extends AbstractService implements
 						// RefCleaner
 						// thread
 						threadService.run(new RefCleaner(queue, knownRefs, logService,
-							disposed));
+							running));
 					}
 				}
 			}
@@ -138,14 +138,13 @@ public class DefaultRefManagerService extends AbstractService implements
 	 */
 	@Override
 	public void dispose() {
-		disposed[0] = false;
+		running[0] = false;
 	}
 
 	@Override
 	public void initialize() {
 		// Set default values
 		queue = new ReferenceQueue();
-		disposed[0] = true;
 	}
 
 	// -- Helper Methods --
