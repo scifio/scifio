@@ -144,9 +144,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			throw new FormatException("Image plane too large. Only 2GB of data can " +
 				"be extracted at one time. You can workaround the problem by opening " +
 				"the plane in tiles; for further details, see: " +
-				"http://www.openmicroscopy.org/site/support/faq/bio-formats/" +
-				"i-see-an-outofmemory-or-negativearraysize-error-message-when-" +
-				"attempting-to-open-an-svs-or-jpeg-2000-file.-what-does-this-mean", e);
+				"https://github.com/scifio/scifio-tutorials/blob/master/core" +
+				"/src/main/java/io/scif/tutorials/core/T1cReadingTilesGood.java", e);
 		}
 
 		return openPlane(imageIndex, planeIndex, plane, bounds, config);
