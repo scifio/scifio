@@ -42,7 +42,6 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-import org.scijava.thread.ThreadService;
 
 /**
  * Default {@link RefManagerService} implementation.
@@ -55,9 +54,6 @@ public class DefaultRefManagerService extends AbstractService implements
 {
 
 	// -- Parameters --
-
-	@Parameter
-	private ThreadService threadService;
 
 	@Parameter
 	private PluginService pluginService;
@@ -119,11 +115,12 @@ public class DefaultRefManagerService extends AbstractService implements
 					knownRefs.add(ref);
 
 					if (knownRefs.size() == 1) {
-						// If this is the first entry in knownRefs, start a
-						// RefCleaner
-						// thread
-						threadService.run(new RefCleaner(queue, knownRefs, logService,
-							running));
+						// If this is the first entry in knownRefs, start RefCleaner thread.
+						final RefCleaner rc =
+							new RefCleaner(queue, knownRefs, logService, running);
+						final Thread t = new Thread(rc, "SCIFIO-RefCleaner");
+						t.setDaemon(true);
+						t.start();
 					}
 				}
 			}
