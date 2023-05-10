@@ -36,6 +36,7 @@ import io.scif.codec.CodecOptions;
 import io.scif.common.Constants;
 import io.scif.enumeration.EnumException;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Vector;
@@ -57,7 +58,7 @@ import org.scijava.util.IntRect;
  * @author Melissa Linkert
  * @author Chris Allan
  */
-public class TiffParser extends AbstractContextual {
+public class TiffParser extends AbstractContextual implements Closeable {
 
 	// -- Fields --
 
@@ -966,6 +967,13 @@ public class TiffParser extends AbstractContextual {
 			.offset();
 
 		return new TiffIFDEntry(entryTag, entryType, valueCount, offset);
+	}
+
+	// -- Closeable methods --
+
+	@Override
+	public void close() throws IOException {
+		in.close();
 	}
 
 	// -- Helper methods - byte stream decoding --
