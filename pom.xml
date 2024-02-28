@@ -11,7 +11,7 @@
 
 	<groupId>io.scif</groupId>
 	<artifactId>scifio</artifactId>
-	<version>0.46.1-SNAPSHOT</version>
+	<version>0.47.0-SNAPSHOT</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a library for scientific N-dimensional image I/O.</description>
@@ -126,15 +126,13 @@
 		<imglib2-cache.version>1.0.0-beta-17</imglib2-cache.version>
 
 		<xdg-java.version>0.1.1</xdg-java.version>
+
+		<jai-imageio.version>1.4.0</jai-imageio.version>
+		<jai-imageio-jpeg2000.version>${jai-imageio.version}</jai-imageio-jpeg2000.version>
+		<com.github.jai-imageio.jai-imageio-jpeg2000.version>${jai-imageio-jpeg2000.version}</com.github.jai-imageio.jai-imageio-jpeg2000.version>
 	</properties>
 
 	<dependencies>
-		<!-- SCIFIO dependencies -->
-		<dependency>
-			<groupId>io.scif</groupId>
-			<artifactId>scifio-jai-imageio</artifactId>
-		</dependency>
-
 		<!-- ImageJ dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
@@ -155,6 +153,13 @@
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
+		</dependency>
+
+		<!-- JAI ImageIO dependencies -->
+		<dependency>
+			<groupId>com.github.jai-imageio</groupId>
+			<artifactId>jai-imageio-jpeg2000</artifactId>
+			<version>${com.github.jai-imageio.jai-imageio-jpeg2000.version}</version>
 		</dependency>
 
 		<!-- Test scope dependencies -->
