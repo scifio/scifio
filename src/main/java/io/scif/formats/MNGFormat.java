@@ -211,6 +211,9 @@ public class MNGFormat extends AbstractFormat {
 					maxIterations = getSource().readInt();
 				}
 				else if (code.equals("ENDL")) {
+					if (stack.isEmpty()) {
+						throw new FormatException("Stack is empty.");
+					}
 					final long seek = stack.get(stack.size() - 1).longValue();
 					if (currentIteration < maxIterations) {
 						getSource().seek(seek);
@@ -235,6 +238,9 @@ public class MNGFormat extends AbstractFormat {
 
 			final MNGImageInfo info = datasetInfo.imageInfo.get(0);
 			meta.getTable().put("Number of frames", info.offsets.size());
+			if (info.offsets.size() > info.lengths.size()) {
+				throw new FormatException("Offsets size is greater than lengths size.");
+			}
 			for (int i = 0; i < info.offsets.size(); i++) {
 				final long offset = info.offsets.get(i);
 				getSource().seek(offset);
