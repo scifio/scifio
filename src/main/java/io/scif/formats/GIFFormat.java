@@ -452,6 +452,9 @@ public class GIFFormat extends AbstractFormat {
 				}
 			}
 
+			if (meta.getColorTables().isEmpty()) {
+				throw new FormatException("The color tables is Empty.")
+			}
 			meta.setAct(meta.getColorTables().get(0));
 		}
 
