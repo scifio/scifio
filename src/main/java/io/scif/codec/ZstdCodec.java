@@ -33,8 +33,8 @@ import io.scif.FormatException;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.zip.Deflater;
-import java.util.zip.InflaterInputStream;
+import com.github.luben.zstd.Zstd;
+import com.github.luben.zstd.ZstdInputStream;
 
 import org.scijava.io.handle.DataHandle;
 import org.scijava.io.handle.DataHandleInputStream;
@@ -42,12 +42,12 @@ import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
- * This class implements ZLIB decompression.
+ * This class implements ZSTD decompression.
  *
  * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
-public class ZlibCodec extends AbstractCodec {
+public class ZstdCodec extends AbstractCodec {
 
 	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
@@ -55,34 +55,24 @@ public class ZlibCodec extends AbstractCodec {
 	{
 		if (data == null || data.length == 0) throw new IllegalArgumentException(
 			"No data to compress");
-		final Deflater deflater = new Deflater();
-		deflater.setInput(data);
-		deflater.finish();
-		final byte[] buf = new byte[8192];
-		final ByteVector bytes = new ByteVector();
-		int r = 0;
-		// compress until eof reached
-		while ((r = deflater.deflate(buf, 0, buf.length)) > 0) {
-			bytes.add(buf, 0, r);
-		}
-		return bytes.toByteArray();
+
+		return Zstd.compress(data);
 	}
 
 	@Override
 	public byte[] decompress(final DataHandle<Location> in,
 		final CodecOptions options) throws FormatException, IOException
 	{
-		final InflaterInputStream i = new InflaterInputStream(
+		final ZstdInputStream zstdStream = new ZstdInputStream(
 			new DataHandleInputStream<>(in));
 		final ByteVector bytes = new ByteVector();
 		final byte[] buf = new byte[8192];
 		int r = 0;
-		// read until eof reached
 		try {
-			while ((r = i.read(buf, 0, buf.length)) > 0)
+			while ((r = zstdStream.read(buf, 0, buf.length)) > 0)
 				bytes.add(buf, 0, r);
 		}
-		catch (final EOFException e) {}
+		catch (final EOFException e)  {}
 		return bytes.toByteArray();
 	}
 
