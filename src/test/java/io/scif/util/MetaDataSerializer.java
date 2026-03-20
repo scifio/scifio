@@ -38,6 +38,7 @@ import com.google.gson.JsonSerializer;
 
 import io.scif.DefaultImageMetadata;
 import io.scif.DefaultMetaTable;
+import io.scif.Format;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
@@ -50,6 +51,7 @@ import net.imglib2.display.ColorTable;
 
 import org.scijava.Context;
 import org.scijava.io.location.Location;
+import org.scijava.plugin.PluginInfo;
 import org.scijava.service.Service;
 
 /**
@@ -79,7 +81,11 @@ public class MetaDataSerializer {
 				@Override
 				public boolean shouldSkipClass(final Class<?> clazz) {
 					return Service.class.isAssignableFrom(clazz) ||
-						clazz == Context.class;
+						Format.class.isAssignableFrom(clazz) ||
+						PluginInfo.class.isAssignableFrom(clazz) ||
+						clazz == Context.class ||
+						clazz == Class.class ||
+						clazz == ClassLoader.class;
 				}
 			});
 
