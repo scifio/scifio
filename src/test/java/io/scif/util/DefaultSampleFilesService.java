@@ -40,8 +40,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.freedesktop.BaseDirectory;
 import org.scijava.download.DiskLocationCache;
 import org.scijava.download.DownloadService;
@@ -88,8 +86,7 @@ public class DefaultSampleFilesService extends AbstractService implements
 
 		final byte[] bytes = Arrays.stream(zipSources).map(Object::toString).reduce(
 			"", (a, b) -> a + b).getBytes();
-		final String localFolderName = DatatypeConverter.printHexBinary(DigestUtils
-			.sha1(bytes));
+		final String localFolderName = DigestUtils.hex(DigestUtils.sha1(bytes));
 
 		// test if we already downloaded and unpacked the source
 		FileLocation out = sources.get(localFolderName);
