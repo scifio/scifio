@@ -42,13 +42,10 @@ import java.awt.image.Raster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Iterator;
-
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ServiceRegistry;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
@@ -73,9 +70,9 @@ public class JAIIIOServiceImpl extends AbstractService implements
 		final ImageOutputStream ios = ImageIO.createImageOutputStream(out);
 
 		final IIORegistry registry = IIORegistry.getDefaultInstance();
-		final Iterator<J2KImageWriterSpi> iter = ServiceRegistry.lookupProviders(
-			J2KImageWriterSpi.class);
-		registry.registerServiceProviders(iter);
+		if (registry.getServiceProviderByClass(J2KImageWriterSpi.class) == null) {
+			registry.registerServiceProvider(new J2KImageWriterSpi());
+		}
 		final J2KImageWriterSpi spi = registry.getServiceProviderByClass(
 			J2KImageWriterSpi.class);
 		final J2KImageWriter writer = new J2KImageWriter(spi);
@@ -172,9 +169,9 @@ public class JAIIIOServiceImpl extends AbstractService implements
 	/** Set up the JPEG-2000 image reader. */
 	private J2KImageReader getReader() {
 		final IIORegistry registry = IIORegistry.getDefaultInstance();
-		final Iterator<J2KImageReaderSpi> iter = ServiceRegistry.lookupProviders(
-			J2KImageReaderSpi.class);
-		registry.registerServiceProviders(iter);
+		if (registry.getServiceProviderByClass(J2KImageReaderSpi.class) == null) {
+			registry.registerServiceProvider(new J2KImageReaderSpi());
+		}
 		final J2KImageReaderSpi spi = registry.getServiceProviderByClass(
 			J2KImageReaderSpi.class);
 		return new J2KImageReader(spi);
