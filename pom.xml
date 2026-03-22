@@ -122,7 +122,11 @@
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
+		<scijava.jvm.version>11</scijava.jvm.version>
+		<scijava.jvm.build.version>[11,)</scijava.jvm.build.version>
+
 		<xdg-java.version>0.1.1</xdg-java.version>
+		<scijava-desktop.version>1.0.0</scijava-desktop.version>
 	</properties>
 
 	<dependencies>
@@ -152,6 +156,11 @@
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-desktop</artifactId>
+			<version>${scijava-desktop.version}</version>
 		</dependency>
 
 		<!-- Test scope dependencies -->

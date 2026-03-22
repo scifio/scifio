@@ -51,8 +51,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import org.scijava.app.AppService;
+import org.scijava.desktop.DesktopService;
+import org.scijava.desktop.FileType;
 import org.scijava.io.handle.DataHandle;
 import org.scijava.io.location.Location;
 import org.scijava.io.location.RemoteLocation;
@@ -84,6 +87,9 @@ public class DefaultFormatService extends AbstractSingletonService<Format>
 
 	@Parameter
 	private LogService logService;
+
+	@Parameter(required = false)
+	private DesktopService desktopService;
 
 	// -- Fields --
 
@@ -418,6 +424,26 @@ public class DefaultFormatService extends AbstractSingletonService<Format>
 	@Override
 	public String getVersion() {
 		return appService.getApp(SCIFIOApp.NAME).getVersion();
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		super.initialize();
+
+		// Register format file types with the desktop integration layer.
+		if (desktopService != null) {
+			// NB: The desktop layer infers precise MIME type as needed;
+			// we just need to pass the MIME type *prefix* here, plus wildcard.
+			desktopService.addFileTypes(() -> {
+				return getInstances().stream().flatMap(
+					format -> Arrays.stream(format.getSuffixes()).map(
+						suffix -> new FileType(suffix, "image/*", format.getFormatName())
+					)
+				).collect(Collectors.toList());
+			});
+		}
 	}
 
 	// -- Helper methods --
