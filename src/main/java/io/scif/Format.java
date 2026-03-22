@@ -30,6 +30,7 @@
 package io.scif;
 
 import org.scijava.io.location.Location;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * Interface for all SCIFIO formats.
@@ -48,7 +49,7 @@ import org.scijava.io.location.Location;
  * @see io.scif.SCIFIO
  * @see io.scif.services.FormatService
  */
-public interface Format extends SCIFIOPlugin {
+public interface Format extends SCIFIOPlugin, SingletonPlugin {
 
 	// -- Format API methods --
 

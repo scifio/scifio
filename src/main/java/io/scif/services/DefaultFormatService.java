@@ -57,22 +57,21 @@ import org.scijava.io.handle.DataHandle;
 import org.scijava.io.location.Location;
 import org.scijava.io.location.RemoteLocation;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-import org.scijava.thread.ThreadService;
 
 /**
  * Default {@link FormatService} implementation
  *
- * @see io.scif.services.FormatService
  * @author Mark Hiner
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultFormatService extends AbstractService implements
-	FormatService
+public class DefaultFormatService extends AbstractSingletonService<Format>
+	implements FormatService
 {
 
 	// -- Parameters --
@@ -84,15 +83,12 @@ public class DefaultFormatService extends AbstractService implements
 	private AppService appService;
 
 	@Parameter
-	private ThreadService threadService;
-
-	@Parameter
 	private LogService logService;
 
 	// -- Fields --
 
 	/*
-	 * A list of all available Formats
+	 * Ordered set of all available Formats.
 	 */
 	private Set<Format> formats;
 
@@ -127,26 +123,12 @@ public class DefaultFormatService extends AbstractService implements
 	private Map<Class<?>, Format> metadataMap;
 
 	/*
-	 * Maps String ids to their associated Format.
-	 * TODO: Update this logic for
-	 * https://github.com/scifio/scifio/issues/237
+	 * Map of previously analyzed {@link Location}s
+	 * to their matched {@link Format}.
 	 */
 	private Map<Location, Format> formatCache;
 
 	private boolean dirtyFormatCache = false;
-
-	// Flag to mark if this service has been initialized or not.
-	private boolean initialized = false;
-
-	// If this value returns true, the current thread has permission to access
-	// uninitialized data structures.
-	private final ThreadLocal<Boolean> threadLock = new ThreadLocal<Boolean>() {
-
-		@Override
-		protected Boolean initialValue() {
-			return false;
-		}
-	};
 
 	// -- FormatService API Methods --
 
@@ -424,6 +406,13 @@ public class DefaultFormatService extends AbstractService implements
 		return writerMap().values();
 	}
 
+	// -- PTService methods --
+
+	@Override
+	public Class<Format> getPluginType() {
+		return Format.class;
+	}
+
 	// -- Versioned methods --
 
 	@Override
@@ -431,88 +420,47 @@ public class DefaultFormatService extends AbstractService implements
 		return appService.getApp(SCIFIOApp.NAME).getVersion();
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		// TODO replace with preload implementation.
-		// See https://github.com/scijava/scijava-common/issues/145
-		threadService.run(() -> {
-			// Allow this thread to bypass the initialization check
-			threadLock.set(true);
-
-			formats = new TreeSet<>();
-			formatMap = new HashMap<>();
-			checkerMap = new HashMap<>();
-			parserMap = new HashMap<>();
-			readerMap = new HashMap<>();
-			writerMap = new HashMap<>();
-			metadataMap = new HashMap<>();
-			formatCache = new WeakHashMap<>();
-
-			// HACK: Wait until the FormatService is available from the context
-			// before initializing all the formats. Otherwise, any Format that
-			// has the FormatService as a parameter will fail to inject.
-			// TODO: Fix this to be less nightmarish.
-			while (context().getService(DefaultFormatService.class) == null) {
-				try {
-					Thread.sleep(50);
-				}
-				catch (final InterruptedException exc) {}
-			}
-
-			// Initialize format information
-			for (final Format format : pluginService
-					.createInstancesOfType(Format.class))
-			{
-				addFormat(format);
-			}
-
-			initialized = true;
-		});
-	}
-
-	// -- Private Methods --
+	// -- Helper methods --
 
 	private Set<Format> formats() {
-		checkLock();
+		if (formats == null) initFormats();
 		return formats;
 	}
 
 	private Map<Class<?>, Format> formatMap() {
-		checkLock();
+		if (formats == null) initFormats();
 		return formatMap;
 	}
 
 	private Map<Class<?>, Format> checkerMap() {
-		checkLock();
+		if (formats == null) initFormats();
 		return checkerMap;
 	}
 
 	private Map<Class<?>, Format> parserMap() {
-		checkLock();
+		if (formats == null) initFormats();
 		return parserMap;
 	}
 
 	private Map<Class<?>, Format> readerMap() {
-		checkLock();
+		if (formats == null) initFormats();
 		return readerMap;
 	}
 
 	private Map<Class<?>, Format> writerMap() {
-		checkLock();
+		if (formats == null) initFormats();
 		return writerMap;
 	}
 
 	private Map<Class<?>, Format> metadataMap() {
-		checkLock();
+		if (formats == null) initFormats();
 		return metadataMap;
 	}
 
 	private Map<Location, Format> formatCache() {
-		checkLock();
+		if (formats == null) initFormats();
 		if (dirtyFormatCache) {
-			// Double lock so that a cache is only cleared once
+			// NB: Double lock so that a cache is only cleared once.
 			synchronized (formatCache) {
 				if (dirtyFormatCache) {
 					formatCache.clear();
@@ -523,31 +471,46 @@ public class DefaultFormatService extends AbstractService implements
 		return formatCache;
 	}
 
-	/**
-	 * Helper method that checks if one of these is true:
-	 * <ul>
-	 * <li>This thread is given permission to access data structures before
-	 * initialization</li>
-	 * <li>The FormatService is initialized</li>
-	 * </ul>
-	 * If either is true, returns harmlessly. If not, this thread waits for the
-	 * initialization thread to complete.
-	 */
-	private void checkLock() {
-		if (!(initialized || threadLock.get())) {
-			synchronized (this) {
-				// Double locked to avoid missing signals
-				while (!(initialized || threadLock.get())) {
-					try {
-						// Limit excessive polling
-						Thread.sleep(100);
-					}
-					catch (final InterruptedException e) {
-						logService.error("DefaultFormatService: " +
-							"Interrupted while waiting for format initialization.", e);
-					}
-				}
+	// Helper methods - lazy initialization --
+
+	private synchronized void initFormats() {
+		if (this.formats != null) return;
+
+		// NB: Build all tables into locals, then publish the formats field
+		// last. Downstream accessors treat a non-null formats as the signal
+		// that initialization is complete, so we must not expose any
+		// half-built structures. This inlines the work addFormat would do,
+		// because going through addFormat (and its accessor calls) would
+		// recursively re-enter initFormats before publication.
+		final TreeSet<Format> formats = new TreeSet<>();
+		final Map<Class<?>, Format> formatMap = new HashMap<>();
+		final Map<Class<?>, Format> checkerMap = new HashMap<>();
+		final Map<Class<?>, Format> parserMap = new HashMap<>();
+		final Map<Class<?>, Format> readerMap = new HashMap<>();
+		final Map<Class<?>, Format> writerMap = new HashMap<>();
+		final Map<Class<?>, Format> metadataMap = new HashMap<>();
+
+		for (final Format format : getInstances()) {
+			if (formatMap.containsKey(format.getClass())) continue;
+			formats.add(format);
+			formatMap.put(format.getClass(), format);
+			checkerMap.put(format.getCheckerClass(), format);
+			parserMap.put(format.getParserClass(), format);
+			readerMap.put(format.getReaderClass(), format);
+			if (format.getWriterClass() != DefaultWriter.class) {
+				writerMap.put(format.getWriterClass(), format);
 			}
+			metadataMap.put(format.getMetadataClass(), format);
+			if (format.getContext() == null) format.setContext(getContext());
 		}
+
+		this.formatMap = formatMap;
+		this.checkerMap = checkerMap;
+		this.parserMap = parserMap;
+		this.readerMap = readerMap;
+		this.writerMap = writerMap;
+		this.metadataMap = metadataMap;
+		this.formatCache = new WeakHashMap<>();
+		this.formats = formats; // publish last
 	}
 }
