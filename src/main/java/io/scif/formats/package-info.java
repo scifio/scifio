@@ -35,7 +35,7 @@
  * written, to facilitate the inclusion of SCIFIO as an image IO library in
  * external projects.
  * </p>
- * <h3>Changes since Bio-Formats</h3>
+ * <h2>Changes since Bio-Formats</h2>
  * <ul>
  * <li>In Bio-Formats, image input and output was separated by Reader and Writer
  * classes. Although these classes still exist in SCIFIO, some operations have

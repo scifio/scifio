@@ -29,7 +29,7 @@
 
 /**
  * Provides utility classes for common operations on or by SCIFIO components.
- * <h3>Changes since Bio-Formats</h3>
+ * <h2>Changes since Bio-Formats</h2>
  * <ul>
  * <li>Because of the split between SCIFIO and OME-XML classes, the Bio-Formats
  * tools class was split into

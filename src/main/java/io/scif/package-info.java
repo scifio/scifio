@@ -91,7 +91,7 @@
  * arbitrary lists of one or more images. Images are the pixel containers, and
  * metadata can exist at both the image and dataset level.
  * </p>
- * <h3>Changes since Bio-Formats</h3>
+ * <h2>Changes since Bio-Formats</h2>
  * <ul>
  * <li>Converting to {@code Format} representations from the Bio-Formats
  * {@code Reader}. Both encapsulate the functions to read and write images of a
@@ -130,7 +130,8 @@
  * {@code series} each containing multiple {@code images}. In SCIFIO, we adopt
  * the OME terminology that you open a {@code dataset} that contains one or more
  * {@code images}. Each {@code image} has a number of {@code planes}.
- * <table summary="Bio-Formats vs. SCIFIO terminology comparison">
+ * <table>
+ * <caption>Bio-Formats vs. SCIFIO terminology comparison</caption>
  * <tr>
  * <th>Bio-Formats</th>
  * <th>SCIFIO</th>
@@ -192,7 +193,7 @@
  * </p>
  * </li>
  * </ul>
- * <h3>Future plans</h3> NB: items with an asterisk (*) are of unknown merit and
+ * <h2>Future plans</h2> NB: items with an asterisk (*) are of unknown merit and
  * may or may not be implemented, pending discussion.
  * <ul>
  * <li>Translate more formats! The goal is to translate all the open source

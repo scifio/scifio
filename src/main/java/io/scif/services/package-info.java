@@ -30,7 +30,7 @@
 /**
  * Provides a set of Services (singletons within a given context) for working
  * with SCIFIO objects.
- * <h3>Changes since Bio-Formats</h3>
+ * <h2>Changes since Bio-Formats</h2>
  * <ul>
  * <li>Removed {@code services.txt}. A text file maintaining the current
  * services is prohibitive to external development, as per {@code readers.txt}

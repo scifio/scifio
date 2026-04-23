@@ -30,7 +30,7 @@
 /**
  * Provides wrapping classes for modifying the performance of one or more of a
  * {link io.scif.Format}'s components.
- * <h3>Changes since Bio-Formats</h3>
+ * <h2>Changes since Bio-Formats</h2>
  * <ul>
  * <li>Implemented SCIFIO {@link io.scif.filters.Filter}s. Filters are designed
  * to wrap arbitrary classes. An implementation is currently provided for
@@ -56,7 +56,7 @@
  * </p>
  * </li>
  * </ul>
- * <h3>Future plans</h3>
+ * <h2>Future plans</h2>
  * <ul>
  * <li>Implement Filters for the remaining component types.</li>
  * </ul>
