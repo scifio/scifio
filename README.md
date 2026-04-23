@@ -1,7 +1,7 @@
 [SCIFIO](https://scif.io/)
 ======
 
-[![](https://github.com/scifio/scifio/actions/workflows/build-main.yml/badge.svg)](https://github.com/scifio/scifio/actions/workflows/build-main.yml)
+[![Build Status](https://github.com/scifio/scifio/actions/workflows/build.yml/badge.svg)](https://github.com/scifio/scifio/actions/workflows/build.yml)
 [![developer chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://imagesc.zulipchat.com/#narrow/stream/327239-SCIFIO)
 
 SCIFIO (SCientific Image Format Input & Output) is an extensible Java framework
