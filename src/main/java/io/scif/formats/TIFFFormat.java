@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -1365,6 +1365,9 @@ public class TIFFFormat extends AbstractFormat {
 		public static final String COMPRESSION_JPEG = //
 			CompressionType.JPEG.getCompression();
 
+		public static final String COMPRESSION_ZSTD = //
+			CompressionType.ZSTD.getCompression();
+
 		public static final String BIG_TIFF_KEY = "WRITE_BIG_TIFF";
 
 		// -- Fields --
@@ -1387,7 +1390,7 @@ public class TIFFFormat extends AbstractFormat {
 		protected String[] makeCompressionTypes() {
 			return new String[] { COMPRESSION_UNCOMPRESSED, COMPRESSION_LZW,
 					COMPRESSION_ZLIB, COMPRESSION_J2K, COMPRESSION_J2K_LOSSY,
-					COMPRESSION_JPEG };
+					COMPRESSION_JPEG, COMPRESSION_ZSTD };
 		}
 
 		// -- TIFFWriter API Methods --
@@ -1574,6 +1577,9 @@ public class TIFFFormat extends AbstractFormat {
 				}
 				else if (getCompression().equals(COMPRESSION_JPEG)) {
 					compressType = TiffCompression.JPEG;
+				}
+				else if (getCompression().equals(COMPRESSION_ZSTD)) {
+					compressType = TiffCompression.ZSTD;
 				}
 			}
 			final Object v = ifd.get(IFD.COMPRESSION);

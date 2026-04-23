@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,7 +44,8 @@ public enum CompressionType implements CodedEnum {
 		UNCOMPRESSED(1, "Uncompressed"), ZLIB(2, "zlib"), CINEPAK(3, "Cinepak"),
 		ANIMATION(4, "Animation"), H_263(5, "H.263"), SORENSON(6, "Sorenson"),
 		SORENSON_3(7, "Sorenson 3"), MPEG_4(8, "MPEG 4"), LZW(9, "LZW"), J2K(10,
-			"JPEG-2000"), J2K_LOSSY(11, "JPEG-2000 Lossy"), JPEG(12, "JPEG");
+			"JPEG-2000"), J2K_LOSSY(11, "JPEG-2000 Lossy"), JPEG(12, "JPEG"),
+		ZSTD(13, "ZSTD");
 
 	/** Code for the compression. */
 	private int code;

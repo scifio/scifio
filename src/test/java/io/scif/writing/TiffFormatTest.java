@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -134,6 +134,24 @@ public class TiffFormatTest extends AbstractSyntheticWriterTest {
 
 		final SCIFIOConfig config = new SCIFIOConfig();
 		config.writerSetCompression(CompressionType.ZLIB.getCompression());
+
+		for (final int f : formats) {
+			final String formatString = FormatTools.getPixelTypeString(f);
+			final ImgPlus<?> sourceImg = opener.openImgs(new TestImgLocation.Builder()
+				.name("testimg").pixelType(formatString).axes("X", "Y", "C").lengths(
+					100, 100, 3).build()).get(0);
+			testWriting(sourceImg, config);
+		}
+	}
+
+	@Test
+	public void testZSTDCompression() throws IOException {
+		final int[] formats = new int[] { FormatTools.INT8, FormatTools.UINT8,
+			FormatTools.INT16, FormatTools.UINT16, FormatTools.INT32,
+			FormatTools.UINT32, FormatTools.FLOAT, FormatTools.DOUBLE };
+
+		final SCIFIOConfig config = new SCIFIOConfig();
+		config.writerSetCompression(CompressionType.ZSTD.getCompression());
 
 		for (final int f : formats) {
 			final String formatString = FormatTools.getPixelTypeString(f);
