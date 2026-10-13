@@ -31,6 +31,23 @@ package io.scif.img;
 
 import static org.scijava.util.ListUtils.first;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.scijava.Context;
+import org.scijava.app.StatusService;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
+import org.scijava.io.location.LocationService;
+import org.scijava.plugin.Parameter;
+import org.scijava.task.Task;
+import org.scijava.task.TaskService;
+
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
@@ -45,15 +62,6 @@ import io.scif.img.converters.PlaneConverter;
 import io.scif.img.converters.PlaneConverterService;
 import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -67,13 +75,6 @@ import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
-
-import org.scijava.Context;
-import org.scijava.app.StatusService;
-import org.scijava.io.location.FileLocation;
-import org.scijava.io.location.Location;
-import org.scijava.io.location.LocationService;
-import org.scijava.plugin.Parameter;
 
 /**
  * Reads images from data sources using SCIFIO.
@@ -96,6 +97,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 	@Parameter
 	private LocationService locationService;
+
+	@Parameter
+	private TaskService taskService;
 
 	// -- Constructors --
 
@@ -701,8 +705,20 @@ public class ImgOpener extends AbstractImgIOComponent {
 			else converter = pcService.getDefaultConverter();
 		}
 
-		read(imageIndex, imgPlus, r, config, converter, bounds, npRanges,
-			npIndices);
+		long totalPlanes = 1;
+		for (final Range npRange : npRanges) {
+			totalPlanes *= npRange.size();
+		}
+		final Task task = taskService.createTask("Reading planes");
+		task.setProgressMaximum(totalPlanes);
+		task.start();
+		try {
+			read(imageIndex, imgPlus, r, config, converter, task, bounds,
+				npRanges, npIndices);
+		}
+		finally {
+			task.finish();
+		}
 
 		if (config.imgOpenerIsComputeMinMax()) populateMinMax(r, imgPlus,
 			imageIndex);
@@ -711,18 +727,20 @@ public class ImgOpener extends AbstractImgIOComponent {
 	@SuppressWarnings("rawtypes")
 	private void read(final int imageIndex, final ImgPlus imgPlus, final Reader r,
 		final SCIFIOConfig config, final PlaneConverter converter,
-		final Interval bounds, final Range[] npRanges, final long[] npIndices)
+		final Task task, final Interval bounds, final Range[] npRanges,
+		final long[] npIndices)
 		throws FormatException, IOException
 	{
-		read(imageIndex, imgPlus, r, config, converter, null, bounds, npRanges,
-			npIndices, 0, new int[] { 0 });
+		read(imageIndex, imgPlus, r, config, converter, task, null, bounds,
+			npRanges, npIndices, 0, new int[] { 0 });
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Plane read(final int imageIndex, final ImgPlus imgPlus,
 		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
-		Plane tmpPlane, final Interval bounds, final Range[] npRanges,
-		final long[] npIndices, final int depth, final int[] planeCount)
+		final Task task, Plane tmpPlane, final Interval bounds,
+		final Range[] npRanges, final long[] npIndices, final int depth,
+		final int[] planeCount)
 		throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {
@@ -733,8 +751,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 			// Recursive step. Sets the non-planar indices
 			for (int i = 0; i < npRanges[npPosition].size(); i++) {
 				npIndices[npPosition] = npRanges[npPosition].get(i);
-				tmpPlane = read(imageIndex, imgPlus, r, config, converter, tmpPlane,
-					bounds, npRanges, npIndices, depth + 1, planeCount);
+				tmpPlane = read(imageIndex, imgPlus, r, config, converter, task,
+					tmpPlane, bounds, npRanges, npIndices, depth + 1, planeCount);
 			}
 		}
 		else {
@@ -765,6 +783,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 			// Update plane count
 			planeCount[0]++;
+			task.setProgressValue(planeCount[0]);
 		}
 
 		return tmpPlane;
