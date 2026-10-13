@@ -29,6 +29,24 @@
 
 package io.scif.formats;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.StringUtils;
+
 import io.scif.AbstractFormat;
 import io.scif.AbstractTranslator;
 import io.scif.AbstractWriter;
@@ -54,17 +72,6 @@ import io.scif.formats.tiff.TiffSaver;
 import io.scif.gui.AWTImageTools;
 import io.scif.util.FormatTools;
 import io.scif.xml.XMLService;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
@@ -72,14 +79,6 @@ import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
-
-import org.scijava.io.handle.DataHandle;
-import org.scijava.io.handle.DataHandleService;
-import org.scijava.io.location.BrowsableLocation;
-import org.scijava.io.location.Location;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.util.StringUtils;
 
 /**
  * Handler for the TIFF file format.
@@ -566,7 +565,7 @@ public class TIFFFormat extends AbstractFormat {
 			table.remove("Comment");
 			meta.setDescription("");
 
-			int z = 1, t = 1;
+			int z = 1, t = 1, images = 1;
 			int c = (int) meta.get(0).getAxisLength(Axes.CHANNEL);
 
 			IFDList ifds = meta.getIfds();
@@ -591,6 +590,7 @@ public class TIFFFormat extends AbstractFormat {
 				if (token.startsWith("channels=")) c = parseInt(value);
 				else if (token.startsWith("slices=")) z = parseInt(value);
 				else if (token.startsWith("frames=")) t = parseInt(value);
+				else if (token.startsWith("images=")) images = parseInt(value);
 				else if (token.startsWith("mode=")) {
 					table.put("Color mode", value);
 				}
@@ -633,7 +633,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			m.setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME);
 
-			if (z * t * (m.isMultichannel() ? 1 : c) == ifds.size()) {
+			if (images <= ifds.size() && z * t * (m.isMultichannel() ? 1 : c) == ifds.size()) {
 				m.setAxisLength(Axes.Z, z);
 				m.setAxisLength(Axes.TIME, t);
 				if (!m.isMultichannel()) {
@@ -645,7 +645,7 @@ public class TIFFFormat extends AbstractFormat {
 				m.setAxisLength(Axes.TIME, t);
 				m.setAxisLength(Axes.CHANNEL, m.getAxisLength(Axes.CHANNEL) * c);
 			}
-			else if (ifds.size() == 1 && z * t > ifds.size() && ifds.get(0)
+			else if (ifds.size() == 1 && (z * t > ifds.size() || images > ifds.size()) && ifds.get(0)
 				.getCompression() == TiffCompression.UNCOMPRESSED)
 			{
 				// file is likely corrupt (missing end IFDs)
@@ -688,6 +688,7 @@ public class TIFFFormat extends AbstractFormat {
 					}
 					ifd.putIFDValue(IFD.STRIP_OFFSETS, offsets);
 				}
+				meta.setIfds(ifds);
 
 				if (z * c * t == ifds.size()) {
 					m.setAxisLength(Axes.Z, z);
