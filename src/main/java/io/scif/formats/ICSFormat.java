@@ -29,6 +29,26 @@
 
 package io.scif.formats;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.zip.GZIPInputStream;
+
+import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleInputStream;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BrowsableLocation;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
@@ -46,31 +66,10 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.img.axes.SCIFIOAxes;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.zip.GZIPInputStream;
-
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imglib2.Interval;
-
-import org.scijava.Priority;
-import org.scijava.io.handle.DataHandle;
-import org.scijava.io.handle.DataHandleInputStream;
-import org.scijava.io.handle.DataHandleService;
-import org.scijava.io.location.BrowsableLocation;
-import org.scijava.io.location.BytesLocation;
-import org.scijava.io.location.Location;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 
 /**
  * SCIFIO Format supporting the
@@ -1396,6 +1395,8 @@ public class ICSFormat extends AbstractFormat {
 		/* Cached GZIPInputStream */
 		private GZIPInputStream gzipStream;
 
+		private final Object gzipLock = new Object();
+
 		/* Whether or not the image is inverted along the Y axis. */
 		private boolean invertY; // TODO only in oldInitFile
 
@@ -1415,6 +1416,19 @@ public class ICSFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
+		{
+			if (gzip) {
+				synchronized (gzipLock) {
+					return openPlaneInternal(imageIndex, planeIndex, plane, bounds,
+						config);
+				}
+			}
+			return openPlaneInternal(imageIndex, planeIndex, plane, bounds, config);
+		}
+
+		private ByteArrayPlane openPlaneInternal(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
