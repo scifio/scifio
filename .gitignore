@@ -11,6 +11,9 @@ test-output
 # Maven #
 target/
 
+# VS Code #
+.vscode
+
 # IntelliJ #
 .idea/
 *.iml
