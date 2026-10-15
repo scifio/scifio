@@ -691,8 +691,7 @@ public class TiffParser extends AbstractContextual implements Closeable {
 
 		codecOptions.maxBytes = Math.max(size, tile.length);
 		codecOptions.ycbcr = ifd
-			.getPhotometricInterpretation() == PhotoInterp.Y_CB_CR && ifd
-				.getIFDIntValue(IFD.Y_CB_CR_SUB_SAMPLING) == 1 && ycbcrCorrection;
+			.getPhotometricInterpretation() == PhotoInterp.Y_CB_CR && ycbcrCorrection;
 
 		if (jpegTable != null) {
 			final byte[] q = new byte[jpegTable.length + tile.length - 4];
