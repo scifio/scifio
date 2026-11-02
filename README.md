@@ -41,6 +41,7 @@ The SCIFIO core includes support for:
 * PGM
 * QuickTime
 * TIFF
+* TIFF With ZLIB and ZSTD compression
 * Zipped images
 
 Additionally,
