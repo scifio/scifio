@@ -33,12 +33,18 @@ import io.scif.FormatException;
 import io.scif.gui.AWTImageTools;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.scijava.io.handle.DataHandle;
 import org.scijava.io.handle.DataHandleInputStream;
@@ -102,7 +108,9 @@ public class JPEGCodec extends AbstractCodec {
 	public byte[] decompress(final DataHandle<Location> in, CodecOptions options)
 		throws FormatException, IOException
 	{
-		BufferedImage b;
+		final boolean ycbcr = options != null && options.ycbcr;
+		BufferedImage b = null;
+		WritableRaster stored = null;
 		int nextByte;
 		final long offset = in.offset();
 		try {
@@ -120,8 +128,12 @@ public class JPEGCodec extends AbstractCodec {
 				in.seek(offset);
 			}
 
-			b = ImageIO.read(new BufferedInputStream(new DataHandleInputStream<>(in),
-				8192));
+			final InputStream s = new BufferedInputStream(
+				new DataHandleInputStream<>(in), 8192);
+			// ImageIO converts YCbCr to RGB on its own whenever it judges the data
+			// to be YCbCr, so read the stored samples and convert them here.
+			if (ycbcr) stored = readStoredSamples(s);
+			else b = ImageIO.read(s);
 		}
 		catch (final IOException exc) {
 			// probably a lossless JPEG; delegate to LosslessJPEGCodec
@@ -132,23 +144,25 @@ public class JPEGCodec extends AbstractCodec {
 
 		if (options == null) options = CodecOptions.getDefaultOptions();
 
-		final byte[][] buf = AWTImageTools.getPixelBytes(b, options.littleEndian);
+		final byte[][] buf = ycbcr ? AWTImageTools.getPixelBytes(stored,
+			options.littleEndian) : AWTImageTools.getPixelBytes(b,
+				options.littleEndian);
 
 		// correct for YCbCr encoding, if necessary
-		if (options.ycbcr && buf.length == 3) {
-			final int nBytes = buf[0].length / (b.getWidth() * b.getHeight());
+		if (ycbcr && buf.length == 3) {
+			final int nBytes = buf[0].length / (stored.getWidth() * stored
+				.getHeight());
 			final int mask = (int) (Math.pow(2, nBytes * 8) - 1);
 			for (int i = 0; i < buf[0].length; i += nBytes) {
 				final int y = Bytes.toInt(buf[0], i, nBytes, options.littleEndian);
-				int cb = Bytes.toInt(buf[1], i, nBytes, options.littleEndian);
-				int cr = Bytes.toInt(buf[2], i, nBytes, options.littleEndian);
+				final int cb = Bytes.toInt(buf[1], i, nBytes, options.littleEndian) -
+					128;
+				final int cr = Bytes.toInt(buf[2], i, nBytes, options.littleEndian) -
+					128;
 
-				cb = Math.max(0, cb - 128);
-				cr = Math.max(0, cr - 128);
-
-				final int red = (int) (y + 1.402 * cr) & mask;
-				final int green = (int) (y - 0.34414 * cb - 0.71414 * cr) & mask;
-				final int blue = (int) (y + 1.772 * cb) & mask;
+				final int red = clamp(y + 1.402 * cr, mask);
+				final int green = clamp(y - 0.34414 * cb - 0.71414 * cr, mask);
+				final int blue = clamp(y + 1.772 * cb, mask);
 
 				Bytes.unpack(red, buf[0], i, nBytes, options.littleEndian);
 				Bytes.unpack(green, buf[1], i, nBytes, options.littleEndian);
@@ -174,5 +188,34 @@ public class JPEGCodec extends AbstractCodec {
 			}
 		}
 		return rtn;
+	}
+
+	/**
+	 * Reads the samples as stored in the JPEG stream, without the colour
+	 * conversion {@link ImageIO#read(InputStream)} would apply. Returns null if
+	 * no ImageIO reader recognizes the stream.
+	 */
+	private static WritableRaster readStoredSamples(final InputStream s)
+		throws IOException
+	{
+		try (ImageInputStream iis = ImageIO.createImageInputStream(s)) {
+			final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+			if (!readers.hasNext()) return null;
+			final ImageReader reader = readers.next();
+			try {
+				reader.setInput(iis);
+				final Raster r = reader.readRaster(0, null);
+				final WritableRaster w = r.createCompatibleWritableRaster();
+				w.setRect(r);
+				return w;
+			}
+			finally {
+				reader.dispose();
+			}
+		}
+	}
+
+	private static int clamp(final double value, final int max) {
+		return (int) Math.max(0, Math.min(max, Math.round(value)));
 	}
 }
